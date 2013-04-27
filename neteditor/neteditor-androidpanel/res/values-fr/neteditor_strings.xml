@@ -1,0 +1,61 @@
+<resources>
+
+    <string name="yes">Oui</string>
+    <string name="no">Non</string>
+    
+    <string name="msg_loading">Chargement&#8230;</string>
+    <string name="msg_loading_file">Chargement de %s&#8230;</string>
+    <string name="msg_saving">Enregistrement&#8230;</string>
+    <string name="msg_save_file">Enregistrer les changements avant de sortir ?</string>
+    <string name="msg_overwrite_file">Voulez-vous écraser le fichier %s ?</string>
+    <string name="msg_saving_file">Enregistrement de %s&#8230;</string>
+    
+    <string name="title_activity_editor_file">%s</string>
+    <string name="title_activity_editor_file_changed">%s [modifié]</string>
+
+    <string name="menu_load">Ouvrir&#8230;</string>
+    <string name="menu_save">Enregistrer</string>
+    <string name="menu_saveas">Enregistrer sous&#8230;</string>
+    <string name="menu_select_all">Sélectionner tout</string>
+    <string name="menu_invert_selection">Inverser la sélection</string>
+    <string name="menu_pack_objects">Taille par défaut</string>
+    <string name="menu_edit">Édition</string>
+    <string name="menu_revert">Annuler</string>
+    <string name="menu_revert_revert">Refaire</string>
+    <string name="menu_locking_action">Figer</string>
+    <string name="menu_delete">Supprimer</string>
+    
+    <string name="zero_selected">0 sélectionné</string>
+    <string name="one_selected">1 sélectionné</string>
+    <string name="n_selected">%d sélectionnés</string>
+    
+    <string name="multi_selection_mode">Multi-sélection</string>
+    <string name="reset_view">Initialiser la vue</string>
+    <string name="undo_pack_object">le changement de taille</string>
+    
+    <string name="actionmode_moving_ctrlpts">le déplacement d\'un point de contrôle</string>
+    <string name="actionmode_inserting_ctrlpts">l\'ajout d\'un point de contrôle à la position %d</string>
+    <string name="actionmode_inserting_moving_ctrlpts">l\'ajout et le déplacement d\'un point de contrôle</string>
+    <string name="actionmode_moving_1_figure">le déplacement de la figure %s</string>
+    <string name="actionmode_moving_n_figures">le déplacement des figures</string>
+    <string name="actionmode_resizing_1_figure">le dimensionnement de la figure %s</string>
+    <string name="actionmode_resizing_n_figures">le dimensionnement des figures</string>
+    <string name="actionmode_create_rectangle_decoration">Dessinez un rectangle</string>
+    <string name="actionmode_create_ellipse_decoration">Dessinez un rectangle pour l\'ellipse</string>
+    <string name="actionmode_create_text_decoration">Dessinez un rectangle pour le texte</string>
+    <string name="actionmode_create_bitmap_decoration">Dessinez un rectangle pour l\'image</string>
+    <string name="actionmode_create_pdf_decoration">Dessinez un rectangle pour le PDF</string>
+    <string name="actionmode_create_polyline_decoration">Dessinez les points de la polyligne</string>
+    <string name="actionmode_create_polygon_decoration">Dessinez les points du polygone</string>
+
+    <string name="is_framed">Contours</string>
+    <string name="is_filled">Remplissage</string>
+
+    <string name="property_label_filled">Remplissage de la forme</string>
+    <string name="property_label_framed">Dessin des contours</string>
+    <string name="property_label_islocked">Figer la figure</string>
+    <string name="property_label_isclosed">Fermer les contours</string>
+    <string name="property_label_fillingcolor">Couleur de remplissage</string>
+    <string name="property_label_linecolor">Couleur des contours</string>
+
+</resources>

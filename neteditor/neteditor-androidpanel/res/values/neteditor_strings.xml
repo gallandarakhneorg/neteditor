@@ -1,0 +1,60 @@
+<resources>
+
+    <string name="yes">Yes</string>
+    <string name="no">No</string>
+    
+    <string name="msg_loading">Loading&#8230;</string>
+    <string name="msg_loading_file">Loading %s&#8230;</string>
+    <string name="msg_saving">Saving&#8230;</string>
+    <string name="msg_save_file">Save changes before existing?</string>
+    <string name="msg_overwrite_file">Are you sure to overwrite the file %s?</string>
+    <string name="msg_saving_file">Saving %s&#8230;</string>
+    
+    <string name="title_activity_editor_file">%s</string>
+    <string name="title_activity_editor_file_changed">%s [changed]</string>
+    
+    <string name="menu_load">Load&#8230;</string>
+    <string name="menu_save">Save</string>
+    <string name="menu_saveas">Save As&#8230;</string>
+    <string name="menu_select_all">Select all</string>
+    <string name="menu_invert_selection">Revert selection</string>
+    <string name="menu_pack_objects">Default size</string>
+    <string name="menu_edit">Edit</string>
+    <string name="menu_revert">Undo</string>
+    <string name="menu_revert_revert">Redo</string>
+    <string name="menu_locking_action">Locking</string>
+    <string name="menu_delete">Delete</string>
+    
+    <string name="zero_selected">0 selected</string>
+    <string name="one_selected">1 selected</string>
+    <string name="n_selected">%d selected</string>
+    <string name="multi_selection_mode">Multi-selection</string>
+    <string name="reset_view">Reset the view</string>
+    <string name="undo_pack_object">the figure packing</string>
+    
+    <string name="actionmode_moving_ctrlpts">the moving of a control point</string>
+    <string name="actionmode_inserting_ctrlpts">the insertion of a control point at position %d</string>
+    <string name="actionmode_inserting_moving_ctrlpts">the insertion and the moving of a control point</string>
+    <string name="actionmode_moving_1_figure">the moving of the figure %s</string>
+    <string name="actionmode_moving_n_figures">the moving of figures</string>
+    <string name="actionmode_resizing_1_figure">the resizing of the figure %s</string>
+    <string name="actionmode_resizing_n_figures">the resizing of figures</string>
+    <string name="actionmode_create_rectangle_decoration">Draw a rectangle</string>
+    <string name="actionmode_create_ellipse_decoration">Draw an ellipse</string>
+    <string name="actionmode_create_text_decoration">Draw a rectangle for the text</string>
+    <string name="actionmode_create_bitmap_decoration">Draw a rectangle for the picture</string>
+    <string name="actionmode_create_pdf_decoration">Draw a rectangle for the PDF</string>
+    <string name="actionmode_create_polyline_decoration">Draw the polyline</string>
+    <string name="actionmode_create_polygon_decoration">Draw the shape of the polygon</string>
+    
+    <string name="is_framed">Framed</string>
+    <string name="is_filled">Filled</string>
+    
+    <string name="property_label_filled">Fill the shape</string>
+    <string name="property_label_framed">Draw the outline</string>
+    <string name="property_label_islocked">Lock the figure</string>
+    <string name="property_label_isclosed">Close the shape outline</string>
+    <string name="property_label_fillingcolor">Filling color</string>
+    <string name="property_label_linecolor">Outline color</string>
+
+</resources>

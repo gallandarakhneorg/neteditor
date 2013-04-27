@@ -1,0 +1,5 @@
+* Creation of a transition
+* No outline for text
+* Exception on color button
+* No picture rendering in the picture figure
+* No PDF rendering

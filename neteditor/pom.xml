@@ -1,0 +1,501 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+
+	<groupId>org.arakhne.neteditor</groupId>
+	<artifactId>neteditor</artifactId>
+	<version>17.0-SNAPSHOT</version>
+	<name>NetEditor</name>
+	<packaging>pom</packaging>
+	<inceptionYear>2001</inceptionYear>
+	<url>http://www.arakhne.org/neteditor.html</url>
+
+	<properties>
+		<year>2013</year>
+		<sourceEncoding>UTF-8</sourceEncoding>
+		<copyrighters>NetEditor Developers</copyrighters>
+		<android.sdk.path>/opt/android-sdk</android.sdk.path>
+		<android.platform>15</android.platform>
+		<android.emulator>acer500</android.emulator>
+	</properties>
+
+	<!-- ======================================= -->
+	<!-- ==== Dependencies === -->
+	<!-- ======================================= -->
+
+	<dependencyManagement>
+		<dependencies>
+			<dependency>
+				<groupId>org.arakhne.afc</groupId>
+				<artifactId>util</artifactId>
+				<version>1.1-SNAPSHOT</version>
+			</dependency>
+			<dependency>
+				<groupId>org.arakhne.afc</groupId>
+				<artifactId>math</artifactId>
+				<version>1.1-SNAPSHOT</version>
+			</dependency>
+			<dependency>
+				<groupId>org.arakhne.afc.ui</groupId>
+				<artifactId>ui-base</artifactId>
+				<version>1.1-SNAPSHOT</version>
+			</dependency>
+			<dependency>
+				<groupId>org.arakhne.afc.ui</groupId>
+				<artifactId>ui-awt</artifactId>
+				<version>1.1-SNAPSHOT</version>
+			</dependency>
+			<dependency>
+				<groupId>org.arakhne.afc.ui</groupId>
+				<artifactId>ui-swing</artifactId>
+				<version>1.1-SNAPSHOT</version>
+			</dependency>
+			<dependency>
+				<groupId>org.arakhne.afc.ui</groupId>
+				<artifactId>ui-vector</artifactId>
+				<version>1.1-SNAPSHOT</version>
+			</dependency>
+			<dependency>
+				<groupId>org.arakhne.afc.ui</groupId>
+				<artifactId>ui-vector-awt</artifactId>
+				<version>1.1-SNAPSHOT</version>
+			</dependency>
+			<dependency>
+				<groupId>org.arakhne.afc.ui</groupId>
+				<artifactId>ui-vector-android</artifactId>
+				<version>1.1-SNAPSHOT</version>
+			</dependency>
+			<dependency>
+				<groupId>org.arakhne.afc.ui</groupId>
+				<artifactId>ui-android</artifactId>
+				<version>1.1-SNAPSHOT</version>
+				<type>apklib</type>
+			</dependency>
+			<dependency>
+				<groupId>org.arakhne.afc.ui</groupId>
+				<artifactId>ui-android</artifactId>
+				<version>1.1-SNAPSHOT</version>
+				<type>jar</type>
+			</dependency>
+			
+			<dependency>
+				<groupId>org.arakhne.neteditor</groupId>
+				<artifactId>neteditor-formalism</artifactId>
+				<version>${project.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.arakhne.neteditor</groupId>
+				<artifactId>neteditor-fig</artifactId>
+				<version>${project.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.arakhne.neteditor</groupId>
+				<artifactId>neteditor-figlayout</artifactId>
+				<version>${project.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.arakhne.neteditor</groupId>
+				<artifactId>neteditor-io</artifactId>
+				<version>${project.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.arakhne.neteditor</groupId>
+				<artifactId>neteditor-swingpanel</artifactId>
+				<version>${project.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.arakhne.neteditor</groupId>
+				<artifactId>neteditor-androidpanel</artifactId>
+				<version>${project.version}</version>
+				<type>apklib</type>
+			</dependency>
+			<dependency>
+				<groupId>org.arakhne.neteditor</groupId>
+				<artifactId>neteditor-androidpanel</artifactId>
+				<version>${project.version}</version>
+				<type>jar</type>
+			</dependency>
+			
+			<dependency>
+				<groupId>org.arakhne.neteditor.fsm</groupId>
+				<artifactId>fsm-constructs</artifactId>
+				<version>${project.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.arakhne.neteditor.fsm</groupId>
+				<artifactId>fsm-figures</artifactId>
+				<version>${project.version}</version>
+			</dependency>
+
+			<dependency>
+				<groupId>org.arakhne.afc</groupId>
+				<artifactId>arakhneVmutils</artifactId>
+				<version>7.3-SNAPSHOT</version>
+			</dependency>
+			<dependency>
+				<groupId>org.arakhne.afc</groupId>
+				<artifactId>arakhneRefs</artifactId>
+				<version>5.11-SNAPSHOT</version>
+			</dependency>
+			<dependency>
+				<groupId>org.arakhne.afc</groupId>
+				<artifactId>arakhneText</artifactId>
+				<version>4.3-SNAPSHOT</version>
+			</dependency>
+
+			<dependency>
+				<groupId>com.google.android</groupId>
+				<artifactId>android</artifactId>
+				<version>4.1.1.4</version>
+			</dependency>
+			<dependency>
+				<groupId>com.google.android</groupId>
+				<artifactId>support-v4</artifactId>
+				<version>r7</version>
+			</dependency>
+
+			<dependency>
+				<groupId>junit</groupId>
+				<artifactId>junit</artifactId>
+				<version>3.8.2</version>
+				<scope>test</scope>
+			</dependency>
+		</dependencies>
+	</dependencyManagement>
+
+	<!-- ======================================= -->
+	<!-- ==== Project Information === -->
+	<!-- ======================================= -->
+	<modules>
+		<module>neteditor-formalism</module>
+		<module>neteditor-fig</module>
+		<module>neteditor-io</module>
+		<module>neteditor-figlayout</module>
+		<module>neteditor-swingpanel</module>
+		<module>neteditor-androidpanel</module>
+		<module>neteditor-fsm</module>
+	</modules>
+
+	<licenses>
+		<license>
+			<name>GNU Lesser General Public License v3.0</name>
+			<url>http://www.gnu.org/licenses/lgpl.html</url>
+			<distribution>repo</distribution>
+			<comments>Since 2005</comments>
+		</license>
+		<license>
+			<name>Apache 2.0</name>
+			<url>http://www.apache.org/licenses/LICENSE-2.0</url>
+			<distribution>repo</distribution>
+			<comments>For the Android Color Picker only</comments>
+		</license>
+		<license>
+			<name>GNU General Public License v2.1</name>
+			<url>http://www.gnu.org/licenses/gpl.html</url>
+			<distribution>repo</distribution>
+			<comments>From 2001 to 2002</comments>
+		</license>
+	</licenses>
+
+	<mailingLists>
+		<mailingList>
+			<name>dev@arakhne.org</name>
+			<subscribe>mailto:dev-request@arakhne.org</subscribe>
+			<unsubscribe>mailto:dev-request@arakhne.org</unsubscribe>
+			<post>mailto:dev@arakhne.org</post>
+		</mailingList>
+	</mailingLists>
+
+	<!-- ======================================= -->
+	<!-- ==== Organization Information === -->
+	<!-- ======================================= -->
+
+	<organization>
+		<name>Arakhnê.org Project</name>
+		<url>http://www.arakhne.org</url>
+	</organization>
+
+	<developers>
+		<developer>
+			<id>galland</id>
+			<name>St&amp;eacute;phane GALLAND</name>
+			<email>galland@arakhne.org</email>
+			<url>http://www.arakhne.org/homes/galland.html</url>
+			<roles>
+				<role>Founder</role>
+				<role>Architect</role>
+				<role>Developer</role>
+			</roles>
+		</developer>
+		<developer>
+			<id>hannoun</id>
+			<name>Mahdi HANNOUN</name>
+			<email>mahdi.hannoun@emse.fr</email>
+			<roles>
+				<role>Developer</role>
+			</roles>
+		</developer>
+		<developer>
+			<id>baumgartner</id>
+			<name>Marc BAUMGARTNER</name>
+			<email>mabaumga@stud.uni-frankfurt.de</email>
+			<roles>
+				<role>Developer</role>
+			</roles>
+		</developer>
+	</developers>
+
+	<!-- ======================================= -->
+	<!-- ==== Devel Configuration === -->
+	<!-- ======================================= -->
+
+	<distributionManagement>
+		<repository>
+			<id>repository.arakhne.org</id>
+			<name>Arakhn&amp;ecirc; Repository</name>
+			<url>file:///srv/arakhne.org/repository/maven/</url>
+		</repository>
+		<site>
+			<id>afc.site.arakhne.org</id>
+			<name>AFC Project Websites Repository</name>
+			<url>file:///srv/arakhne.org/web/maven-sites/</url>
+		</site>
+	</distributionManagement>
+
+	<scm>
+		<connection>scm:svn:svn://svn.tuxfamily.org/svnroot/arakhne/neteditor/trunk</connection>
+		<developerConnection>scm:svn:svn+ssh://svn.tuxfamily.org/svnroot/arakhne/neteditor/trunk</developerConnection>
+	</scm>
+
+	<build>
+		<pluginManagement>
+			<plugins>
+				<plugin>
+					<groupId>org.arakhne.afc</groupId>
+					<artifactId>tag-replacer</artifactId>
+					<version>2.4</version>
+				</plugin>
+				<plugin>
+					<groupId>org.arakhne.afc</groupId>
+					<artifactId>license-installer</artifactId>
+					<version>2.4</version>
+				</plugin>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-resources-plugin</artifactId>
+					<version>2.6</version>
+				</plugin>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-compiler-plugin</artifactId>
+					<version>3.0</version>
+				</plugin>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-source-plugin</artifactId>
+					<version>2.2.1</version>
+				</plugin>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-assembly-plugin</artifactId>
+					<version>2.4</version>
+				</plugin>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-javadoc-plugin</artifactId>
+					<version>2.9</version>
+				</plugin>
+				<plugin>
+					<groupId>com.jayway.maven.plugins.android.generation2</groupId>
+					<artifactId>android-maven-plugin</artifactId>
+					<version>3.5.0</version>
+				</plugin>
+
+				<!-- This plugin's configuration is used to store Eclipse m2e settings 
+					only. It has no influence on the Maven build itself. This plugin configuration 
+					may be removed if all the developpers are using m2e 1.1 or higher. -->
+				<plugin>
+					<groupId>org.eclipse.m2e</groupId>
+					<artifactId>lifecycle-mapping</artifactId>
+					<version>1.0.0</version>
+					<configuration>
+						<lifecycleMappingMetadata>
+							<pluginExecutions>
+								<pluginExecution>
+									<pluginExecutionFilter>
+										<groupId>org.arakhne.afc</groupId>
+										<artifactId>tag-replacer</artifactId>
+										<versionRange>[1.1-SNAPSHOT,)</versionRange>
+										<goals>
+											<goal>replaceresource</goal>
+											<goal>replacehtml</goal>
+											<goal>generatereplacesrc</goal>
+											<goal>generatesrc</goal>
+										</goals>
+									</pluginExecutionFilter>
+									<action>
+										<execute />
+									</action>
+								</pluginExecution>
+								<pluginExecution>
+									<pluginExecutionFilter>
+										<groupId>org.arakhne.afc</groupId>
+										<artifactId>license-installer</artifactId>
+										<versionRange>[1.1-SNAPSHOT,)</versionRange>
+										<goals>
+											<goal>installlicense</goal>
+										</goals>
+									</pluginExecutionFilter>
+									<action>
+										<execute />
+									</action>
+								</pluginExecution>
+							</pluginExecutions>
+						</lifecycleMappingMetadata>
+					</configuration>
+				</plugin>
+			</plugins>
+		</pluginManagement>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<configuration>
+					<source>1.6</source>
+					<target>1.6</target>
+					<encoding>${sourceEncoding}</encoding>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-source-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>attach-sources</id>
+						<phase>verify</phase>
+						<goals>
+							<goal>jar-no-fork</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-resources-plugin</artifactId>
+				<configuration>
+					<encoding>${sourceEncoding}</encoding>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.arakhne.afc</groupId>
+				<artifactId>tag-replacer</artifactId>
+				<executions>
+					<execution>
+						<id>property_preparation</id>
+						<phase>process-resources</phase>
+						<goals>
+							<goal>replaceresource</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.arakhne.afc</groupId>
+				<artifactId>license-installer</artifactId>
+				<configuration>
+					<name>neteditor</name>
+					<licenses>
+						<param>gplv3</param>
+					</licenses>
+					<copyrightDates>${project.inceptionYear}-${year}</copyrightDates>
+					<copyrighters>${copyrighters}</copyrighters>
+				</configuration>
+				<executions>
+					<execution>
+						<phase>compile</phase>
+						<goals>
+							<goal>installlicense</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-javadoc-plugin</artifactId>
+				<configuration>
+					<docencoding>${sourceEncoding}</docencoding>
+					<show>package</show>
+					<detectLinks>true</detectLinks>
+					<detectJavaApiLink>true</detectJavaApiLink>
+					<links>
+						<link>http://download.java.net/media/java3d/javadoc/1.5.2/</link>
+					</links>
+					<docfilessubdirs>true</docfilessubdirs>
+					<bottom>&lt;small&gt;Copyright &amp;copy;
+						${project.inceptionYear}-${year} ${copyrighters}.
+						&lt;a
+						rel="license"
+						href="http://creativecommons.org/licenses/by-nc-nd/3.0/"&gt;&lt;img
+						alt="Creative Commons License" style="border-width:0"
+						src="{@docRoot}/doc-files/cc_by_nc_nd.png" /&gt;&lt;/a&gt;&lt;br
+						/&gt;&lt;span xmlns:dct="http://purl.org/dc/terms/"
+						property="dct:title"&gt;NetEditor API Documentation&lt;/span&gt;
+						by
+						&lt;a xmlns:cc="http://creativecommons.org/ns#"
+						href="http://www.arakhne.org/neteditor/"
+						property="cc:attributionName"
+						rel="cc:attributionURL"&gt;${copyrighters}&lt;/a&gt; is licensed
+						under a &lt;a rel="license"
+						href="http://creativecommons.org/licenses/by-nc-nd/3.0/"&gt;Creative
+						Commons Attribution-NonCommercial-NoDerivs
+						3.0 Unported
+						License&lt;/a&gt;.&lt;br /&gt;Based on a work at &lt;a
+						xmlns:dct="http://purl.org/dc/terms/"
+						href="http://www.arakhne.org/neteditor"
+						rel="dct:source"&gt;www.arakhne.org/neteditor&lt;/a&gt;</bottom>
+					<tags>
+						<tag>
+							<name>mavengroupid</name>
+							<placement>pt</placement>
+							<head>Maven Group Id:</head>
+						</tag>
+						<tag>
+							<name>mavenartifactid</name>
+							<placement>pt</placement>
+							<head>Maven Artifact Id:</head>
+						</tag>
+					</tags>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
+
+	<!-- ======================================= -->
+	<!-- ==== Repositories === -->
+	<!-- ======================================= -->
+
+	<repositories>
+		<repository>
+			<id>org.codehaus-arakhne</id>
+			<name>Codehaus</name>
+			<url>http://snapshots.repository.codehaus.org/</url>
+		</repository>
+		<repository>
+			<id>org.arakhne-maven</id>
+			<name>Arakhn&amp;ecirc; Maven Repository</name>
+			<url>http://download.tuxfamily.org/arakhne/maven/</url>
+		</repository>
+	</repositories>
+	<pluginRepositories>
+		<pluginRepository>
+			<id>org.arakhne-maven</id>
+			<name>Arakhn&amp;ecirc; Maven Repository</name>
+			<url>http://download.tuxfamily.org/arakhne/maven/</url>
+			<snapshots>
+				<enabled>true</enabled>
+			</snapshots>
+		</pluginRepository>
+	</pluginRepositories>
+
+
+</project>

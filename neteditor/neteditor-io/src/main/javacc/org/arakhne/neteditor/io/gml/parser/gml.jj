@@ -1,0 +1,149 @@
+/* 
+ * $Id$
+ * 
+ * Copyright (C) 2012 Stephane GALLAND.
+ * 
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 2.1 of the License, or (at your option) any later version.
+ * 
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this library; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * This program is free software; you can redistribute it and/or modify
+ */
+options {
+  IGNORE_CASE = false;
+  STATIC = false;
+  SUPPORT_CLASS_VISIBILITY_PUBLIC = false;
+}
+
+PARSER_BEGIN(GMLParser)
+
+package org.arakhne.neteditor.io.gml.parser;
+
+import org.arakhne.neteditor.io.gml.GMLException;
+import org.arakhne.neteditor.io.gml.GMLConstants;
+
+import org.arakhne.util.text.TextUtil;
+
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+
+@SuppressWarnings("all")
+public class GMLParser implements GMLConstants {
+
+	private Document xmlDocument = null;
+
+	/** Run the lexer and the syntax analyzer.
+	 * @param xmlDocument is the document that permits to create the DOM.
+	 * @return the root of the DOM (just inside the given document).
+	 * @throw GMLException
+	 */
+	public Element execute(Document xmlDocument) throws GMLException {
+		try {
+			this.xmlDocument = xmlDocument;
+			Element gml = this.xmlDocument.createElement(N_GML);
+			this.xmlDocument.appendChild(gml);
+			list(gml);
+			return gml;
+		}
+		catch(Throwable e) {
+			throw new GMLException(e);
+		}
+		finally {
+			this.xmlDocument = null;
+		}
+	}
+
+}
+
+PARSER_END(GMLParser)
+
+
+////////////////////////////////////////////////////////////////////////////////
+// Lexical structure
+////////////////////////////////////////////////////////////////////////////////
+
+SKIP :
+{
+	   " "
+	|  "\t"
+	|  "\r"
+	|  "\n"
+	|  <"#" ((~["\n","\r"])*)? ("\n" | "\r" | "\r\n")>
+}
+
+////////////////////////////////
+// NUMBERS.
+
+TOKEN :
+{
+	  < NUMBER: ("+"|"-")? (<DIGIT>)+ (<DECIMAL_PART>)? (<EXPONENTIAL_PART>)? >
+	| < #DIGIT: ["0"-"9"] >
+	| < #DECIMAL_PART: "." (<DIGIT>)+ >
+	| < #EXPONENTIAL_PART: ("e"|"E") ("+"|"-")? (<DIGIT>)+ >
+}
+
+////////////////////////////////
+// STRINGS.
+
+TOKEN :
+{
+	< STRING: "\"" (<STRING_ELEMENT>)* "\"" >
+	| < #STRING_ELEMENT: ((~["\"","&"])*) | ("&" (<LETTER>)+ ";") >  
+}
+
+////////////////////////////////
+// KEY.
+TOKEN :
+{
+	  < KEY: <LETTER> (<LETTER> | <DIGIT>)* >
+	| < #LETTER: ["A"-"Z","a"-"z"] >
+}
+
+////////////////////////////////////////////////////////////////////////////////
+// Grammar
+////////////////////////////////////////////////////////////////////////////////
+
+private void list(Element root) throws GMLException :
+{ Element e1, e2, r;
+  Token t;
+}
+{
+	  t=<KEY>						{ r = this.xmlDocument.createElement("gml:"+t.image.trim());
+	  								} 
+	  value(r)						{ root.appendChild(r);
+	  								}
+	  list(root)					{ /* do nothing */ }
+	|								{ /* do nothing */ }
+}
+
+private void value(Element parent) throws GMLException :
+{ Token t;
+  Element e;
+}
+{
+	  t=<NUMBER>					{ Double d = Double.valueOf(t.image);
+	  								  if (d.longValue() == d.doubleValue()) {
+	  								    parent.setAttribute(K_TYPE, K_INTEGER);
+	  								    parent.setAttribute(K_VALUE, Long.toString(d.longValue()));
+	  								  }
+	  								  else {
+	  								    parent.setAttribute(K_TYPE, K_FLOAT);
+	  								    parent.setAttribute(K_VALUE, d.toString());
+	  								  }
+	  								}
+	| t=<STRING>					{ parent.setAttribute(K_VALUE, 
+											TextUtil.parseHTML(t.image.substring(1, t.image.length()-1)));
+	  								  parent.setAttribute(K_TYPE, K_STRING);
+	  								}
+	| "[" list(parent) "]"			{ parent.setAttribute(K_TYPE, K_LIST);
+	  								}
+}

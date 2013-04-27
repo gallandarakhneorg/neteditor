@@ -1,0 +1,89 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>org.arakhne.neteditor</groupId>
+		<artifactId>neteditor</artifactId>
+		<version>17.0-SNAPSHOT</version>
+		<relativePath>..</relativePath>
+	</parent>
+
+	<artifactId>neteditor-androidpanel</artifactId>
+	<name>NetEditor Android Panel</name>
+	<packaging>apklib</packaging>
+
+	<dependencies>
+		<dependency>
+			<groupId>com.google.android</groupId>
+			<artifactId>support-v4</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>com.google.android</groupId>
+			<artifactId>android</artifactId>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.arakhne.afc.ui</groupId>
+			<artifactId>ui-vector-android</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.arakhne.neteditor</groupId>
+			<artifactId>neteditor-fig</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.arakhne.neteditor</groupId>
+			<artifactId>neteditor-formalism</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.arakhne.neteditor</groupId>
+			<artifactId>neteditor-io</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.arakhne.afc.ui</groupId>
+			<artifactId>ui-android</artifactId>
+			<type>apklib</type>
+		</dependency>
+	</dependencies>
+
+	<profiles>
+		<profile>
+			<id>m2e</id>
+			<activation>
+				<activeByDefault>false</activeByDefault>
+			</activation>
+			<dependencies>
+				<dependency>
+					<groupId>org.arakhne.afc.ui</groupId>
+					<artifactId>ui-android</artifactId>
+					<type>jar</type>
+				</dependency>
+			</dependencies>
+		</profile>
+	</profiles>
+
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>com.jayway.maven.plugins.android.generation2</groupId>
+				<artifactId>android-maven-plugin</artifactId>
+				<configuration>
+					<androidManifestFile>${project.basedir}/AndroidManifest.xml</androidManifestFile>
+					<assetsDirectory>${project.basedir}/assets</assetsDirectory>
+					<resourceDirectory>${project.basedir}/res</resourceDirectory>
+					<nativeLibrariesDirectory>${project.basedir}/native</nativeLibrariesDirectory>
+					<sdk>
+						<path>${android.sdk.path}</path>
+						<platform>${android.platform}</platform>
+					</sdk>
+					<emulator>
+						<avd>${android.emulator}</avd>
+					</emulator>
+					<deleteConflictingFiles>true</deleteConflictingFiles>
+					<undeployBeforeDeploy>true</undeployBeforeDeploy>
+				</configuration>
+				<extensions>true</extensions>
+			</plugin>
+		</plugins>
+	</build>
+
+</project>

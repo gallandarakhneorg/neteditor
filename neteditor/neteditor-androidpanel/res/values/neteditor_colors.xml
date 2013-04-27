@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="figureviewer_selection_background">#FF9ccf00</color>
+    <color name="figureviewer_selection_foreground">#FF000000</color>
+    <color name="figureviewer_background">#FFFFFFFF</color>
+</resources>

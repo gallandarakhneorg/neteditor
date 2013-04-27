@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android" >
+        
+    <item
+        android:id="@+id/menu_finalize_polypoint_object"
+        android:checkable="false"
+        android:enabled="false"
+        android:icon="@drawable/ic_menu_add_selector"
+        android:orderInCategory="31"
+        android:menuCategory="container"
+        android:showAsAction="always"
+        android:title="@android:string/unknownName">
+    </item>
+    <item
+        android:id="@+id/menu_revert"
+        android:checkable="false"
+        android:enabled="false"
+        android:icon="@drawable/ic_menu_revert_selector"
+        android:orderInCategory="32"
+        android:menuCategory="container"
+        android:showAsAction="always"
+        android:title="@string/menu_revert">
+    </item>
+    <item
+        android:id="@+id/menu_revert_revert"
+        android:checkable="false"
+        android:enabled="false"
+        android:icon="@drawable/ic_menu_revert_revert_selector"
+        android:orderInCategory="33"
+        android:menuCategory="container"
+        android:showAsAction="always"
+        android:title="@string/menu_revert_revert">
+    </item>
+    
+</menu>

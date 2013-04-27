@@ -1,0 +1,32 @@
+<resources>
+
+    <string name="app_name">Éditeur FSM</string>
+    <string name="title_activity_editor">Éditeur FSM</string>
+    
+    <string name="property_label_guard">Guarde</string>
+    <string name="property_label_action">Action</string>
+    <string name="property_label_enterAction">Action d\'entrée</string>
+    <string name="property_label_insideAction">Action d\'état</string>
+    <string name="property_label_exitAction">Action de sortie</string>
+    <string name="property_label_accepting">État acceptant</string>
+    
+    <string name="menu_newdocument">Nouveau</string>
+    <string name="menu_settings">Préférences</string>
+    <string name="menu_about">À propos de</string>
+    <string name="menu_share">Partager source Java</string>
+    
+    <string name="choose_file">Sélectionner un fichier</string>
+    <string name="edit_text">Éditer un fichier texte</string>
+    <string name="is_accepting">État acceptant</string>
+    
+    <string name="actionmode_create_fsm_state">Dessinez ou déposer l\'état</string>
+    <string name="actionmode_create_fsm_start">Dessinez ou déposer l\'état initial</string>
+    <string name="actionmode_create_fsm_end">Dessinez ou déposer l\'état final</string>
+    <string name="actionmode_create_fsm_transition">Dessinez une transition entre états</string>
+    
+    <string name="undo_fsm_state">la création d\'un état</string>
+    <string name="undo_fsm_start">la création d\'un état initial</string>
+    <string name="undo_fsm_end">la création d\'un état final</string>
+    <string name="undo_fsm_transition">la création d\'une transition</string>
+
+</resources>
