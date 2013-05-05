@@ -181,19 +181,6 @@
 			<name>GNU Lesser General Public License v3.0</name>
 			<url>http://www.gnu.org/licenses/lgpl.html</url>
 			<distribution>repo</distribution>
-			<comments>Since 2005</comments>
-		</license>
-		<license>
-			<name>Apache 2.0</name>
-			<url>http://www.apache.org/licenses/LICENSE-2.0</url>
-			<distribution>repo</distribution>
-			<comments>For the Android Color Picker only</comments>
-		</license>
-		<license>
-			<name>GNU General Public License v2.1</name>
-			<url>http://www.gnu.org/licenses/gpl.html</url>
-			<distribution>repo</distribution>
-			<comments>From 2001 to 2002</comments>
 		</license>
 	</licenses>
 
@@ -263,8 +250,8 @@
 	</distributionManagement>
 
 	<scm>
-		<connection>scm:svn:svn://svn.tuxfamily.org/svnroot/arakhne/neteditor/trunk</connection>
-		<developerConnection>scm:svn:svn+ssh://svn.tuxfamily.org/svnroot/arakhne/neteditor/trunk</developerConnection>
+		<connection>scm:git:git://github.com/gallandarakhneorg/neteditor.git</connection>
+		<developerConnection>scm:git:https://github.com/gallandarakhneorg/neteditor.git</developerConnection>
 	</scm>
 
 	<build>
