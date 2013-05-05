@@ -6,6 +6,9 @@
 
 # IntelliJ
 *.iml
+*.ipr
+*.iws
+.ideal/
 
 # NetBean
 bin/
