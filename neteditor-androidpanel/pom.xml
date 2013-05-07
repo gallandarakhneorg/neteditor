@@ -82,6 +82,21 @@
 					<undeployBeforeDeploy>true</undeployBeforeDeploy>
 				</configuration>
 				<extensions>true</extensions>
+				<!-- Update the Manifest according to currenty Maven configuration -->
+				<executions>
+					<execution>
+						<id>update-manifest</id>
+						<phase>process-resources</phase>
+						<goals>
+							<goal>manifest-update</goal>
+						</goals>
+						<configuration>
+							<manifest>
+								<versionCodeUpdateFromVersion>true</versionCodeUpdateFromVersion>
+							</manifest>
+						</configuration>
+					</execution>
+				</executions>
 			</plugin>
 		</plugins>
 	</build>
