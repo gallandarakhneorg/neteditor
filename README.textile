@@ -17,25 +17,64 @@ This version of NetEditor is an original idea of Mahdi HANNOUN and "Stéphane GA
 
 p=. !http://www.arakhne.org/neteditor/screen.png!
 
-h1. Language Constructs Specification
+h1. Definition of a Graph-based Graphical Language
 
-NetEditor is designed to create editors for Visual Languages. NetEditor assumes the language constructs is separated than the graphical representations of these constructs. NetEditor also assumes all the language constructs is expressed with a graph composed with the three following concepts:
+NetEditor is designed to create editors for Visual Languages. NetEditor assumes the language constructs is separated than the graphical representations of these constructs. 
+
+h2. Language Constructs Specification
+
+NetEditor assumes all the language constructs is expressed with a graph designed with the three following concepts:
 * *Node:* a node is a point in a graph. A node is linked to other nodes throough edges.
 * *Edge:* an edge a connection between two nodes. An edge may be directed or not. An edge is not directly linked to nodes but to the anchors of the nodes. An edge has a start anchor and an end anchor.
 * *Anchor:* an anchor is a connection point between a node and an edge. An anchor is defined inside a single node. Many edge could be connected to one anchor.
 
 The language of the diagram that should be edited by NetEditor must be defined with Java classes that are extending the node, edge and anchor classes.
 
-h1. Language Constructs Figures
+h2. Language Constructs Figures
 
 Each language construct (node, edge and anchor) may be associated to one graphical representation (also named the view of the construct). This graphical representation is in charge of the rendering of the construct's information on on a Java panel (Swing or Android).
 
-h1. Example: a simple Finite State Machine editor
+h2. Example: a simple Finite State Machine editor
 
 To illustrate the use of NetEditor, a simple Finite State Machine editor is provided. A tutorial explains to to create this editor step-by-step: "FSM Editor Tutorial.":http://www.arakhne.org/neteditor/tutorial.html 
 
+h1. Installation and Usage
+
+NetEditor is a Java library designed to be used with "Maven.":http://maven.apache.org/
+Maven is a software project management and compilation tool. Based on the project object model (POM) of the project (written inside the file _pom.xml_), Maven can manage the project's builds, the reports and documentation. It is also able to retreive the Java librairies on the Web, which are inside the dependencies of the project.
+
+Maven's primary goal is to allow a developer to manage the complete state of a development effort in the shortest period of time. In order to attain this goal, there are several areas of concern that Maven attempts to deal with:
+* Making the build process easy
+* Providing a uniform build system
+* Providing quality project information
+* Providing guidelines for best practices development
+* Allowing transparent migration to new features
+
+Because NetEditor is a Maven project, *we recommend to use Maven and add the "Arakhne.org Maven repository.":http://www.arakhne.org/maven.html inside our POM.*
+This repository will allow you to obtain the NetEditor libraries with less efforts.
+
+If you do not want to use Maven, you should dowload manually the Java libraries in the dependencies of NetEditor:
+* NetEditor libraries: http://download.tuxfamily.org/arakhne/maven/org/arakhne/neteditor/
+* Arakhne Foundation Classes:
+** Arakhne virtual machine utilities: http://www.arakhne.org/arakhneVmutils
+** Arakhne reference utilities: http://www.arakhne.org/arakhneVmutils
+** Arakhne text utilities: http://www.arakhne.org/arakhneText
+** Arakhne utilities: http://www.arakhne.org/arakhneUtil
+** Arakhne math tools: http://www.arakhne.org/arakhneMath
+** Arakhne UI base library: http://www.arakhne.org/arakhneUiBase
+** Arakhne vectorial picture API: http://www.arakhne.org/arakhneUiVector
+
+For Swing Interface:
+** Arakhne AWT: http://www.arakhne.org/arakhneUiAwt
+** Arakhne Swing: http://www.arakhne.org/arakhneUiSwing
+** Arakhne AWT implementation of the vector picture API: http://www.arakhne.org/arakhneUiVector
+
+For Android Interface:
+** Arakhne Android: http://www.arakhne.org/arakhneUiAndroid
+** Arakhne Android implementation of the vector picture API: http://www.arakhne.org/arakhneUiVectorAndroid
+
 h1. License
 
-"GNU Lesser General Public License.":http://www.gnu.org/licenses/lgpl-3.0.en.html
+NetEditor is distributed under the "GNU Lesser General Public License.":http://www.gnu.org/licenses/lgpl-3.0.en.html
 
 
