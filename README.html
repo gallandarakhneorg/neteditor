@@ -1,0 +1,47 @@
+<html>
+<head>
+	<title>README - NetEditor</title>
+</head>
+<body>
+
+<h1>About NetEditor</h1>
+
+<p>The <a href="http://www.arakhne.org/neteditor/">Arakhn&ecirc;.org Network Editor</a> (NetEditor) is a free Java component that permits to edit and show connected-graphs. NetEditor is composed by a drawing area in which you can draw nodes and edges.</p>
+
+<p>NetEditor supports the following features:<ul>
+<li><strong>separation of the visual-language constructs and the drawings;</strong></li>
+<li>graphical editing of the graph structure;</li>
+<li>algorithms to laying out the figures (Sugiyama-like and force-based algorithms);</li>
+<li>depth levels for nodes and egdes;</li>
+<li>can undoing and redoing user actions;</li>
+<li>clipboard and Drag&Drop management;</li>
+<li>exporting into graphical formats : GIF, JPEG, PNG, BMP;</li>
+<li>exporting into vectorial formats : SVG, PDF, Encapsulated Postscript, PDF, Graphviz DOT, GXL, GraphML, GML...;</li>
+<li>save and load into GML, GraphML, GXL, or NGR (zipped GML/GraphML/GXL) files.</li>
+</ul></p>
+
+<p>This version of NetEditor is an original idea of Mahdi HANNOUN and <a href="http://www.arakhne.org/homes/galland/">St&eacute;phane GALLAND</a>. In 2001, we decide to develop a new graph-editing library because existing ones don't support our needs, or are to difficult to extend.</p>
+
+<center><img src="http://www.arakhne.org/neteditor/screen.png"/></center>
+
+<h1>Language Constructs Specification</h1>
+
+<p>NetEditor is designed to create editors for Visual Languages. NetEditor assumes the language constructs is separated than the graphical representations of these constructs. NetEditor also assumes all the language constructs is expressed with a graph composed with the three following concepts:<ul>
+<li><strong>Node:</strong> a node is a point in a graph. A node is linked to other nodes throough edges.</li>
+<li><strong>Edge:</strong> an edge a connection between two nodes. An edge may be directed or not. An edge is not directly linked to nodes but to the anchors of the nodes. An edge has a start anchor and an end anchor.</li>
+<li><strong>Anchor:</strong> an anchor is a connection point between a node and an edge. An anchor is defined inside a single node. Many edge could be connected to one anchor.</li>
+</ul></p>
+<p>The language of the diagram that should be edited by NetEditor must be defined with Java classes that are extending the node, edge and anchor classes.</p>
+
+<h1>Language Constructs Figures</h1>
+
+<p>Each language construct (node, edge and anchor) may be associated to one graphical representation (also named the view of the construct). This graphical representation is in charge of the rendering of the construct's information on on a Java panel (Swing or Android).</p>
+
+<h1>Example: a simple Finite State Machine editor</h1>
+
+<p>To illustrate the use of NetEditor, a simple Finite State Machine editor is provided. A tutorial explains to to create this editor step-by-step: <a href="http://www.arakhne.org/neteditor/tutorial.html">FSM Editor Tutorial</a>.</p>
+
+<h1>License</h1>
+
+<p>GNU Lesser General Public License</p>
+
