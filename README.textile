@@ -15,7 +15,7 @@ NetEditor supports the following features:
 
 This version of NetEditor is an original idea of Mahdi HANNOUN and "Stéphane GALLAND":http://www.arakhne.org/homes/galland/. In 2001, we decide to develop a new graph-editing library because existing ones don't support our needs, or are to difficult to extend.</p>
 
-p=. centered !http://www.arakhne.org/neteditor/screen.png!
+p=. !http://www.arakhne.org/neteditor/screen.png!
 
 h1. Language Constructs Specification
 
