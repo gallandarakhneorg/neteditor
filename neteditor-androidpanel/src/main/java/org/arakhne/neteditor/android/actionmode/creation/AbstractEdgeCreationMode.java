@@ -25,6 +25,7 @@ import java.util.UUID;
 import org.arakhne.afc.math.continous.object2d.Path2f;
 import org.arakhne.afc.math.continous.object2d.Point2f;
 import org.arakhne.afc.math.continous.object2d.Rectangle2f;
+import org.arakhne.afc.math.continous.object2d.Shape2f;
 import org.arakhne.afc.math.generic.Point2D;
 import org.arakhne.afc.ui.actionmode.ActionPointerEvent;
 import org.arakhne.afc.ui.undo.AbstractUndoable;
@@ -99,7 +100,10 @@ public abstract class AbstractEdgeCreationMode extends AbstractAndroidCreationMo
 		Figure fig = getPointedFigure();
 		if (fig instanceof NodeFigure<?,?>) {
 			NodeFigure<?,?> nodeFigure = (NodeFigure<?,?>)fig;
-			return nodeFigure.getLastHitAnchor();
+			Shape2f hitArea = getModeManager().getFigureHitArea();
+			if (hitArea!=null) {
+				return nodeFigure.getAnchorOn(hitArea);
+			}
 		}
 		return null;
 	}

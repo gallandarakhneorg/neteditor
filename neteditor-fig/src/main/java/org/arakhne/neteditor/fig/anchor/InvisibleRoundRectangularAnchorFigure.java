@@ -161,14 +161,6 @@ extends AbstractRectangularAnchorFigure<A> {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public boolean hit(float x, float y, float epsilon) {
-		return super.hit(x, y, epsilon);
-	}
-	
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
 	protected Point2D getConnectionPointFrom(Point2D position,
 			Point2D absoluteAnchorPosition, AnchorLocation location) {
 		return super.getConnectionPointFrom(position, absoluteAnchorPosition, location);

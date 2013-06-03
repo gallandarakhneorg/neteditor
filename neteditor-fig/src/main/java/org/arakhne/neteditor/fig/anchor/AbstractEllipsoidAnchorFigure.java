@@ -108,6 +108,7 @@ public abstract class AbstractEllipsoidAnchorFigure<A extends Anchor<?,?,?,?>> e
 	 * {@inheritDoc}
 	 */
 	@Override
+	@Deprecated
 	public boolean hit(float x, float y, float epsilon) {
 		float absx = getRelativeX();
 		float absy = getRelativeY();
@@ -115,6 +116,12 @@ public abstract class AbstractEllipsoidAnchorFigure<A extends Anchor<?,?,?,?>> e
 				absx - epsilon, absy - epsilon,
 				getWidth() + epsilon, getHeight() + epsilon) ;
 		return ( ellipse.contains(x, y) );
+	}
+	
+	@Override
+	public boolean intersects(Shape2f r) {
+		Ellipse2f ellipse = new Ellipse2f(getX(), getY(), getWidth(), getHeight());
+		return r.intersects(ellipse);
 	}
 	
 	/**

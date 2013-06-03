@@ -71,6 +71,8 @@
 					<assetsDirectory>${project.basedir}/assets</assetsDirectory>
 					<resourceDirectory>${project.basedir}/res</resourceDirectory>
 					<nativeLibrariesDirectory>${project.basedir}/native</nativeLibrariesDirectory>
+					<deleteConflictingFiles>true</deleteConflictingFiles>
+					<undeployBeforeDeploy>true</undeployBeforeDeploy>
 					<sdk>
 						<path>${android.sdk.path}</path>
 						<platform>${android.platform}</platform>
@@ -78,8 +80,6 @@
 					<emulator>
 						<avd>${android.emulator}</avd>
 					</emulator>
-					<deleteConflictingFiles>true</deleteConflictingFiles>
-					<undeployBeforeDeploy>true</undeployBeforeDeploy>
 				</configuration>
 				<extensions>true</extensions>
 				<!-- Update the Manifest according to currenty Maven configuration -->

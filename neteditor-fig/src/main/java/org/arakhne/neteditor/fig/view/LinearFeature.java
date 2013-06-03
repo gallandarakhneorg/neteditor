@@ -24,6 +24,7 @@ import java.util.Collection;
 
 import org.arakhne.afc.math.continous.object2d.Path2f;
 import org.arakhne.afc.math.continous.object2d.PathIterator2f;
+import org.arakhne.afc.math.continous.object2d.Shape2f;
 import org.arakhne.afc.math.generic.Point2D;
 import org.arakhne.neteditor.fig.shadow.LinearFeatureShadowPainter;
 
@@ -76,8 +77,18 @@ public interface LinearFeature {
 	 * @return <code>true</code> if the point 
 	 *         (<var>x</var>,<var>y</var>) is in this Fig.
 	 * @see #contains(float, float)
+	 * @deprecated see {@link #contains(float, float)}
 	 */
+	@Deprecated
 	public boolean hit(float x, float y, float epsilon) ;
+
+	/** Reply <code>true</code> if the object intersects the given shape.
+	 *
+	 *  @param r a shape
+	 *  @return <code>true</code> if the figure intersects
+	 *          the given shape. otherwise <code>false</code>
+	 */    
+	public boolean intersects(Shape2f r) ;
 
 	/** Reply <code>true</code> if given coords are in the bounds of this Fig.
 	 * This function takes into account only the bounds of the figure.
@@ -164,7 +175,9 @@ public interface LinearFeature {
 	 * 
 	 * @return the index of the last hit segment; if negative these is not
 	 * last hit segment.
+	 * @deprecated see {@link #hitSegment(float, float, float)}
 	 */
+	@Deprecated
 	public int getLastHitSegment();
 
 	/** Insert a point into the path defined by the given index.

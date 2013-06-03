@@ -34,6 +34,7 @@ import java.util.Set;
 
 import javax.imageio.ImageIO;
 
+import org.arakhne.afc.math.continous.object2d.Circle2f;
 import org.arakhne.afc.math.continous.object2d.Rectangle2f;
 import org.arakhne.afc.ui.MouseCursor;
 import org.arakhne.afc.ui.ZoomableContext;
@@ -434,10 +435,11 @@ public class BaseMode extends ActionMode<Figure,VirtualScreenGraphics2D,java.awt
 			}
 			else if (isCtrlDown) {
 				Iterator<Figure> figureIterator = manager.iterator();
+				Circle2f circle = new Circle2f(x, y, getClickPrecision());
 				LinearFeature linearFeature;
 				while(c==null && figureIterator.hasNext()) {
 					linearFeature = (LinearFeature)figureIterator.next();
-					if (linearFeature.hit(x, y, getClickPrecision())) {
+					if (linearFeature.intersects(circle)) {
 						c = MouseCursor.MOVE;
 					}
 				}

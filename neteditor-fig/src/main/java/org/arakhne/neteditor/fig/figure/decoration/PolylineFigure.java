@@ -95,8 +95,10 @@ public class PolylineFigure extends DecorationFigure implements LinearFeature {
 	 * a hit.
 	 * This attribute is updated each time {@link #hit(float, float, float)}
 	 * is invoked.
+	 * @deprecated
 	 */
-	protected int lastHitSegment = -1;
+	@Deprecated
+	protected int _lastHitSegment = -1;
 
 	/** Construct a new figure.
 	 *
@@ -305,6 +307,7 @@ public class PolylineFigure extends DecorationFigure implements LinearFeature {
 	/**
 	 * {@inheritDoc}
 	 */
+	@Deprecated
 	@Override
 	public boolean hit(float x, float y, float epsilon) {
 		if ( getDamagedBounds().contains(x,y) ) {
@@ -312,7 +315,7 @@ public class PolylineFigure extends DecorationFigure implements LinearFeature {
 				// Hit the polygon?
 				Path2f path = getPath();
 				assert(path!=null);
-				this.lastHitSegment = -1;
+				this._lastHitSegment = -1;
 				Rectangle2f mouse = new Rectangle2f();
 				mouse.setFromCenter(x, y, x-epsilon, y-epsilon);
 				return path.intersects(mouse);
@@ -347,7 +350,7 @@ public class PolylineFigure extends DecorationFigure implements LinearFeature {
 								pathElement.toX, pathElement.toY,
 								x, y,
 								epsilon ) ) {
-							this.lastHitSegment = index ;
+							this._lastHitSegment = index ;
 							return true ;
 						}
 						break;
@@ -357,7 +360,7 @@ public class PolylineFigure extends DecorationFigure implements LinearFeature {
 								pathElement.toX, pathElement.toY,
 								x, y,
 								epsilon) ) {
-							this.lastHitSegment = index ;
+							this._lastHitSegment = index ;
 							return true ;
 						}
 						break;
@@ -367,7 +370,7 @@ public class PolylineFigure extends DecorationFigure implements LinearFeature {
 			}
 			else {
 				ControlPoint previous = null;
-				this.lastHitSegment = 0;
+				this._lastHitSegment = 0;
 				for(ControlPoint p : this.points) {
 					if (previous!=null) {
 						if (MathUtil.isPointClosedToSegment(
@@ -377,13 +380,13 @@ public class PolylineFigure extends DecorationFigure implements LinearFeature {
 								epsilon)) {
 							return true;
 						}
-						++this.lastHitSegment;
+						++this._lastHitSegment;
 					}
 					previous = p;
 				}
 			}
 		}
-		this.lastHitSegment = -1;
+		this._lastHitSegment = -1;
 		return false;
 	}
 
@@ -747,8 +750,9 @@ public class PolylineFigure extends DecorationFigure implements LinearFeature {
 	 * {@inheritDoc}
 	 */
 	@Override
+	@Deprecated
 	public int getLastHitSegment() {
-		return this.lastHitSegment;
+		return this._lastHitSegment;
 	}
 	
 	/**

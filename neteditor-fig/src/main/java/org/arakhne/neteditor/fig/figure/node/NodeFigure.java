@@ -29,6 +29,7 @@ import java.util.NoSuchElementException;
 import java.util.UUID;
 
 import org.arakhne.afc.math.continous.object2d.Rectangle2f;
+import org.arakhne.afc.math.continous.object2d.Shape2f;
 import org.arakhne.afc.math.matrix.Transform2D;
 import org.arakhne.afc.ui.Graphics2DLOD;
 import org.arakhne.neteditor.fig.anchor.AnchorFigure;
@@ -61,7 +62,8 @@ public abstract class NodeFigure<N extends Node<?,? super N,? super A,?>,A exten
 
 	private static final long serialVersionUID = -3748725681196675586L;
 
-	private AnchorFigure<A> lastHitAnchor = null;
+	@Deprecated
+	private AnchorFigure<A> _lastHitAnchor = null;
 
 	/** Construct a new AbstractNodeFigure.
 	 * <p>
@@ -171,9 +173,11 @@ public abstract class NodeFigure<N extends Node<?,? super N,? super A,?>,A exten
 	 * @param y
 	 * @param epsilon
 	 * @return <code>true</code> if hit; otherwise <code>false</code>.
+	 * @deprecated see {@link #getAnchorOn(Shape2f)}
 	 */
+	@Deprecated
 	protected boolean hitAnchors(float x, float y, float epsilon) {
-		this.lastHitAnchor = null;
+		this._lastHitAnchor = null;
 
 		float ox = getX();
 		float oy =  getY();
@@ -182,7 +186,7 @@ public abstract class NodeFigure<N extends Node<?,? super N,? super A,?>,A exten
 
 		for(AnchorFigure<A> anchor : getAnchorFigures()) {
 			if (anchor.hit(px, py, epsilon)) {
-				this.lastHitAnchor = anchor;
+				this._lastHitAnchor = anchor;
 				return true;
 			}
 		}
@@ -190,10 +194,30 @@ public abstract class NodeFigure<N extends Node<?,? super N,? super A,?>,A exten
 		return false;
 	}
 	
+	/** Test if one of the anchors is hit by the given shape.
+	 * 
+	 * @param shape
+	 * @return the anchor in intersection with the shape; or
+	 * <code>null</code> if no anchor.
+	 */
+	public AnchorFigure<A> getAnchorOn(Shape2f shape) {
+		// Translate the shape because the anchors coordinates
+		// are relative to the node
+		Shape2f trans = shape.clone();
+		trans.translate(-getX(), -getY());
+		for(AnchorFigure<A> anchor : getAnchorFigures()) {
+			if (anchor.intersects(trans)) {
+				return anchor;
+			}
+		}
+		return null;
+	}
+
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
+	@Deprecated
 	public boolean hit(float x, float y, float epsilon) {
 		if (hitAnchors(x, y, epsilon)) return true;
 
@@ -211,9 +235,11 @@ public abstract class NodeFigure<N extends Node<?,? super N,? super A,?>,A exten
 	 * before to obtain this information.
 	 * 
 	 * @return the last hit anchor, or <code>null</code>.
+	 * @deprecated
 	 */
+	@Deprecated
 	public AnchorFigure<A> getLastHitAnchor() {
-		return this.lastHitAnchor;
+		return this._lastHitAnchor;
 	}
 
 	/** {@inheritDoc}

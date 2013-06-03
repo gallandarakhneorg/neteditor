@@ -25,6 +25,7 @@ import java.util.UUID;
 
 import org.arakhne.afc.math.continous.object2d.Circle2f;
 import org.arakhne.afc.math.continous.object2d.Rectangle2f;
+import org.arakhne.afc.math.continous.object2d.Shape2f;
 import org.arakhne.neteditor.fig.figure.ResizeDirection;
 import org.arakhne.neteditor.fig.view.ViewComponentConstants;
 import org.arakhne.neteditor.formalism.Anchor;
@@ -115,6 +116,7 @@ public class CircleNodeFigure<N extends Node<?,? super N,? super A,?>,A extends 
 	 * {@inheritDoc}
 	 */
 	@Override
+	@Deprecated
 	public boolean hit(float x, float y, float epsilon) {
 		if (hitAnchors(x, y, epsilon)) return true;
 		Rectangle2f r = getBounds();
@@ -126,6 +128,13 @@ public class CircleNodeFigure<N extends Node<?,? super N,? super A,?>,A extends 
 		cy -= y;
 		radius += epsilon;
 		return cx*cx+cy*cy <= radius*radius;
+	}
+	
+	@Override
+	public boolean intersects(Shape2f r) {
+		float radius = getWidth()/2f;
+		Circle2f circle = new Circle2f(getX()+radius, getY()+radius, radius);
+		return r.intersects(circle);
 	}
 
 	/** Replies the radius of this circle.

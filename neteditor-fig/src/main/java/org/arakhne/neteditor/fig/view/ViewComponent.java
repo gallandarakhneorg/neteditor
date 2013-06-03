@@ -175,14 +175,11 @@ public interface ViewComponent extends Serializable, Comparable<ViewComponent>, 
 
 	/** Reply <code>true</code> if given coords are in the bounds of this Fig.
 	 * This function takes into account only the bounds of the figure.
-	 * If you are interested in a click in the shape of the figure,
-	 * see {@link #hit(float, float, float)}
 	 *
 	 * @param x horizontal coord.
 	 * @param y vertical coord.
 	 * @return <code>true</code> if the point 
 	 *         (<var>x</var>,<var>y</var>) is in this Fig.
-	 * @see #hit(float, float, float)
 	 */
 	public boolean contains(float x, float y) ;
 
@@ -206,7 +203,9 @@ public interface ViewComponent extends Serializable, Comparable<ViewComponent>, 
 	 * @return <code>true</code> if the point 
 	 *         (<var>x</var>,<var>y</var>) is in this Fig.
 	 * @see #contains(float, float)
+	 * @deprecated see {@link #intersects(Shape2f)} or {@link #contains(float, float)}
 	 */
+	@Deprecated
 	public boolean hit(float x, float y, float epsilon) ;
 
 	/** Set the width of this Fig.
@@ -316,18 +315,18 @@ public interface ViewComponent extends Serializable, Comparable<ViewComponent>, 
 	 */
 	public void setMaximalDimension(Dimension dimension) ;
 
-	/** Set the maximal dimension of the figure .
+	/** Set the maximal dimension of the figure.
 	 * 
 	 * @param width is the maximal width
 	 * @param height is the maximal height
 	 */
 	public void setMaximalDimension(float width, float height) ;
 	
-	/** Reply <code>true</code> if the object intersects the given rectangle.
+	/** Reply <code>true</code> if the object intersects the given shape.
 	 *
-	 *  @param r a rectangle
+	 *  @param r a shape
 	 *  @return <code>true</code> if the figure intersects
-	 *          the given rectangle. otherwise <code>false</code>
+	 *          the given shape. otherwise <code>false</code>
 	 */    
 	public boolean intersects(Shape2f r) ;
 

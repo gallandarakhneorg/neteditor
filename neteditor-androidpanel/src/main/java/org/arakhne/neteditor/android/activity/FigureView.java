@@ -39,6 +39,7 @@ import java.util.concurrent.locks.ReentrantLock;
 import org.arakhne.afc.ui.android.filechooser.FileChooser;
 import org.arakhne.afc.ui.android.zoom.ZoomableView;
 import org.arakhne.afc.io.filefilter.FileFilter;
+import org.arakhne.afc.math.continous.object2d.Circle2f;
 import org.arakhne.afc.math.continous.object2d.Rectangle2f;
 import org.arakhne.afc.math.continous.object2d.Shape2f;
 import org.arakhne.afc.math.generic.Vector2D;
@@ -929,8 +930,9 @@ public class FigureView<G extends Graph<?,?,?,?>> extends ZoomableView  implemen
 	 */
 	public Figure getFigureAt(float x, float y) {
 		float precision = pixel2logical_size(getHitPrecision());
+		Circle2f circle = new Circle2f(x, y, precision);
 		for(Figure figure : this.figures) {
-			if (figure.hit(x, y, precision)) {
+			if (figure.intersects(circle)) {
 				return figure;
 			}
 		}

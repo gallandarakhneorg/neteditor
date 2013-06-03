@@ -92,8 +92,10 @@ public abstract class EdgeFigure<E extends Edge<?,?,?,?>> extends AbstractModelO
 	 * a hit.
 	 * This attribute is updated each time {@link #hit(float, float, float)}
 	 * is invoked.
+	 * @deprecated
 	 */
-	protected int lastHitSegment = -1;
+	@Deprecated
+	protected int _lastHitSegment = -1;
 
 	/** Buffered general path.
 	 */
@@ -840,7 +842,7 @@ public abstract class EdgeFigure<E extends Edge<?,?,?,?>> extends AbstractModelO
 	public int hitSegment(float x, float y, float epsilon) {
 		if ( getDamagedBounds().contains(x,y) ) {
 			ControlPoint previous = null;
-			this.lastHitSegment = 0;
+			int segmentIndex = 0;
 			for(ControlPoint p : this.points) {
 				if (previous!=null) {
 					if (isClosedToSegment(
@@ -848,22 +850,22 @@ public abstract class EdgeFigure<E extends Edge<?,?,?,?>> extends AbstractModelO
 							p.x(), p.y(),
 							x, y,
 							epsilon)) {
-						return this.lastHitSegment;
+						return segmentIndex;
 					}
-					++this.lastHitSegment;
+					++segmentIndex;
 				}
 				previous = p;
 			}
 		}
-		this.lastHitSegment = -1;
-		return this.lastHitSegment;
+		return -1;
 	}
 
 	/** {@inheritDoc}
 	 */
 	@Override
+	@Deprecated
 	public int getLastHitSegment() {
-		return this.lastHitSegment;
+		return this._lastHitSegment;
 	}
 
 	/** Replies if a point is closed to a segment.
@@ -907,6 +909,7 @@ public abstract class EdgeFigure<E extends Edge<?,?,?,?>> extends AbstractModelO
 	/** {@inheritDoc}
 	 */
 	@Override
+	@Deprecated
 	public final boolean hit(float x, float y, float epsilon) {
 		// Tests if hitting the edges
 		boolean hitted = hitSegment( x, y, epsilon ) != -1;

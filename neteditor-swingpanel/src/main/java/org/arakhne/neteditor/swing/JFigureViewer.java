@@ -59,6 +59,7 @@ import javax.swing.ActionMap;
 import javax.swing.TransferHandler;
 import javax.swing.UIManager;
 
+import org.arakhne.afc.math.continous.object2d.Circle2f;
 import org.arakhne.afc.math.continous.object2d.Point2f;
 import org.arakhne.afc.math.continous.object2d.Rectangle2f;
 import org.arakhne.afc.math.continous.object2d.Shape2f;
@@ -979,8 +980,9 @@ implements ViewComponentContainer<Figure, G> {
 	 */
 	public Figure getFigureAt(float x, float y) {
 		float precision = pixel2logical_size(getClickPrecision());
+		Circle2f circle = new Circle2f(x, y, precision);
 		for(Figure figure : this.figures) {
-			if (figure.hit(x, y, precision)) {
+			if (figure.intersects(circle)) {
 				return figure;
 			}
 		}

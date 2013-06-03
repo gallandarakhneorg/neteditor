@@ -1,0 +1,5 @@
+h1. Android View for NetEditor Constructs
+
+This module provides an Android view for the NetEditor constructs.
+
+To learn how to compile an Apklib with Maven and Eclipse, see "this how-to":howto-apk_apkplib_with_maven_eclipse.textile.

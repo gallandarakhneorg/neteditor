@@ -236,6 +236,7 @@ public class BitmapFigure extends BlockDecorationFigure implements ImageObserver
 	 * {@inheritDoc}
 	 */
 	@Override
+	@Deprecated
 	public boolean hit(float x, float y, float epsilon) {
 		Rectangle2f bounds = getBounds();
 		Rectangle2f rr = new Rectangle2f(

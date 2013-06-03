@@ -74,6 +74,7 @@ public abstract class AbstractRectangularAnchorFigure<A extends Anchor<?,?,?,?>>
 	 * {@inheritDoc}
 	 */
 	@Override
+	@Deprecated
 	public boolean hit(float x, float y, float epsilon) {
 		float ax = getRelativeX();
 		float ay = getRelativeX();

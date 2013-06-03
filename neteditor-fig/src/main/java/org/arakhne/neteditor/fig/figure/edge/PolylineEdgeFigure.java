@@ -216,8 +216,7 @@ public class PolylineEdgeFigure<E extends Edge<?,?,?,?>> extends EdgeFigure<E> {
 								pathElement.toX, pathElement.toY,
 								x, y,
 								epsilon ) ) {
-							this.lastHitSegment = index ;
-							return this.lastHitSegment ;
+							return index;
 						}
 						break;
 					default:
@@ -225,8 +224,7 @@ public class PolylineEdgeFigure<E extends Edge<?,?,?,?>> extends EdgeFigure<E> {
 					}		
 				}
 			}
-			this.lastHitSegment = -1;
-			return this.lastHitSegment;
+			return -1;
 		}
 		return super.hitSegment(x, y, epsilon);
 	}

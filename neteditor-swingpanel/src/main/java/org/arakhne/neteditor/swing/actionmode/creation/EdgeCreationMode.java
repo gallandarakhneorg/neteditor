@@ -27,6 +27,7 @@ import java.util.List;
 import java.util.UUID;
 
 import org.arakhne.afc.math.continous.object2d.Point2f;
+import org.arakhne.afc.math.continous.object2d.Shape2f;
 import org.arakhne.afc.math.generic.Point2D;
 import org.arakhne.afc.ui.MouseCursor;
 import org.arakhne.afc.ui.actionmode.ActionMode;
@@ -98,7 +99,10 @@ public abstract class EdgeCreationMode<G extends Graph<G,?,A,E>, A extends Ancho
                         Figure fig = getPointedFigure();
                         if (fig instanceof NodeFigure<?,?>) {
                                 NodeFigure<?,?> nodeFigure = (NodeFigure<?,?>)fig;
-                                return (AnchorFigure<A>)nodeFigure.getLastHitAnchor();
+                                Shape2f hitArea = getModeManager().getFigureHitArea();
+                                if (hitArea!=null) {
+	                                return (AnchorFigure<A>)nodeFigure.getAnchorOn(hitArea);
+                                }
                         }
                 }
                 return null;

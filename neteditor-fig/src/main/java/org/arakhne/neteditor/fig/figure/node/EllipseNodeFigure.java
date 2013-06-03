@@ -153,6 +153,7 @@ public class EllipseNodeFigure<N extends Node<?,? super N,? super A,?>,A extends
 	 * {@inheritDoc}
 	 */
 	@Override
+	@Deprecated
 	public boolean hit(float x, float y, float epsilon) {
 		if (hitAnchors(x, y, epsilon)) return true;
 		float absx = getX();

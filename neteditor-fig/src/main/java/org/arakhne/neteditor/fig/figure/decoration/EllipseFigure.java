@@ -192,6 +192,7 @@ public class EllipseFigure extends BlockDecorationFigure {
 	/**
 	 * {@inheritDoc}
 	 */
+	@Deprecated
 	@Override
 	public boolean hit(float x, float y, float epsilon) {
 		Ellipse2f oval = new Ellipse2f(

@@ -25,6 +25,7 @@ import java.util.UUID;
 
 import org.arakhne.afc.math.continous.object2d.Circle2f;
 import org.arakhne.afc.math.continous.object2d.Rectangle2f;
+import org.arakhne.afc.math.continous.object2d.Shape2f;
 import org.arakhne.neteditor.fig.figure.node.NodeFigure;
 import org.arakhne.neteditor.fig.graphics.ViewGraphics2D;
 import org.arakhne.neteditor.fig.view.ViewComponentConstants;
@@ -134,6 +135,7 @@ extends AbstractEllipsoidAnchorFigure<A> {
 	 * {@inheritDoc}
 	 */
 	@Override
+	@Deprecated
 	public boolean hit(float x, float y, float epsilon) {
 		float cx = getRelativeX() + getWidth()/2f;
 		float cy = getRelativeY() + getHeight()/2f;
@@ -142,6 +144,13 @@ extends AbstractEllipsoidAnchorFigure<A> {
 		cy -= y;
 		radius += epsilon;
 		return cx*cx+cy*cy <= radius*radius;
+	}
+	
+	@Override
+	public boolean intersects(Shape2f r) {
+		float radius = getWidth()/2f;
+		Circle2f circle = new Circle2f(getX() + radius, getY() + radius, radius);
+		return r.intersects(circle);
 	}
 
 	/**
