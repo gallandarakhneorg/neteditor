@@ -138,6 +138,7 @@ import org.arakhne.neteditor.fsm.property.StatePropertyPanel;
 import org.arakhne.neteditor.fsm.property.TextPropertyPanel;
 import org.arakhne.neteditor.fsm.property.TransitionPropertyPanel;
 import org.arakhne.neteditor.io.BitmapExporter;
+import org.arakhne.neteditor.io.FileCollection;
 import org.arakhne.neteditor.io.NetEditorContentType;
 import org.arakhne.neteditor.io.NetEditorReader;
 import org.arakhne.neteditor.io.VectorialExporter;
@@ -152,6 +153,7 @@ import org.arakhne.neteditor.io.gxl.GXLExporter;
 import org.arakhne.neteditor.io.ngr.NGRReader;
 import org.arakhne.neteditor.io.ngr.NGRWriter;
 import org.arakhne.neteditor.io.pdf.PdfExporter;
+import org.arakhne.neteditor.io.pdf.PdfTeXExporter;
 import org.arakhne.neteditor.io.svg.SvgExporter;
 import org.arakhne.neteditor.swing.JFigureViewer;
 import org.arakhne.neteditor.swing.actionmode.creation.BitmapDecorationCreationMode;
@@ -836,8 +838,8 @@ public class FSMEditor extends JFrame {
 		for(FileFilter ff : fileFilter) {
 			if (preferredExtension==null) {
 				preferredExtension = ff.getExtensions()[0];
-				chooser.addChoosableFileFilter(new FileFilterSwing(ff));
 			}
+			chooser.addChoosableFileFilter(new FileFilterSwing(ff));
 		}
 
 		if (accessory!=null) {
@@ -930,7 +932,12 @@ public class FSMEditor extends JFrame {
 	protected void export() {
 		setCursor(AwtUtil.getCursor(MouseCursor.WAIT));
 		try {
-			File outputFile = selectFileToSave(null, ImageType.getFileFilters());
+			FileFilter[] filters1 = VectorialPictureFileType.getFileFilters();
+			FileFilter[] filters2 = ImageType.getFileFilters();
+			FileFilter[] filters = new FileFilter[filters1.length+filters2.length];
+			System.arraycopy(filters1, 0, filters, 0, filters1.length);
+			System.arraycopy(filters2, 0, filters, filters1.length, filters2.length);
+			File outputFile = selectFileToSave(null, filters);
 			if (outputFile!=null) {
 				ImageType type = ImageType.valueOf(outputFile);
 				if (type!=null) {
@@ -984,6 +991,11 @@ public class FSMEditor extends JFrame {
 						case GML:
 							vExporter = new GMLExporter();
 							break;
+						case PDF_TEX:
+							vExporter = new PdfTeXExporter();
+							break;
+						case EPS_TEX:
+							throw new UnsupportedOperationException();
 						default:
 							throw new IllegalStateException();
 						}
@@ -996,16 +1008,17 @@ public class FSMEditor extends JFrame {
 						if (export) {
 							try {
 								vExporter.setShadowExported(FSMEditor.this.figurePanel.isShadowDrawn());
-								File tmpOutputFile = File.createTempFile("fsmeditorexport", "."+vType.getExtension()); //$NON-NLS-1$ //$NON-NLS-2$
+								FileCollection fileCollection = new FileCollection(outputFile);
+								vExporter.setFileCollection(fileCollection);
 								try {
 									vExporter.write(
-											tmpOutputFile,
+											fileCollection.getTemporaryMainFile(),
 											FSMEditor.this.figurePanel.getGraph(),
 											FSMEditor.this.figurePanel);
-									FileSystem.copy(tmpOutputFile, outputFile);
+									fileCollection.copyFiles();
 								}
 								finally {
-									tmpOutputFile.delete();
+									fileCollection.deleteTemporaryFiles();
 								}
 							}
 							catch (Throwable ex) {
