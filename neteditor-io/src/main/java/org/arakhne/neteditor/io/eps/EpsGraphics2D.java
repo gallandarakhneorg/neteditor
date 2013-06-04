@@ -37,7 +37,9 @@ import org.arakhne.afc.math.continous.object2d.Rectangle2f;
 import org.arakhne.afc.math.continous.object2d.RoundRectangle2f;
 import org.arakhne.afc.math.continous.object2d.Segment2f;
 import org.arakhne.afc.math.continous.object2d.Shape2f;
+import org.arakhne.afc.math.generic.Point2D;
 import org.arakhne.afc.math.matrix.Transform2D;
+import org.arakhne.afc.ui.TextAlignment;
 import org.arakhne.afc.ui.vector.Color;
 import org.arakhne.afc.ui.vector.Font;
 import org.arakhne.afc.ui.vector.Image;
@@ -257,7 +259,7 @@ public class EpsGraphics2D extends AbstractVectorialExporterGraphics2D {
 		gwriteln(pixels);
 		
 		grestore();
-
+		
 		return true;
 	}
 
@@ -277,7 +279,16 @@ public class EpsGraphics2D extends AbstractVectorialExporterGraphics2D {
 		if (clip!=null) {
 			clip(clip);
 		}
-
+		
+		setDrawingAttributes(true, true, false);
+		drawEpsString(context, x, y, str);
+		
+		grestore();
+		
+		postDrawing();
+	}
+	
+	private void drawEpsString(EpsContext context, float x, float y, String str) {
 		Font font = getFont();
 		if ((font==null && context.font!=null)
 			||(font!=null && !font.equals(context.font))) {
@@ -296,8 +307,6 @@ public class EpsGraphics2D extends AbstractVectorialExporterGraphics2D {
 			}
 		}
 
-		setDrawingAttributes(true, true, false);
-
 		// Move the text at the right position
 		gwrite(Float.toString(EpsUtil.toEpsX(x)));
 		gwrite(" "); //$NON-NLS-1$
@@ -308,18 +317,18 @@ public class EpsGraphics2D extends AbstractVectorialExporterGraphics2D {
 		gwrite("("); //$NON-NLS-1$
 		gwrite(text);
 		gwriteln(") show"); //$NON-NLS-1$
-
-		grestore();
-		
-		postDrawing();
 	}
 
 	@Override
-	protected void drawPath(PathIterator2f pathIterator) {
+	protected void drawPath(PathIterator2f pathIterator, Rectangle2f figureBounds) {
+		String epsPath = computeEpsPath(pathIterator);
+		
 		preDrawing();
 
+		gsave();
+		
 		gwriteln("newpath"); //$NON-NLS-1$
-		gwriteln(computeEpsPath(pathIterator));
+		gwriteln(epsPath);
 
 		if (isInteriorPainted()) {
 			gsave();
@@ -333,33 +342,49 @@ public class EpsGraphics2D extends AbstractVectorialExporterGraphics2D {
 			gwriteln("stroke"); //$NON-NLS-1$
 			grestore();
 		}
+		
+		String text = getInteriorText();
+		if (text!=null && !text.isEmpty()) {
+			gwriteln("initclip"); //$NON-NLS-1$
+			gwriteln("newpath"); //$NON-NLS-1$
+			gwrite(epsPath);
+			gwriteln(" clip"); //$NON-NLS-1$
+			Point2D p = computeTextPosition(
+					text,
+					figureBounds, 
+					TextAlignment.CENTER_ALIGN, TextAlignment.CENTER_ALIGN);
+			setDrawingAttributes(true, false, false);
+			drawEpsString(this.context.peek(), p.getX(), p.getY(), text);
+		}
+		
+		grestore();
 
 		postDrawing();
 	}
 
 	@Override
 	protected void drawEllipse(Ellipse2f ellipse) {
-		drawPath(ellipse.getPathIterator());
+		drawPath(ellipse.getPathIterator(), ellipse.toBoundingBox());
 	}
 
 	@Override
 	protected void drawRectangle(Rectangle2f rectangle) {
-		drawPath(rectangle.getPathIterator());
+		drawPath(rectangle.getPathIterator(), rectangle);
 	}
 
 	@Override
 	protected void drawRoundRectangle(RoundRectangle2f rectangle) {
-		drawPath(rectangle.getPathIterator());
+		drawPath(rectangle.getPathIterator(), rectangle.toBoundingBox());
 	}
 
 	@Override
 	protected void drawLine(Segment2f line) {
-		drawPath(line.getPathIterator());
+		drawPath(line.getPathIterator(), line.toBoundingBox());
 	}
 
 	@Override
 	protected void drawCircle(Circle2f circle) {
-		drawPath(circle.getPathIterator());
+		drawPath(circle.getPathIterator(), circle.toBoundingBox());
 	}
 
 	@Override

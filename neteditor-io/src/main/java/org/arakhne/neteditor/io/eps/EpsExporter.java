@@ -68,7 +68,7 @@ public class EpsExporter extends AbstractVectorialExporter<EpsGraphics2D, EpsOut
 	 * {@inheritDoc}
 	 */
 	@Override
-	protected EpsOutputStream createStream(OutputStream stream) {
+	protected EpsOutputStream createStream(File currentFile, OutputStream stream) {
 		return new EpsOutputStream(stream);
 	}
 	

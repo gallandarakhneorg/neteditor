@@ -46,6 +46,7 @@ import org.arakhne.neteditor.formalism.ModelObject;
 import org.arakhne.neteditor.formalism.Node;
 import org.arakhne.neteditor.formalism.View;
 import org.arakhne.neteditor.formalism.ViewBinding;
+import org.arakhne.neteditor.io.FileCollection;
 import org.arakhne.neteditor.io.VectorialExporter;
 import org.arakhne.vmutil.locale.Locale;
 
@@ -63,6 +64,7 @@ public class DotExporter implements VectorialExporter {
 	private boolean exportShadows = false;
 	private boolean exportFigures = false;
 	private Progression taskProgression = null;
+	private FileCollection fileCollection = null;
 
 	/**
 	 */
@@ -119,6 +121,16 @@ public class DotExporter implements VectorialExporter {
 	private static Node<?,?,?,?> extractNode(Anchor<?,?,?,?> a) {
 		if (a==null) return null;
 		return a.getNode();
+	}
+
+	@Override
+	public FileCollection getFileCollection() {
+		return this.fileCollection;
+	}
+	
+	@Override
+	public void setFileCollection(FileCollection c) {
+		this.fileCollection = c;
 	}
 
 	/**

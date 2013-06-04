@@ -49,11 +49,20 @@ public abstract class AbstractVectorialExporter<D extends AbstractVectorialExpor
 	private boolean exportShadows = true;
 	private File file = null;
 	private Progression taskProgression = null;
+	private FileCollection fileCollection = null;
 
 	/**
 	 */
 	public AbstractVectorialExporter() {
 		//
+	}
+	
+	/** Replies the name of the file to output.
+	 * 
+	 * @return the name of the file or <code>null</code>.
+	 */
+	protected File getFile() {
+		return this.file;
 	}
 	
 	/**
@@ -95,6 +104,16 @@ public abstract class AbstractVectorialExporter<D extends AbstractVectorialExpor
 	public void setShadowExported(boolean export) {
 		this.exportShadows = export;
 	}	
+	
+	@Override
+	public void setFileCollection(FileCollection c) {
+		this.fileCollection = c;
+	}
+	
+	@Override
+	public FileCollection getFileCollection() {
+		return this.fileCollection;
+	}
 
 	/** {@inheritDoc}
 	 */
@@ -144,7 +163,7 @@ public abstract class AbstractVectorialExporter<D extends AbstractVectorialExpor
 		}
 		if (bounds!=null && !bounds.isEmpty()) {
 			Rectangle2f r;
-			S stream = createStream(output);
+			S stream = createStream(this.file, output);
 			try {
 				D g = prepareExport(this.file, stream, bounds);
 				if (g==null) throw new IOException();
@@ -176,7 +195,7 @@ public abstract class AbstractVectorialExporter<D extends AbstractVectorialExpor
 	public <G extends Graph<?,?,?,?>> void write(OutputStream output, G graph, ViewComponentContainer<?,G> container) throws IOException {
 		synchronized(container.getTreeLock()) {
 			ProgressionUtil.init(getProgression(), 0, 1000);
-			S stream = createStream(output);
+			S stream = createStream(this.file, output);
 			ProgressionUtil.advance(getProgression(), 10);
 			try {
 				D g = prepareExport(this.file, stream, container.getComponentBounds());
@@ -208,11 +227,12 @@ public abstract class AbstractVectorialExporter<D extends AbstractVectorialExpor
 	/** Wrap the specified stream to a stream that may 
 	 * be properly used by the exporter.
 	 * 
+	 * @param currentFile is the name of the file currently under creation; may be <code>null</code>.
 	 * @param stream is the stream to wrap.
 	 * @return the wrapping stream.
 	 * @throws IOException
 	 */
-	protected abstract S createStream(OutputStream stream) throws IOException;
+	protected abstract S createStream(File currentFile, OutputStream stream) throws IOException;
 
 	/** Create the graphics context to use to export the data.
 	 * 

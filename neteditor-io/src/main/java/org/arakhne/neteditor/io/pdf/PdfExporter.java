@@ -72,7 +72,7 @@ public class PdfExporter extends AbstractVectorialExporter<PdfGraphics2D, PdfOut
 	 * {@inheritDoc}
 	 */
 	@Override
-	protected PdfOutputStream createStream(OutputStream stream) {
+	protected PdfOutputStream createStream(File currentFile, OutputStream stream) throws IOException {
 		return new PdfOutputStream(stream);
 	}
 	

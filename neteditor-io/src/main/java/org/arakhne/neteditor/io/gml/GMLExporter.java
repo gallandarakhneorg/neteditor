@@ -36,6 +36,7 @@ import org.arakhne.neteditor.formalism.Edge;
 import org.arakhne.neteditor.formalism.Graph;
 import org.arakhne.neteditor.formalism.ModelObject;
 import org.arakhne.neteditor.formalism.Node;
+import org.arakhne.neteditor.io.FileCollection;
 import org.arakhne.neteditor.io.VectorialExporter;
 
 
@@ -59,6 +60,7 @@ public class GMLExporter implements VectorialExporter {
 
 	private boolean exportShadows = false;
 	private Progression taskProgression = null;
+	private FileCollection fileCollection = null;
 
 	/**
 	 */
@@ -105,6 +107,16 @@ public class GMLExporter implements VectorialExporter {
 	@Override
 	public boolean isSpecificationCompliant() {
 		return true;
+	}
+	
+	@Override
+	public FileCollection getFileCollection() {
+		return this.fileCollection;
+	}
+	
+	@Override
+	public void setFileCollection(FileCollection c) {
+		this.fileCollection = c;
 	}
 
 	/**

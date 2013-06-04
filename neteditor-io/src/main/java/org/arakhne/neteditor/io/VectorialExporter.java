@@ -86,6 +86,24 @@ public interface VectorialExporter {
 	 */
 	public boolean isShadowSupported();
 
+	/** Replies the collection of files that is used by this exporter.
+	 * <p>
+	 * A collection of files may be used by the exporter to create
+	 * files associated to the file to export.
+	 * 
+	 * @return the collection of files, or <code>null</code> if none.
+	 */
+	public FileCollection getFileCollection();
+
+	/** Set the collection of files that is used by this exporter.
+	 * <p>
+	 * A collection of files may be used by the exporter to create
+	 * files associated to the file to export.
+	 * 
+	 * @param c is the collection of files, or <code>null</code> if none.
+	 */
+	public void setFileCollection(FileCollection c);
+
 	/** Exports the specified graph, its figures and all the other
 	 * figures in the specified container into the given stream.
 	 *

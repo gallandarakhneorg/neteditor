@@ -575,7 +575,7 @@ public class SvgGraphics2D extends AbstractVectorialExporterGraphics2D {
 	 * {@inheritDoc}
 	 */
 	@Override
-	protected void drawPath(PathIterator2f pathIterator) {
+	protected void drawPath(PathIterator2f pathIterator, Rectangle2f figureBounds) {
 		preDrawing();
 		
 		PathElement2f pathElement;

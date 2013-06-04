@@ -608,7 +608,7 @@ public class PdfGraphics2D extends AbstractVectorialExporterGraphics2D {
 	}
 	
 	@Override
-	protected void drawPath(PathIterator2f pathIterator) {
+	protected void drawPath(PathIterator2f pathIterator, Rectangle2f figureBounds) {
 		String drawOp = setDrawingAttributes(true, true, false);
 		if (drawOp==null) return ;
 
@@ -621,27 +621,27 @@ public class PdfGraphics2D extends AbstractVectorialExporterGraphics2D {
 
 	@Override
 	protected void drawLine(Segment2f line) {
-		drawPath(line.getPathIterator());
+		drawPath(line.getPathIterator(), line.toBoundingBox());
 	}
 
 	@Override
 	protected void drawRectangle(Rectangle2f rectangle) {
-		drawPath(rectangle.getPathIterator());
+		drawPath(rectangle.getPathIterator(), rectangle);
 	}
 
 	@Override
 	protected void drawRoundRectangle(RoundRectangle2f rectangle) {
-		drawPath(rectangle.getPathIterator());
+		drawPath(rectangle.getPathIterator(), rectangle.toBoundingBox());
 	}
 
 	@Override
 	protected void drawEllipse(Ellipse2f ellipse) {
-		drawPath(ellipse.getPathIterator());
+		drawPath(ellipse.getPathIterator(), ellipse.toBoundingBox());
 	}
 
 	@Override
 	protected void drawCircle(Circle2f circle) {
-		drawPath(circle.getPathIterator());
+		drawPath(circle.getPathIterator(), circle.toBoundingBox());
 	}
 	
 	@Override

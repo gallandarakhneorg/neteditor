@@ -105,7 +105,7 @@ public class SvgExporter extends AbstractVectorialExporter<SvgGraphics2D, Output
 	 * {@inheritDoc}
 	 */
 	@Override
-	protected OutputStream createStream(OutputStream stream) {
+	protected OutputStream createStream(File currentFile, OutputStream stream) {
 		return stream;
 	}
 	

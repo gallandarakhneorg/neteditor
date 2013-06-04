@@ -558,7 +558,7 @@ public abstract class AbstractVectorialExporterGraphics2D extends AbstractVector
 			drawLine((Segment2f)s);
 		}
 		else {
-			drawPath(s.getPathIterator());
+			drawPath(s.getPathIterator(), s.toBoundingBox());
 		}
 	}
 	
@@ -581,8 +581,9 @@ public abstract class AbstractVectorialExporterGraphics2D extends AbstractVector
 	/** Draw a path.
 	 * 
 	 * @param path
+	 * @param figureBounds
 	 */
-	protected abstract void drawPath(PathIterator2f path);
+	protected abstract void drawPath(PathIterator2f path, Rectangle2f figureBounds);
 
 	/** Draw an ellipse.
 	 * 
