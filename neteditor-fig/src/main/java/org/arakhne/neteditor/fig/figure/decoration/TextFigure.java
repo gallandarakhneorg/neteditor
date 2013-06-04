@@ -176,9 +176,9 @@ public class TextFigure extends BlockDecorationFigure {
 		boolean isFilled = isFilled();
 		String text = getDisplayableText();
 		if (isFramed || isFilled || (text!=null && !text.isEmpty())) {
-			g.setOutlineDrawn(isFramed());
-			g.setInteriorPainted(isFilled());
-			g.setInteriorText(getDisplayableText());
+			g.setOutlineDrawn(isFramed);
+			g.setInteriorPainted(isFilled);
+			g.setInteriorText(text);
 			g.draw(g.getCurrentViewComponentBounds());
 		}
 	}
