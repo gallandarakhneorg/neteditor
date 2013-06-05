@@ -89,6 +89,11 @@ public class EpsGraphics2D extends AbstractVectorialExporterGraphics2D {
 		this.globalBuffer.setLength(0);
 	}
 	
+	@Override
+	public boolean isShadowDrawing() {
+		return false;
+	}
+	
 	private void gwrite(Transform2D trans) {
 		float tx = EpsUtil.toEpsX(trans.getTranslationX());
 		float ty = EpsUtil.toEpsY(trans.getTranslationY());

@@ -58,6 +58,13 @@ public interface ViewGraphics2D extends VectorGraphics2D {
 	 */
 	public boolean isLocked();
 		
+	/** Indicates if the drawings are for shadows or not.
+	 * 
+	 * @return <code>true</code> if the drawings are for shadows,
+	 * <code>false</code> otherwise.
+	 */
+	public boolean isShadowDrawing();
+
 	/** Replies the bounds of the current view. This bounds may
 	 * changed dynamically.
 	 * 

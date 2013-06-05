@@ -41,6 +41,7 @@ import org.arakhne.afc.math.continous.object2d.Shape2f;
 import org.arakhne.afc.math.generic.Point2D;
 import org.arakhne.afc.math.matrix.Transform2D;
 import org.arakhne.afc.ui.StringAnchor;
+import org.arakhne.afc.ui.TextAlignment;
 import org.arakhne.afc.ui.vector.Color;
 import org.arakhne.afc.ui.vector.Font;
 import org.arakhne.afc.ui.vector.FontComparator;
@@ -74,7 +75,7 @@ public class PdfGraphics2D extends AbstractVectorialExporterGraphics2D {
 
 	/** Prefix string for PDF transparency resource ids. */
 	protected static final String TRANSPARENCY_RESOURCE_PREFIX = "T"; //$NON-NLS-1$
-	
+
 	private static String makeImageKey(Image image, int sx1, int sy1, int sx2, int sy2) {
 		return IMAGE_RESOURCE_PREFIX +
 				System.identityHashCode(image.toString()) +
@@ -102,12 +103,12 @@ public class PdfGraphics2D extends AbstractVectorialExporterGraphics2D {
 	public PdfGraphics2D() {
 		//
 	}
-	
+
 	@Override
 	public float getShadowTranslationX() {
 		return PdfUtil.SHADOW_DISTANCE;
 	}
-	
+
 	@Override
 	public float getShadowTranslationY() {
 		return PdfUtil.SHADOW_DISTANCE;
@@ -129,7 +130,7 @@ public class PdfGraphics2D extends AbstractVectorialExporterGraphics2D {
 		this.currentLineJoin = null;
 		this.currentDashes = null;
 	}
-		
+
 	@Override
 	public void reset() {
 		super.reset();
@@ -148,6 +149,11 @@ public class PdfGraphics2D extends AbstractVectorialExporterGraphics2D {
 	}
 
 	@Override
+	public boolean isShadowDrawing() {
+		return false;
+	}
+
+	@Override
 	public void prolog() throws IOException {
 		this.buffer.setLength(0);
 		this.currentTransparency = -1;
@@ -158,7 +164,7 @@ public class PdfGraphics2D extends AbstractVectorialExporterGraphics2D {
 
 		writeln("q"); //$NON-NLS-1$
 	}
-	
+
 	@Override
 	public void epilog() throws IOException {
 		if (getClip() != null) {
@@ -199,7 +205,7 @@ public class PdfGraphics2D extends AbstractVectorialExporterGraphics2D {
 		}
 		return changed;
 	}
-	
+
 	private void writeCurrentTransform() {
 		if (!this.currentTransform.isIdentity()) {
 			write( PdfUtil.toPdfParameters(this.currentTransform) );
@@ -265,9 +271,9 @@ public class PdfGraphics2D extends AbstractVectorialExporterGraphics2D {
 	 */
 	protected String getImageResource(Image image, int sx1, int sy1, int sx2, int sy2) {
 		assert(image!=null);
-		
+
 		String desiredKey = makeImageKey(image, sx1, sy1, sx2, sy2);
-		
+
 		if (!this.imageResources.containsKey(desiredKey)) {
 			Image subImage = image;
 			if (sx1>0 || sy1>0 || sx2<image.getWidth(null)-1 || sy2<image.getHeight(null)-1) {
@@ -284,7 +290,7 @@ public class PdfGraphics2D extends AbstractVectorialExporterGraphics2D {
 			}
 			this.imageResources.put(desiredKey, subImage);
 		}
-		
+
 		return desiredKey;
 	}
 
@@ -296,119 +302,76 @@ public class PdfGraphics2D extends AbstractVectorialExporterGraphics2D {
 		return Collections.unmodifiableMap(this.imageResources);
 	}
 
-	private String computeDrawOp(boolean enableOutline, boolean enableFilling) {
-		boolean isFilling = false;
-		boolean isOutlining = false;
-		if (isInteriorPainted() && enableFilling) {
-			isFilling = true;
+	private void setDrawingAttributes(DrawingMode mode, Color outlineColor, Color fillingColor) {
+		assert(outlineColor!=null);
+		assert(fillingColor!=null);
+		if (mode.isInteriorPainted()) {
+			double alpha = fillingColor.getAlpha() / 255.;
+			if (alpha!=this.currentTransparency) {
+				String resourceId = getTransparencyResource(alpha);
+				writeln("/", resourceId, " gs");  //$NON-NLS-1$//$NON-NLS-2$
+				this.currentTransparency = alpha;
+			}
+
+			double r = fillingColor.getRed() / 255.;
+			double g = fillingColor.getGreen() / 255.;
+			double b = fillingColor.getBlue() / 255.;
+
+			writeln( r + " " + g + " " + b + " rg");  //$NON-NLS-1$ //$NON-NLS-2$//$NON-NLS-3$
 		}
 
-		if (isOutlineDrawn() && enableOutline) {
-			isOutlining = true;
+		if (mode.isOutlineDrawn()) {
+			double alpha = outlineColor.getAlpha() / 255.;
+			if (alpha!=this.currentTransparency) {
+				String resourceId = getTransparencyResource(alpha);
+				writeln("/", resourceId, " gs");  //$NON-NLS-1$//$NON-NLS-2$
+				this.currentTransparency = alpha;
+			}
+
+			double r = outlineColor.getRed() / 255.;
+			double g = outlineColor.getGreen() / 255.;
+			double b = outlineColor.getBlue() / 255.;
+
+			writeln( r + " " + g + " " + b + " RG");  //$NON-NLS-1$ //$NON-NLS-2$//$NON-NLS-3$			
 		}
 
-		if (isFilling && isOutlining) {
-			return "B"; //$NON-NLS-1$
+		Stroke bStroke = getStroke();
+
+		if (this.currentLineWidth!=bStroke.getLineWidth()) {
+			this.currentLineWidth = bStroke.getLineWidth();
+			writeln( this.currentLineWidth + " w"); //$NON-NLS-1$
 		}
-		if (isFilling) {
-			return "f"; //$NON-NLS-1$
+		PdfEndCaps endCap = PdfEndCaps.fromGenericType(bStroke.getEndCap());
+		if (this.currentEndCap!=endCap) {
+			this.currentEndCap = endCap;
+			writeln( this.currentEndCap.pdf() + " J"); //$NON-NLS-1$
 		}
-		if (isOutlining) {
-			return "S"; //$NON-NLS-1$
+		PdfLineJoin lineJoin = PdfLineJoin.fromGenericType(bStroke.getLineJoin());
+		if (this.currentLineJoin!=lineJoin) {
+			this.currentLineJoin = lineJoin;
+			writeln( this.currentLineJoin.pdf() + " j"); //$NON-NLS-1$
 		}
-		return null;
-	}
-
-	private String setDrawingAttributes(boolean enableOutline, boolean enableFilling,
-			boolean invertFillingOutlineColors) {
-		String drawOp = computeDrawOp(enableOutline, enableFilling);
-
-		if (drawOp!=null) {
-			
-			if (isInteriorPainted() && enableFilling) {
-				Color color = invertFillingOutlineColors ? getOutlineColor() : getFillColor();
-				if (color==null) {
-					color = invertFillingOutlineColors ?
-							ViewComponentConstants.DEFAULT_LINE_COLOR :
-								ViewComponentConstants.DEFAULT_FILL_COLOR;
-				}
-	
-				double alpha = color.getAlpha() / 255.;
-				if (alpha!=this.currentTransparency) {
-					String resourceId = getTransparencyResource(alpha);
-					writeln("/", resourceId, " gs");  //$NON-NLS-1$//$NON-NLS-2$
-					this.currentTransparency = alpha;
-				}
-
-				double r = color.getRed() / 255.;
-				double g = color.getGreen() / 255.;
-				double b = color.getBlue() / 255.;
-	
-				writeln( r + " " + g + " " + b + " rg");  //$NON-NLS-1$ //$NON-NLS-2$//$NON-NLS-3$
-			}
-	
-			if (isOutlineDrawn() && enableOutline) {
-				Color color = invertFillingOutlineColors ? getFillColor() : getOutlineColor();
-				if (color==null) {
-					color = invertFillingOutlineColors ?
-							ViewComponentConstants.DEFAULT_FILL_COLOR :
-							ViewComponentConstants.DEFAULT_LINE_COLOR;
-				}
-	
-				double alpha = color.getAlpha() / 255.;
-				if (alpha!=this.currentTransparency) {
-					String resourceId = getTransparencyResource(alpha);
-					writeln("/", resourceId, " gs");  //$NON-NLS-1$//$NON-NLS-2$
-					this.currentTransparency = alpha;
-				}
-
-				double r = color.getRed() / 255.;
-				double g = color.getGreen() / 255.;
-				double b = color.getBlue() / 255.;
-	
-				writeln( r + " " + g + " " + b + " RG");  //$NON-NLS-1$ //$NON-NLS-2$//$NON-NLS-3$			
-			}
-			
-			Stroke bStroke = getStroke();
-
-			if (this.currentLineWidth!=bStroke.getLineWidth()) {
-				this.currentLineWidth = bStroke.getLineWidth();
-				writeln( this.currentLineWidth + " w"); //$NON-NLS-1$
-			}
-			PdfEndCaps endCap = PdfEndCaps.fromGenericType(bStroke.getEndCap());
-			if (this.currentEndCap!=endCap) {
-				this.currentEndCap = endCap;
-				writeln( this.currentEndCap.pdf() + " J"); //$NON-NLS-1$
-			}
-			PdfLineJoin lineJoin = PdfLineJoin.fromGenericType(bStroke.getLineJoin());
-			if (this.currentLineJoin!=lineJoin) {
-				this.currentLineJoin = lineJoin;
-				writeln( this.currentLineJoin.pdf() + " j"); //$NON-NLS-1$
-			}
-			if (this.currentMiterLimit!=bStroke.getMiterLimit()) {
-				this.currentMiterLimit = bStroke.getMiterLimit();
-				writeln( this.currentMiterLimit+ " M"); //$NON-NLS-1$
-			}
-			float[] dashes = bStroke.getDashArray();
-			if (this.currentDashPhase!=bStroke.getDashPhase() ||
+		if (this.currentMiterLimit!=bStroke.getMiterLimit()) {
+			this.currentMiterLimit = bStroke.getMiterLimit();
+			writeln( this.currentMiterLimit+ " M"); //$NON-NLS-1$
+		}
+		float[] dashes = bStroke.getDashArray();
+		if (this.currentDashPhase!=bStroke.getDashPhase() ||
 				!Arrays.equals(this.currentDashes, dashes)) {
-				this.currentDashPhase = bStroke.getDashPhase();
-				this.currentDashes = dashes;
-				if (this.currentDashes!=null) {
-					write("["); //$NON-NLS-1$
-					for(float dash : this.currentDashes) {
-						write(" "+dash); //$NON-NLS-1$
-					}
-					write("] "); //$NON-NLS-1$
-					write(Float.toString(this.currentDashPhase));
-					write(" d"); //$NON-NLS-1$
+			this.currentDashPhase = bStroke.getDashPhase();
+			this.currentDashes = dashes;
+			if (this.currentDashes!=null) {
+				write("["); //$NON-NLS-1$
+				for(float dash : this.currentDashes) {
+					write(" "+dash); //$NON-NLS-1$
 				}
+				write("] "); //$NON-NLS-1$
+				write(Float.toString(this.currentDashPhase));
+				write(" d"); //$NON-NLS-1$
 			}
 		}
-
-		return drawOp;
 	}
-	
+
 	private void resetDrawingAttributes() {
 		this.currentLineWidth = Float.NaN;
 		this.currentMiterLimit = Float.NaN;
@@ -417,7 +380,7 @@ public class PdfGraphics2D extends AbstractVectorialExporterGraphics2D {
 		this.currentLineJoin = null;
 		this.currentDashes = null;
 	}
-	
+
 	@Override
 	public void beginGroup() {
 		writeln("q"); //$NON-NLS-1$
@@ -435,24 +398,24 @@ public class PdfGraphics2D extends AbstractVectorialExporterGraphics2D {
 			ImageObserver observer) {
 		String resourceId = getImageResource(img, sx1, sy1, sx2, sy2);
 		if (resourceId==null) return false;
-		
+
 		preDrawing();
 
 		Rectangle2f imgBounds = new Rectangle2f();
 		imgBounds.setFromCorners(dx1, dy1, dx2, dy2);
 		imgBounds = PdfUtil.toPdf(imgBounds);
-		
+
 		float sx = imgBounds.getWidth();
 		float sy = imgBounds.getHeight();
 		float tx = imgBounds.getMinX();
 		float ty = imgBounds.getMinY();
-		
+
 		// Save graphics state
 		writeln("q"); //$NON-NLS-1$
-		
+
 		// Write the current transformation
 		writeCurrentTransform();
-		
+
 		// Move image to correct position and scale it to (width, height)
 		write(	sx,
 				" 0 0 ", //$NON-NLS-1$
@@ -466,9 +429,9 @@ public class PdfGraphics2D extends AbstractVectorialExporterGraphics2D {
 		writeln("/", resourceId, " Do");  //$NON-NLS-1$//$NON-NLS-2$
 		// Restore old graphics state
 		writeln("Q"); //$NON-NLS-1$
-		
+
 		postDrawing();
-		
+
 		return true;
 	}
 
@@ -486,9 +449,20 @@ public class PdfGraphics2D extends AbstractVectorialExporterGraphics2D {
 		if (clip!=null) {
 			clip(clip);
 		}
-		
-		setDrawingAttributes(true, true, true);
 
+		Color c = getOutlineColor();
+		if (c==null) c = ViewComponentConstants.DEFAULT_LINE_COLOR;
+		setDrawingAttributes(DrawingMode.BOTH, c, c);
+		drawPdfString(x, y, str);
+
+		if (clip!=null) {
+			setClip(oldClip);
+		}
+
+		postDrawing();
+	}
+
+	private void drawPdfString(float x, float y, String str) {
 		float fontSize = getFont().getSize();
 
 		// Start text and save current graphics state
@@ -510,21 +484,15 @@ public class PdfGraphics2D extends AbstractVectorialExporterGraphics2D {
 
 		// End text and restore previous graphics state
 		writeln("ET Q"); //$NON-NLS-1$
-
-		if (clip!=null) {
-			setClip(oldClip);
-		}
-		
-		postDrawing();
 	}
 
 	private static String computePdfPath(Iterator<PathElement2f> iterator, Transform2D transform) {
 		StringBuilder buffer = new StringBuilder();
-		
+
 		boolean insertSeparator = false;
 		Point2D pt = new Point2f();
 		PathElement2f element;
-		
+
 		while (iterator.hasNext()) {
 			element = iterator.next();
 			if (insertSeparator) {
@@ -603,18 +571,41 @@ public class PdfGraphics2D extends AbstractVectorialExporterGraphics2D {
 				throw new IllegalStateException();
 			}
 		}
-		
+
 		return buffer.toString();
 	}
-	
+
 	@Override
 	protected void drawPath(PathIterator2f pathIterator, Rectangle2f figureBounds) {
-		String drawOp = setDrawingAttributes(true, true, false);
-		if (drawOp==null) return ;
+		DrawingMode mode= DrawingMode.computeDrawOp(
+				isOutlineDrawn(),
+				isInteriorPainted());
 
 		preDrawing();
-		
-		writeln(computePdfPath(pathIterator, this.currentTransform), " ", drawOp); //$NON-NLS-1$
+
+		if (mode!=null) {
+			Color fillingColor = getFillColor();
+			if (fillingColor==null) fillingColor = ViewComponentConstants.DEFAULT_FILL_COLOR;
+	
+			Color lineColor = getOutlineColor();
+			if (lineColor==null) lineColor = ViewComponentConstants.DEFAULT_LINE_COLOR;
+	
+			setDrawingAttributes(mode, lineColor, fillingColor);
+
+			writeln(computePdfPath(pathIterator, this.currentTransform), " ", mode.getPdfDrawingOperator()); //$NON-NLS-1$
+		}
+
+		String text = getInteriorText();
+		if (text!=null && !text.isEmpty()) {
+			Point2D p = computeTextPosition(
+					text,
+					figureBounds, 
+					TextAlignment.CENTER_ALIGN, TextAlignment.CENTER_ALIGN);
+			Color c = getOutlineColor();
+			if (c==null) c = ViewComponentConstants.DEFAULT_LINE_COLOR;
+			setDrawingAttributes(DrawingMode.BOTH, c, c);
+			drawPdfString(p.getX(), p.getY(), text);
+		}
 
 		postDrawing();
 	}
@@ -643,7 +634,7 @@ public class PdfGraphics2D extends AbstractVectorialExporterGraphics2D {
 	protected void drawCircle(Circle2f circle) {
 		drawPath(circle.getPathIterator(), circle.toBoundingBox());
 	}
-	
+
 	@Override
 	public void setStroke(Stroke stroke) {
 		Stroke prevStroke = getStroke();
@@ -703,7 +694,7 @@ public class PdfGraphics2D extends AbstractVectorialExporterGraphics2D {
 			writeln(pathStr, " W n"); //$NON-NLS-1$
 		}
 	}
-	
+
 	/** Replies the generated string.
 	 * 
 	 * @return the generated string.
@@ -711,5 +702,77 @@ public class PdfGraphics2D extends AbstractVectorialExporterGraphics2D {
 	public String getGeneratedString() {
 		return this.buffer.toString();
 	}
+
+	/** Pdf drawing mode.
+	 *  
+	 * @author $Author: galland$
+	 * @version $FullVersion$
+	 * @mavengroupid $GroupId$
+	 * @mavenartifactid $ArtifactId$
+	 */
+	public static enum DrawingMode {
+		/** Shape is drawn.
+		 */
+		SHAPE("S"), //$NON-NLS-1$
+		/** Interior is filled.
+		 */
+		INTERIOR("f"), //$NON-NLS-1$
+		/** Shape is drawn, and interior is filled.
+		 */
+		BOTH("B"); //$NON-NLS-1$
+
+		private final String pdfOp;
+
+		private DrawingMode(String pdfOp) {
+			this.pdfOp = pdfOp;
+		}
+
+		/** Replies the PDF operator for the drawing mode.
+		 * 
+		 * @return the PDF operator for the drawing mode.
+		 */
+		public String getPdfDrawingOperator() {
+			return this.pdfOp;
+		}
+
+		/** Replies if the interior is painted.
+		 * 
+		 * @return <code>true</code> if the interior is painted,
+		 * <code>false</code> otherwise.
+		 */
+		public boolean isInteriorPainted() {
+			return this==BOTH || this==INTERIOR;
+		}
+
+		/** Replies if the outline is drawn.
+		 * 
+		 * @return <code>true</code> if the outline is drawn,
+		 * <code>false</code> otherwise.
+		 */
+		public boolean isOutlineDrawn() {
+			return this==BOTH || this==SHAPE;
+		}
+
+		/** Compute the drawing mode according to the flag of enabling
+		 * of the outline and the interior.
+		 * 
+		 * @param enableOutline
+		 * @param enableFilling
+		 * @return the drawing mode, or none if nothing should be drawn.
+		 */
+		public static DrawingMode computeDrawOp(boolean enableOutline, boolean enableFilling) {
+			if (enableFilling && enableOutline) {
+				return BOTH;
+			}
+			if (enableFilling) {
+				return INTERIOR;
+			}
+			if (enableOutline) {
+				return SHAPE;
+			}
+			return null;
+		}
+
+	} // class DrawingMode
 
 }

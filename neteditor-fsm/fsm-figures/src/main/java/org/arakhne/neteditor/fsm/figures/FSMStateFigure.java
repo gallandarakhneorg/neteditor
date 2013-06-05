@@ -224,103 +224,106 @@ public class FSMStateFigure extends RoundRectangleNodeFigure<FSMState,FSMAnchor>
 					getArcSize()/2, getArcSize()/2);
 			g.draw(r);
 		}
-
-		Rectangle2f nameBounds = new Rectangle2f(
-				bounds.getMinX(),
-				bounds.getMinY(),
-				bounds.getWidth(),
-				boldFont.getSize() + 10f);
-		g.draw(new Segment2f(
-				nameBounds.getMinX(), nameBounds.getMaxY(),
-				nameBounds.getMaxX(), nameBounds.getMaxY()));
-
-		String str = getName();
-		if (str!=null && !str.isEmpty()) {
-			g.setFont(boldFont);
-			Point2D pos = g.computeTextPosition(str, nameBounds,
-					TextAlignment.CENTER_ALIGN, TextAlignment.CENTER_ALIGN);
-			g.drawString(str, pos.getX(), pos.getY(), nameBounds);
-			g.setFont(oldFont);
-			this.nameBox = nameBounds;
+		
+		if (!g.isShadowDrawing()) {
+			Rectangle2f nameBounds = new Rectangle2f(
+					bounds.getMinX(),
+					bounds.getMinY(),
+					bounds.getWidth(),
+					boldFont.getSize() + 10f);
+			g.draw(new Segment2f(
+					nameBounds.getMinX(), nameBounds.getMaxY(),
+					nameBounds.getMaxX(), nameBounds.getMaxY()));
+	
+			String str = getName();
+			if (str!=null && !str.isEmpty()) {
+				g.setFont(boldFont);
+				Point2D pos = g.computeTextPosition(str, nameBounds,
+						TextAlignment.CENTER_ALIGN, TextAlignment.CENTER_ALIGN);
+				g.drawString(str, pos.getX(), pos.getY(), nameBounds);
+				g.setFont(oldFont);
+				this.nameBox = nameBounds;
+			}
+			else {
+				this.nameBox = null;
+			}
+	
+			FontMetrics fm = g.getFontMetrics(oldFont);
+			Rectangle2f contentBounds = new Rectangle2f(
+					bounds.getMinX()+1,
+					nameBounds.getMaxY()+1,
+					bounds.getWidth()-2,
+					(bounds.getHeight() - nameBounds.getHeight() - 2));
+			float y = Float.NaN;
+			switch(g.getStringAnchor()) {
+			case UPPER_LEFT:
+				y = contentBounds.getMinY();
+				break;
+			case LOWER_LEFT:
+				y = contentBounds.getMinY() + oldFont.getSize();
+				break;
+			case LEFT_BASELINE:
+				y = contentBounds.getMinY() + fm.getMaxAscent();
+				break;
+			default:
+				throw new IllegalStateException();
+			}
+	
+			float boxY = contentBounds.getMinY();
+			str = getModelObject().getEnterAction();
+			if (str!=null && !str.isEmpty()) {
+				str = Locale.getString("ENTER_ACTION", str); //$NON-NLS-1$
+				g.drawString(str,
+						contentBounds.getMinX()+1,
+						y,
+						contentBounds);
+				this.enterActionBox = new Rectangle2f(
+						contentBounds.getMinX(),
+						boxY,
+						contentBounds.getWidth(),
+						fm.getHeight());
+				y += oldFont.getSize() + 2;
+				boxY += oldFont.getSize() + 2;
+			}
+			else {
+				this.enterActionBox = null;
+			}
+			str = getModelObject().getAction();
+			if (str!=null && !str.isEmpty()) {
+				str = Locale.getString("IN_ACTION", str); //$NON-NLS-1$
+				g.drawString(str,
+						contentBounds.getMinX()+1,
+						y,
+						contentBounds);
+				this.insideActionBox = new Rectangle2f(
+						contentBounds.getMinX(),
+						boxY,
+						contentBounds.getWidth(),
+						fm.getHeight());
+				y += oldFont.getSize() + 2;
+				boxY += oldFont.getSize() + 2;
+			}
+			else {
+				this.insideActionBox = null;
+			}
+			str = getModelObject().getExitAction();
+			if (str!=null && !str.isEmpty()) {
+				str = Locale.getString("EXIT_ACTION", str); //$NON-NLS-1$
+				g.drawString(str,
+						contentBounds.getMinX()+1,
+						y,
+						contentBounds);
+				this.exitActionBox = new Rectangle2f(
+						contentBounds.getMinX(),
+						boxY,
+						contentBounds.getWidth(),
+						fm.getHeight());
+			}
+			else {
+				this.exitActionBox = null;
+			}
 		}
-		else {
-			this.nameBox = null;
-		}
-
-		FontMetrics fm = g.getFontMetrics(oldFont);
-		Rectangle2f contentBounds = new Rectangle2f(
-				bounds.getMinX()+1,
-				nameBounds.getMaxY()+1,
-				bounds.getWidth()-2,
-				(bounds.getHeight() - nameBounds.getHeight() - 2));
-		float y = Float.NaN;
-		switch(g.getStringAnchor()) {
-		case UPPER_LEFT:
-			y = contentBounds.getMinY();
-			break;
-		case LOWER_LEFT:
-			y = contentBounds.getMinY() + oldFont.getSize();
-			break;
-		case LEFT_BASELINE:
-			y = contentBounds.getMinY() + fm.getMaxAscent();
-			break;
-		default:
-			throw new IllegalStateException();
-		}
-
-		float boxY = contentBounds.getMinY();
-		str = getModelObject().getEnterAction();
-		if (str!=null && !str.isEmpty()) {
-			str = Locale.getString("ENTER_ACTION", str); //$NON-NLS-1$
-			g.drawString(str,
-					contentBounds.getMinX()+1,
-					y,
-					contentBounds);
-			this.enterActionBox = new Rectangle2f(
-					contentBounds.getMinX(),
-					boxY,
-					contentBounds.getWidth(),
-					fm.getHeight());
-			y += oldFont.getSize() + 2;
-			boxY += oldFont.getSize() + 2;
-		}
-		else {
-			this.enterActionBox = null;
-		}
-		str = getModelObject().getAction();
-		if (str!=null && !str.isEmpty()) {
-			str = Locale.getString("IN_ACTION", str); //$NON-NLS-1$
-			g.drawString(str,
-					contentBounds.getMinX()+1,
-					y,
-					contentBounds);
-			this.insideActionBox = new Rectangle2f(
-					contentBounds.getMinX(),
-					boxY,
-					contentBounds.getWidth(),
-					fm.getHeight());
-			y += oldFont.getSize() + 2;
-			boxY += oldFont.getSize() + 2;
-		}
-		else {
-			this.insideActionBox = null;
-		}
-		str = getModelObject().getExitAction();
-		if (str!=null && !str.isEmpty()) {
-			str = Locale.getString("EXIT_ACTION", str); //$NON-NLS-1$
-			g.drawString(str,
-					contentBounds.getMinX()+1,
-					y,
-					contentBounds);
-			this.exitActionBox = new Rectangle2f(
-					contentBounds.getMinX(),
-					boxY,
-					contentBounds.getWidth(),
-					fm.getHeight());
-		}
-		else {
-			this.exitActionBox = null;
-		}
+		
 		g.endGroup();
 	}
 

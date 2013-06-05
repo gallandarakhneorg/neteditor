@@ -172,15 +172,10 @@ public class TextFigure extends BlockDecorationFigure {
 	 */
 	@Override
 	public void paint(ViewGraphics2D g) {
-		boolean isFramed = isFramed();
-		boolean isFilled = isFilled();
-		String text = getDisplayableText();
-		if (isFramed || isFilled || (text!=null && !text.isEmpty())) {
-			g.setOutlineDrawn(isFramed);
-			g.setInteriorPainted(isFilled);
-			g.setInteriorText(text);
-			g.draw(g.getCurrentViewComponentBounds());
-		}
+		g.setOutlineDrawn(isFramed());
+		g.setInteriorPainted(isFilled());
+		g.setInteriorText(getDisplayableText());
+		g.draw(g.getCurrentViewComponentBounds());
 	}
 
 	/**

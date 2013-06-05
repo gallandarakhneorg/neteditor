@@ -96,6 +96,11 @@ public class DroidViewGraphics2D extends DroidZoomableGraphics2D implements View
 		this.stack.clear();
 		super.reset();
 	}
+	
+	@Override
+	public boolean isShadowDrawing() {
+		return false;
+	}
 
 	@Override
 	public float getShadowTranslationX() {

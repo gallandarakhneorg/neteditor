@@ -69,6 +69,11 @@ public class DelegatedViewGraphics2D<D extends LODGraphics2D> extends DelegatedV
 	}
 	
 	@Override
+	public boolean isShadowDrawing() {
+		return false;
+	}
+	
+	@Override
 	public float getShadowTranslationX() {
 		return ViewComponentConstants.DEFAULT_SHADOW_PROJECTION_DISTANCE_X;
 	}

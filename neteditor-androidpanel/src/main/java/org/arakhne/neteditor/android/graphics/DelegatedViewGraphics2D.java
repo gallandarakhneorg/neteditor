@@ -52,6 +52,11 @@ public class DelegatedViewGraphics2D extends DelegatedVectorGraphics2D<DroidView
 	public DelegatedViewGraphics2D(DroidViewGraphics2D context) {
 		super(context);
 	}
+	
+	@Override
+	public boolean isShadowDrawing() {
+		return this.delegate.isShadowDrawing();
+	}
 
 	@Override
 	public float logical2pixel_size(float l) {

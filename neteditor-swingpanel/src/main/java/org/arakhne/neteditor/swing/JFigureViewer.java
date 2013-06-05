@@ -757,9 +757,6 @@ implements ViewComponentContainer<Figure, G> {
 		VectorToolkit.prepareDrawing(g);
 
 		if (isShadowDrawn() && g.getLOD().compareTo(Graphics2DLOD.NORMAL_LEVEL_OF_DETAIL)>=0) {
-			//Color oldOutlineColor = g.getOutlineColor();
-			//Color oldFillColor = g.getFillColor();
-
 			Iterator<Figure> iterator = this.figures.descendingIterator();
 			Figure figure;
 			ViewGraphics2D sg = new ShadowViewGraphics2D(g);
@@ -775,11 +772,9 @@ implements ViewComponentContainer<Figure, G> {
 				figure.paint(sg);
 				sg.popRenderingContext();
 			}
-
-			//g.setOutlineColor(oldOutlineColor);
-			//g.setFillColor(oldFillColor);
 		}
-
+		
+		g.reset();
 
 		Iterator<Figure> iterator = this.figures.descendingIterator();
 		Figure figure;

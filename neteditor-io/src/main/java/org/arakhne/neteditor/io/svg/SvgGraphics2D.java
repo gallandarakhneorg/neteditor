@@ -182,6 +182,11 @@ public class SvgGraphics2D extends AbstractVectorialExporterGraphics2D {
 	}
 	
 	@Override
+	public boolean isShadowDrawing() {
+		return false;
+	}
+	
+	@Override
 	public float getShadowTranslationX() {
 		return ViewComponentConstants.DEFAULT_SHADOW_PROJECTION_DISTANCE_X*.5f;
 	}

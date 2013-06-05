@@ -80,6 +80,11 @@ public class ShadowViewGraphics2D implements ViewGraphics2D {
 	}
 	
 	@Override
+	public final boolean isShadowDrawing() {
+		return true;
+	}
+	
+	@Override
 	public float getShadowTranslationX() {
 		return 0;
 	}
