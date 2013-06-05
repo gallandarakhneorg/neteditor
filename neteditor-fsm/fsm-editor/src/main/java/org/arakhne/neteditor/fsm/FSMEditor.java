@@ -146,6 +146,7 @@ import org.arakhne.neteditor.io.VectorialPictureFileType;
 import org.arakhne.neteditor.io.bitmap.ImageIOBitmapExporter;
 import org.arakhne.neteditor.io.bitmap.ImageType;
 import org.arakhne.neteditor.io.eps.EpsExporter;
+import org.arakhne.neteditor.io.eps.EpsTeXExporter;
 import org.arakhne.neteditor.io.gml.GMLExporter;
 import org.arakhne.neteditor.io.graphml.GraphMLExporter;
 import org.arakhne.neteditor.io.graphviz.DotExporter;
@@ -995,7 +996,8 @@ public class FSMEditor extends JFrame {
 							vExporter = new PdfTeXExporter();
 							break;
 						case EPS_TEX:
-							throw new UnsupportedOperationException();
+							vExporter = new EpsTeXExporter();
+							break;
 						default:
 							throw new IllegalStateException();
 						}

@@ -24,11 +24,13 @@ import java.io.File;
 
 import org.arakhne.afc.io.filefilter.DOTFileFilter;
 import org.arakhne.afc.io.filefilter.EPSFileFilter;
+import org.arakhne.afc.io.filefilter.EPSTeXFileFilter;
 import org.arakhne.afc.io.filefilter.FileFilter;
 import org.arakhne.afc.io.filefilter.GMLFileFilter;
 import org.arakhne.afc.io.filefilter.GXLFileFilter;
 import org.arakhne.afc.io.filefilter.GraphMLFileFilter;
 import org.arakhne.afc.io.filefilter.PDFFileFilter;
+import org.arakhne.afc.io.filefilter.PDFTeXFileFilter;
 import org.arakhne.afc.io.filefilter.SVGFileFilter;
 import org.arakhne.vmutil.FileSystem;
 
@@ -55,7 +57,11 @@ public enum VectorialPictureFileType {
 	/** GRAPHML FORMAT */
 	GRAPHML(GraphMLFileFilter.EXTENSION_GRAPHML),
 	/** Graph Modelling Language */
-	GML(GMLFileFilter.EXTENSION);
+	GML(GMLFileFilter.EXTENSION),
+	/** PORTABLE DOCUMENT FORMAT COMBINED WITH TEX MACROS */
+	PDF_TEX(PDFTeXFileFilter.EXTENSION1, PDFTeXFileFilter.EXTENSION2),
+	/** ENCAPSULED POSTSCRIPT COMBINED WITH TEX MACROS */
+	EPS_TEX(EPSTeXFileFilter.EXTENSION1, EPSTeXFileFilter.EXTENSION2);
 
 	private final String[] extensions;
 
@@ -119,6 +125,8 @@ public enum VectorialPictureFileType {
 				new DOTFileFilter(),
 				new GXLFileFilter(),
 				new GraphMLFileFilter(),
+				new PDFTeXFileFilter(),
+				new EPSTeXFileFilter()
 		};
 	}
 
