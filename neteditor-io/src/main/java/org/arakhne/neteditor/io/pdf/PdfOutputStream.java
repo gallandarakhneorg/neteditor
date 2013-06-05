@@ -67,6 +67,18 @@ public class PdfOutputStream extends OutputStream {
 		++this.bytes;
 	}
 	
+	@Override
+	public void write(byte[] b) throws IOException {
+		this.stream.write(b);
+		this.bytes += b.length;
+	}
+	
+	@Override
+	public void write(byte[] b, int off, int len) throws IOException {
+		this.stream.write(b, off, len);
+		this.bytes += len;
+	}
+	
 	/**
 	 * Write a sequence of characters.
 	 * 

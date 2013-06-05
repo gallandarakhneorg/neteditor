@@ -48,6 +48,8 @@ import org.arakhne.neteditor.io.AbstractVectorialExporter;
  */
 public class PdfExporter extends AbstractVectorialExporter<PdfGraphics2D, PdfOutputStream> {
 	
+	private static final char CR = 0x0A;
+	
 	/**
 	 */
 	public PdfExporter() {
@@ -76,6 +78,31 @@ public class PdfExporter extends AbstractVectorialExporter<PdfGraphics2D, PdfOut
 		return new PdfOutputStream(stream);
 	}
 	
+	/** Replies the size of the stream.
+	 * 
+	 * @param stream
+	 * @return the size of the stream.
+	 * @throws IOException
+	 */
+	protected static int size(PdfOutputStream stream) throws IOException {
+		stream.flush();
+		return stream.size();
+	}
+	
+	/** Write the specified bytes in the PDF.
+	 * 
+	 * @param stream
+	 * @param addNewLine indicates if a new line character must be added at the end.
+	 * @param bytes
+	 * @throws IOException
+	 */
+	protected static void writeRaw(PdfOutputStream stream, boolean addNewLine, byte... bytes) throws IOException {
+		stream.write(bytes);
+		if (addNewLine) {
+			stream.write(CR);
+		}
+	}
+	
 	/**
 	 * Write the specified objects as strings in the output stream.
 	 * The passed objects are converted to strings.
@@ -88,7 +115,7 @@ public class PdfExporter extends AbstractVectorialExporter<PdfGraphics2D, PdfOut
 	protected static boolean writeln(PdfOutputStream stream, Object... text) throws IOException {
 		boolean changed = write(stream, text);
 		if (changed) {
-			stream.write("\n"); //$NON-NLS-1$
+			stream.write(CR);
 		}
 		return changed;	
 	}
@@ -173,68 +200,74 @@ public class PdfExporter extends AbstractVectorialExporter<PdfGraphics2D, PdfOut
 
 		Map<Integer,Integer> objectMap = new TreeMap<Integer, Integer>();
 		
+		int idCatalogue = 1;
+		int idOutlines = 2;
+		int idPages = 3;
+		int idMainPage = 4;
+		int idContents = 5;
+		int idResources = 6;
+
 		writeln(stream, "%PDF-1.4"); //$NON-NLS-1$
 		writeln(stream, "%% Creator: Arakhne.org NetEditor ", getClass().getName()); //$NON-NLS-1$
 		writeln(stream, "%% CreationDate: ", new Date()); //$NON-NLS-1$
-		// Object 1: Catalogue
-		objectMap.put(1, stream.size());
-		writePdfObject(1,  stream,
+		// Object 0: Catalogue
+		objectMap.put(idCatalogue, size(stream));
+		writePdfObject(idCatalogue,  stream,
 			"Type", "/Catalog", //$NON-NLS-1$ //$NON-NLS-2$
-			"Outlines", "2 0 R", //$NON-NLS-1$ //$NON-NLS-2$
-			"Pages", "3 0 R" //$NON-NLS-1$ //$NON-NLS-2$
+			"Outlines", idOutlines+" 0 R", //$NON-NLS-1$ //$NON-NLS-2$
+			"Pages", idPages+" 0 R" //$NON-NLS-1$ //$NON-NLS-2$
 		);
-		// Object 2: Outlines
-		objectMap.put(2, stream.size());
-		writePdfObject( 2, stream,
+		// Object 1: Outlines
+		objectMap.put(idOutlines, size(stream));
+		writePdfObject( idOutlines, stream,
 			"Type", "Outlines", //$NON-NLS-1$ //$NON-NLS-2$
 			"Count", "0" //$NON-NLS-1$ //$NON-NLS-2$
 		);
-		// Object 3: Pages
-		objectMap.put(3, stream.size());
-		writePdfObject( 3, stream,
+		// Object 2: Pages
+		objectMap.put(idPages, size(stream));
+		writePdfObject( idPages, stream,
 			"Type", "/Pages", //$NON-NLS-1$ //$NON-NLS-2$
-			"Kids", "[4 0 R]", //$NON-NLS-1$ //$NON-NLS-2$
+			"Kids", "["+idMainPage+" 0 R]", //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 			"Count", "1" //$NON-NLS-1$ //$NON-NLS-2$
 		);
-		// Object 4: the single page
-		objectMap.put(4, stream.size());
-		writePdfObject( 4, stream,
+		// Object 3: the single page
+		objectMap.put(idMainPage, size(stream));
+		writePdfObject( idMainPage, stream,
 			"Type", "/Page", //$NON-NLS-1$ //$NON-NLS-2$
-			"Parent", "3 0 R", //$NON-NLS-1$ //$NON-NLS-2$
+			"Parent", idPages+" 0 R", //$NON-NLS-1$ //$NON-NLS-2$
 			"MediaBox", String.format("[%d %d %d %d]", x1, y1, x2, y2), //$NON-NLS-1$ //$NON-NLS-2$
-			"Contents", "5 0 R", //$NON-NLS-1$ //$NON-NLS-2$
-			"Resources", "6 0 R" //$NON-NLS-1$ //$NON-NLS-2$
+			"Contents", idContents+" 0 R", //$NON-NLS-1$ //$NON-NLS-2$
+			"Resources", idResources+" 0 R" //$NON-NLS-1$ //$NON-NLS-2$
 		);
-		// Object 5: the page content itself
-		objectMap.put(5, stream.size());
-		writeln(stream, "5 0 obj"); //$NON-NLS-1$
+		// Object 4: the page content itself
+		objectMap.put(idContents, size(stream));
+		writeln(stream, idContents+" 0 obj"); //$NON-NLS-1$
 		writePdfDictionary(stream, "Length", generateBytes.length); //$NON-NLS-1$
 		writeln(stream, "stream"); //$NON-NLS-1$
 		
-		stream.write(generateBytes);
+		writeRaw(stream, true, generateBytes);
 		
 		// Footer
-		stream.write("\n"); //$NON-NLS-1$
-		stream.writeln("endstream"); //$NON-NLS-1$
-		stream.writeln("endobj"); //$NON-NLS-1$
+		writeln(stream, "endstream"); //$NON-NLS-1$
+		writeln(stream, "endobj"); //$NON-NLS-1$
 
-		// Object 6: the resources
-		objectMap.put(6, stream.size());
-		stream.writeln("6 0 obj"); //$NON-NLS-1$
-		stream.writeln("<<"); //$NON-NLS-1$
-		stream.writeln(" /ProcSet [/PDF /Text /ImageB /ImageC /ImageI]"); //$NON-NLS-1$
+		// Object 5: the resources
+		objectMap.put(idResources, size(stream));
+		writeln(stream, idResources+" 0 obj"); //$NON-NLS-1$
+		writeln(stream, "<<"); //$NON-NLS-1$
+		writeln(stream, " /ProcSet [/PDF /Text /ImageB /ImageC /ImageI]"); //$NON-NLS-1$
 
-		int objectId = 7;
+		int objectId = idResources+1;
 		Map<Integer,String> differedOutput = new TreeMap<Integer, String>();
 		
 		// Add resources for fonts
 		Map<Font,String> fonts = graphicContext.getFontResources();
 		if (!fonts.isEmpty()) {
-			stream.writeln(" /Font <<"); //$NON-NLS-1$
+			writeln(stream, " /Font <<"); //$NON-NLS-1$
 			for (Entry<Font,String> entry : fonts.entrySet()) {
 				Font font = entry.getKey();
 				String resourceId = entry.getValue();
-				String psName = font.getPSName().replace('.', ',');
+				String psName = font.getPSName().replaceAll("[.-]", ","); //$NON-NLS-1$ //$NON-NLS-2$
 				FontMetrics fm = graphicContext.getFontMetrics(font);
 				Rectangle2f fontBounds = fm.getMaxCharBounds();
 				int fontFlags = 0;
@@ -245,145 +278,178 @@ public class PdfExporter extends AbstractVectorialExporter<PdfGraphics2D, PdfOut
 					fontFlags |= 1<<18;
 				}
 				
-				stream.write("  /"); //$NON-NLS-1$
-				stream.write(resourceId);
-				stream.writeln(" << /Type /Font"); //$NON-NLS-1$
-				stream.writeln(" /Subtype /TrueType"); //$NON-NLS-1$
-				stream.write(" /BaseFont /"); //$NON-NLS-1$
-				stream.writeln(psName);
-				stream.write(" /FontDescriptor "); //$NON-NLS-1$
-				stream.write(Integer.toString(objectId));
-				stream.writeln(" 0 R"); //$NON-NLS-1$
-				stream.writeln(" >>"); //$NON-NLS-1$
+				write(stream, "  /"); //$NON-NLS-1$
+				write(stream, resourceId);
+				writeln(stream, " << /Type /Font"); //$NON-NLS-1$
+				writeln(stream, " /Subtype /TrueType"); //$NON-NLS-1$
+				write(stream, " /BaseFont /"); //$NON-NLS-1$
+				writeln(stream, psName);
+				write(stream, " /FontDescriptor "); //$NON-NLS-1$
+				write(stream, objectId);
+				writeln(stream, " 0 R"); //$NON-NLS-1$
+				writeln(stream, " >>"); //$NON-NLS-1$
 				
-				differedOutput.put(objectId,
-						objectId + " 0 obj\n<<\n" //$NON-NLS-1$
-						+ "/Type /FontDescriptor\n" //$NON-NLS-1$
-						+ "/FontName " //$NON-NLS-1$
-						+ psName
-						+ "\n/Flags " //$NON-NLS-1$
-						+ fontFlags
-						+ "\n/FontBBox [0 0 " //$NON-NLS-1$
-						+ fontBounds.getWidth()
-						+ " " //$NON-NLS-1$
-						+ fontBounds.getHeight()
-						+ "]\n/ItalicAngle " //$NON-NLS-1$
-						+ font.getItalicAngle()
-						+ "\n/Ascent " //$NON-NLS-1$
-						+ fm.getAscent()
-						+ "\n/Descent " //$NON-NLS-1$
-						+ -fm.getDescent()
-						+ "\n/Leading " //$NON-NLS-1$
-						+ fm.getLeading()
-						+ "\n/CapHeight " //$NON-NLS-1$
-						+ fm.getMaxAscent()
-						+ "\n>>\nendobj\n"); //$NON-NLS-1$
+				StringBuilder b = new StringBuilder();
+				b.append(objectId);
+				b.append(" 0 obj"); //$NON-NLS-1$
+				b.append(CR);
+				b.append("<<"); //$NON-NLS-1$
+				b.append(CR);
+				b.append("/Type /FontDescriptor"); //$NON-NLS-1$
+				b.append(CR);
+				b.append("/FontName "); //$NON-NLS-1$
+				b.append(psName);
+				b.append(CR);
+				b.append("/Flags "); //$NON-NLS-1$
+				b.append(fontFlags);
+				b.append(CR);
+				b.append("/FontBBox [0 0 "); //$NON-NLS-1$
+				b.append(fontBounds.getWidth());
+				b.append(" "); //$NON-NLS-1$
+				b.append(fontBounds.getHeight());
+				b.append("]"); //$NON-NLS-1$
+				b.append(CR);
+				b.append("/ItalicAngle "); //$NON-NLS-1$
+				b.append(font.getItalicAngle());
+				b.append(CR);
+				b.append("/Ascent "); //$NON-NLS-1$
+				b.append(fm.getAscent());
+				b.append(CR);
+				b.append("/Descent "); //$NON-NLS-1$
+				b.append(-fm.getDescent());
+				b.append(CR);
+				b.append("/Leading "); //$NON-NLS-1$
+				b.append(fm.getLeading());
+				b.append(CR);
+				b.append("/CapHeight "); //$NON-NLS-1$
+				b.append(fm.getMaxAscent());
+				b.append(CR);
+				b.append(">>"); //$NON-NLS-1$
+				b.append(CR);
+				b.append("endobj"); //$NON-NLS-1$
+				b.append(CR);
+				differedOutput.put(objectId, b.toString());
 				++objectId;
 			}
-			stream.writeln(" >>"); //$NON-NLS-1$
+			writeln(stream, " >>"); //$NON-NLS-1$
 		}
 
 		// Add resources for images
 		Map<String,Image> images = graphicContext.getImageResources();
 		if (!images.isEmpty()) {
-			stream.writeln(" /XObject <<"); //$NON-NLS-1$
+			writeln(stream, " /XObject <<"); //$NON-NLS-1$
 
 			for (Entry<String,Image> entry : images.entrySet()) {
 				// Add image declaration
 				String resourceId = entry.getKey();
-				stream.write("  /"); //$NON-NLS-1$
-				stream.write(resourceId);
-				stream.write(" "); //$NON-NLS-1$
-				stream.write(Integer.toString(objectId));
-				stream.writeln(" 0 R"); //$NON-NLS-1$
+				writeln(stream,
+						"  /",  //$NON-NLS-1$
+						resourceId, " ", //$NON-NLS-1$
+						objectId, " 0 R"); //$NON-NLS-1$
 
 				// Add data of images
 				Image image = entry.getValue();
 				String imageData = PdfUtil.toPdf(image);
 				StringBuilder b = new StringBuilder();
-				b.append(Integer.toString(objectId));
-				b.append(" 0 obj\n"); //$NON-NLS-1$
-				b.append("<<\n"); //$NON-NLS-1$
-				b.append("  /Type /XObject\n"); //$NON-NLS-1$
-				b.append("  /Subtype /Image\n"); //$NON-NLS-1$
+				b.append(objectId);
+				b.append(" 0 obj"); //$NON-NLS-1$
+				b.append(CR);
+				b.append("<<"); //$NON-NLS-1$
+				b.append(CR);
+				b.append("  /Type /XObject"); //$NON-NLS-1$
+				b.append(CR);
+				b.append("  /Subtype /Image"); //$NON-NLS-1$
+				b.append(CR);
 				b.append("  /Width "); //$NON-NLS-1$
 				b.append(image.getWidth(null));
-				b.append("\n  /Height "); //$NON-NLS-1$
+				b.append(CR);
+				b.append("  /Height "); //$NON-NLS-1$
 				b.append(image.getHeight(null));
-				b.append("\n  /ColorSpace /DeviceRGB\n"); //$NON-NLS-1$
-				b.append("  /BitsPerComponent 8\n"); //$NON-NLS-1$
-				b.append("  /Interpolate true\n"); //$NON-NLS-1$
+				b.append(CR);
+				b.append("  /ColorSpace /DeviceRGB"); //$NON-NLS-1$
+				b.append(CR);
+				b.append("  /BitsPerComponent 8"); //$NON-NLS-1$
+				b.append(CR);
+				b.append("  /Interpolate true"); //$NON-NLS-1$
+				b.append(CR);
 				b.append("  /Length "); //$NON-NLS-1$
 				b.append(imageData.length());
-				b.append("\n  /Filter /ASCIIHexDecode\n"); //$NON-NLS-1$
-				b.append(">>\n"); //$NON-NLS-1$
-				b.append("stream\n"); //$NON-NLS-1$
+				b.append(CR);
+				b.append("  /Filter /ASCIIHexDecode"); //$NON-NLS-1$
+				b.append(CR);
+				b.append(">>"); //$NON-NLS-1$
+				b.append(CR);
+				b.append("stream"); //$NON-NLS-1$
+				b.append(CR);
 				b.append(imageData);
-				b.append("\nendstream\n"); //$NON-NLS-1$
-				b.append("endobj\n"); //$NON-NLS-1$
+				b.append(CR);
+				b.append("endstream"); //$NON-NLS-1$
+				b.append(CR);
+				b.append("endobj"); //$NON-NLS-1$
+				b.append(CR);
 				differedOutput.put(objectId, b.toString());
 				++objectId;
 			}
-			stream.writeln(" >>"); //$NON-NLS-1$
+			writeln(stream, " >>"); //$NON-NLS-1$
 		}
 
 		// Add resources for transparency levels
 		Map<Double,String> transparencies = graphicContext.getTransparencyResources();
 		if (!transparencies.isEmpty()) {
-			stream.writeln(" /ExtGState <<"); //$NON-NLS-1$
+			writeln(stream, " /ExtGState <<"); //$NON-NLS-1$
 			for (Entry<Double,String> entry : transparencies.entrySet()) {
 				double alpha = entry.getKey();
 				String resourceId = entry.getValue();
-				stream.write("  /"); //$NON-NLS-1$
-				stream.write(resourceId);
-				stream.write(" << /Type /ExtGState"); //$NON-NLS-1$
-				stream.write(" /ca "); //$NON-NLS-1$
-				stream.write(Double.toString(alpha));
-				stream.write(" /CA "); //$NON-NLS-1$
-				stream.write(Double.toString(alpha));
-				stream.writeln(" >>"); //$NON-NLS-1$
+				writeln(stream,
+						"  /", //$NON-NLS-1$
+						resourceId, " << /Type /ExtGState", //$NON-NLS-1$
+						" /ca ", //$NON-NLS-1$
+						alpha,
+						" /CA ", //$NON-NLS-1$
+						alpha, " >>"); //$NON-NLS-1$
 			}
-			stream.writeln(" >>"); //$NON-NLS-1$
+			writeln(stream, " >>"); //$NON-NLS-1$
 		}
 
-		stream.writeln(">>"); //$NON-NLS-1$
-		stream.writeln("endobj"); //$NON-NLS-1$
+		writeln(stream, ">>"); //$NON-NLS-1$
+		writeln(stream, "endobj"); //$NON-NLS-1$
 		
 		// Write the differed objects to output
 		for(Entry<Integer,String> entry : differedOutput.entrySet()) {
-			objectMap.put(entry.getKey(), stream.size());
-			stream.write(entry.getValue());
+			objectMap.put(entry.getKey(), size(stream));
+			write(stream, entry.getValue());
 		}
 
-		int nObjects = objectMap.size();
-		
-		stream.write("\n"); //$NON-NLS-1$
-		int xrefPos = stream.size();
-		stream.writeln("xref"); //$NON-NLS-1$
-		stream.write("0 "); //$NON-NLS-1$
-		stream.writeln(Integer.toString(nObjects));
+		// Write the XREFs
+		int nObjects = objectMap.size();		
+		int xrefPos = size(stream);
+		writeln(stream, "xref"); //$NON-NLS-1$
 
-		// lines of xref entries must must be exactly 20 bytes long
+		// lines of xref entries must be exactly 20 bytes long
 		// (including line break) and thus end with <SPACE NEWLINE>
-		stream.write(String.format("%010d %05d", 0, 65535)); //$NON-NLS-1$
-		stream.writeln(" f"); //$NON-NLS-1$
+
+		writeln(stream, "0 ", nObjects+1); //$NON-NLS-1$
+
+		writeln(stream, String.format("%010d %05d f ", 0, 0)); //$NON-NLS-1$
+
 		for(int i=1; i<=nObjects; ++i) {
 			Integer pos = objectMap.get(i);
 			if (pos==null) throw new IOException("Position for PDF object not found: "+i); //$NON-NLS-1$
-			stream.write(String.format("%010d %05d", pos.intValue(), 0)); //$NON-NLS-1$
-			stream.writeln(" n"); //$NON-NLS-1$
+			writeln(stream, String.format("%010d %05d n ", pos.intValue(), 0)); //$NON-NLS-1$
 		}
 
-		stream.writeln("\ntrailer"); //$NON-NLS-1$
-		stream.writeln("<<"); //$NON-NLS-1$
-		stream.write("/Size "); //$NON-NLS-1$
-		stream.writeln(Integer.toString(nObjects));
-		stream.writeln("/Root 1 0 R"); //$NON-NLS-1$
-		stream.writeln(">>"); //$NON-NLS-1$
-		stream.writeln("startxref"); //$NON-NLS-1$
-		stream.writeln(Integer.toString(xrefPos));
+		writeln(stream, "trailer"); //$NON-NLS-1$
+		writeln(stream, "<<"); //$NON-NLS-1$
+		writeln(stream, "/Size ", nObjects); //$NON-NLS-1$
+		writeln(stream, "/Root ", idCatalogue, " 0 R"); //$NON-NLS-1$ //$NON-NLS-2$
+		/*writeln(stream, "/ID [ <", fileIdentifier, ">"); //$NON-NLS-1$ $NON-NLS-2$
+		writeln(stream, "      <", fileIdentifier, ">"); //$NON-NLS-1$ $NON-NLS-2$
+		writeln(stream, "      ]"); //$NON-NLS-1$*/
+		writeln(stream, ">>"); //$NON-NLS-1$
+		writeln(stream, "startxref"); //$NON-NLS-1$
+		writeln(stream, xrefPos);
 
-		stream.writeln("%%EOF"); //$NON-NLS-1$
+		writeln(stream, "%%EOF"); //$NON-NLS-1$
 	}
 
 }
