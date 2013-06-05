@@ -302,7 +302,21 @@ public class PdfGraphics2D extends AbstractVectorialExporterGraphics2D {
 		return Collections.unmodifiableMap(this.imageResources);
 	}
 
-	private void setDrawingAttributes(DrawingMode mode, Color outlineColor, Color fillingColor) {
+	/** Change the attributes for drawing the texts.
+	 * 
+	 * @param color is the text color
+	 */
+	protected void setTextAttributes(Color color) {
+		setDrawingAttributes(DrawingMode.BOTH, color, color);
+	}
+
+	/** Change the attributes for drawing the shapes (including texts).
+	 * 
+	 * @param mode is the mode of drawing.
+	 * @param outlineColor is the color of the outline.
+	 * @param fillingColor is the color of the interior.
+	 */
+	protected void setDrawingAttributes(DrawingMode mode, Color outlineColor, Color fillingColor) {
 		assert(outlineColor!=null);
 		assert(fillingColor!=null);
 		if (mode.isInteriorPainted()) {
@@ -452,7 +466,7 @@ public class PdfGraphics2D extends AbstractVectorialExporterGraphics2D {
 
 		Color c = getOutlineColor();
 		if (c==null) c = ViewComponentConstants.DEFAULT_LINE_COLOR;
-		setDrawingAttributes(DrawingMode.BOTH, c, c);
+		setTextAttributes(c);
 		drawPdfString(x, y, str);
 
 		if (clip!=null) {
@@ -462,7 +476,13 @@ public class PdfGraphics2D extends AbstractVectorialExporterGraphics2D {
 		postDrawing();
 	}
 
-	private void drawPdfString(float x, float y, String str) {
+	/** Primtive operation that permits to draw a string.
+	 * 
+	 * @param x is the position of the text
+	 * @param y is the position of the text
+	 * @param str is the string to draw.
+	 */
+	protected void drawPdfString(float x, float y, String str) {
 		float fontSize = getFont().getSize();
 
 		// Start text and save current graphics state
@@ -603,7 +623,7 @@ public class PdfGraphics2D extends AbstractVectorialExporterGraphics2D {
 					TextAlignment.CENTER_ALIGN, TextAlignment.CENTER_ALIGN);
 			Color c = getOutlineColor();
 			if (c==null) c = ViewComponentConstants.DEFAULT_LINE_COLOR;
-			setDrawingAttributes(DrawingMode.BOTH, c, c);
+			setTextAttributes(c);
 			drawPdfString(p.getX(), p.getY(), text);
 		}
 

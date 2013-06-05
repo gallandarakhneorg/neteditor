@@ -77,6 +77,14 @@ public class EpsGraphics2D extends AbstractVectorialExporterGraphics2D {
 		this.documentBounds = documentBounds;
 	}
 	
+	/** Replies the bounds of the document.
+	 * 
+	 * @return the bounds of the document.
+	 */
+	protected Rectangle2f getDocumentBounds() {
+		return this.documentBounds;
+	}
+	
 	@Override
 	public void dispose() {
 		super.dispose();
@@ -152,7 +160,8 @@ public class EpsGraphics2D extends AbstractVectorialExporterGraphics2D {
 		this.globalBuffer.append(o);
 		return this.globalBuffer;
 	}
-
+	
+	@SuppressWarnings("synthetic-access")
 	private void gsave() {
 		gwriteln("gsave"); //$NON-NLS-1$
 		this.context.push(new EpsContext(this.context.peek()));
@@ -285,7 +294,9 @@ public class EpsGraphics2D extends AbstractVectorialExporterGraphics2D {
 			clip(clip);
 		}
 		
-		setDrawingAttributes(true, true, false);
+		Color c = getOutlineColor();
+		if (c==null) c = ViewComponentConstants.DEFAULT_LINE_COLOR;
+		setTextAttributes(c);
 		drawEpsString(context, x, y, str);
 		
 		grestore();
@@ -293,7 +304,14 @@ public class EpsGraphics2D extends AbstractVectorialExporterGraphics2D {
 		postDrawing();
 	}
 	
-	private void drawEpsString(EpsContext context, float x, float y, String str) {
+	/** Draw a text in EPS.
+	 * 
+	 * @param context is the EPS context.
+	 * @param x is the position of the text.
+	 * @param y is the position of the text.
+	 * @param str is the text to draw.
+	 */
+	protected void drawEpsString(EpsContext context, float x, float y, String str) {
 		Font font = getFont();
 		if ((font==null && context.font!=null)
 			||(font!=null && !font.equals(context.font))) {
@@ -335,15 +353,21 @@ public class EpsGraphics2D extends AbstractVectorialExporterGraphics2D {
 		gwriteln("newpath"); //$NON-NLS-1$
 		gwriteln(epsPath);
 
+		Color fillingColor = getFillColor();
+		if (fillingColor==null) fillingColor = ViewComponentConstants.DEFAULT_FILL_COLOR;
+
+		Color lineColor = getOutlineColor();
+		if (lineColor==null) lineColor = ViewComponentConstants.DEFAULT_LINE_COLOR;
+
 		if (isInteriorPainted()) {
 			gsave();
-			setDrawingAttributes(false, true, false);
+			setDrawingAttributes(DrawingMode.INTERIOR, lineColor, fillingColor);
 			gwriteln("fill"); //$NON-NLS-1$
 			grestore();
 		}
 		if (isOutlineDrawn()) {
 			gsave();
-			setDrawingAttributes(true, false, false);
+			setDrawingAttributes(DrawingMode.SHAPE, lineColor, fillingColor);
 			gwriteln("stroke"); //$NON-NLS-1$
 			grestore();
 		}
@@ -358,7 +382,9 @@ public class EpsGraphics2D extends AbstractVectorialExporterGraphics2D {
 					text,
 					figureBounds, 
 					TextAlignment.CENTER_ALIGN, TextAlignment.CENTER_ALIGN);
-			setDrawingAttributes(true, false, false);
+			Color c = getOutlineColor();
+			if (c==null) c = ViewComponentConstants.DEFAULT_LINE_COLOR;
+			setTextAttributes(c);
 			drawEpsString(this.context.peek(), p.getX(), p.getY(), text);
 		}
 		
@@ -418,6 +444,7 @@ public class EpsGraphics2D extends AbstractVectorialExporterGraphics2D {
 		gclip(getClip());
 	}
 
+	@SuppressWarnings("synthetic-access")
 	@Override
 	public void prolog() throws IOException {
 		this.globalBuffer.setLength(0);
@@ -469,25 +496,31 @@ public class EpsGraphics2D extends AbstractVectorialExporterGraphics2D {
 	public String getGeneratedString() {
 		return this.globalBuffer.toString();
 	}
+	
+	/** Set the attributes for the text, just before drawing this text.
+	 * 
+	 * @param color is the color of the text.
+	 */
+	protected void setTextAttributes(Color color) {
+		setDrawingAttributes(DrawingMode.BOTH, color, color);
+	}
 
-	private void setDrawingAttributes(boolean enableOutline, boolean enableFilling,
-			boolean invertFillingOutlineColors) {
+	/** Set the attributes for drawing a shape.
+	 * 
+	 * @param mode is the mode of drawing.
+	 * @param outlineColor is the color of the outline.
+	 * @param fillingColor is the color of the interior.
+	 */
+	protected void setDrawingAttributes(DrawingMode mode, Color outlineColor, Color fillingColor) {
 		EpsContext context = this.context.peek();
 
-		if (isInteriorPainted() && enableFilling) {
-			Color color = invertFillingOutlineColors ? getOutlineColor() : getFillColor();
-			if (color==null) {
-				color = invertFillingOutlineColors ?
-						ViewComponentConstants.DEFAULT_LINE_COLOR :
-							ViewComponentConstants.DEFAULT_FILL_COLOR;
-			}
+		if (mode.isInteriorPainted()) {
+			if (!fillingColor.equals(context.color)) {
+				context.color = fillingColor;
 
-			if (!color.equals(context.color)) {
-				context.color = color;
-
-				double r = color.getRed() / 255.;
-				double g = color.getGreen() / 255.;
-				double b = color.getBlue() / 255.;
+				double r = fillingColor.getRed() / 255.;
+				double g = fillingColor.getGreen() / 255.;
+				double b = fillingColor.getBlue() / 255.;
 
 				gwrite(Double.toString(r));
 				gwrite(" "); //$NON-NLS-1$
@@ -498,20 +531,13 @@ public class EpsGraphics2D extends AbstractVectorialExporterGraphics2D {
 			}
 		}
 
-		if (isOutlineDrawn() && enableOutline) {
-			Color color = invertFillingOutlineColors ? getFillColor() : getOutlineColor();
-			if (color==null) {
-				color = invertFillingOutlineColors ?
-						ViewComponentConstants.DEFAULT_FILL_COLOR :
-							ViewComponentConstants.DEFAULT_LINE_COLOR;
-			}
+		if (mode.isOutlineDrawn()) {
+			if (!outlineColor.equals(context.color)) {
+				context.color = outlineColor;
 
-			if (!color.equals(context.color)) {
-				context.color = color;
-
-				double r = color.getRed() / 255.;
-				double g = color.getGreen() / 255.;
-				double b = color.getBlue() / 255.;
+				double r = outlineColor.getRed() / 255.;
+				double g = outlineColor.getGreen() / 255.;
+				double b = outlineColor.getBlue() / 255.;
 
 				gwrite(Double.toString(r));
 				gwrite(" "); //$NON-NLS-1$
@@ -634,30 +660,54 @@ public class EpsGraphics2D extends AbstractVectorialExporterGraphics2D {
 		return path.toString();
 	}
 
-	/**
+	/** Define a context in the EPS generation.
+	 * 
 	 * @author $Author: galland$
 	 * @version $FullVersion$
 	 * @mavengroupid $GroupId$
 	 * @mavenartifactid $ArtifactId$
 	 * @since 15.0
 	 */
-	private static class EpsContext {
+	protected static class EpsContext {
 
+		/** Current clipping area.
+		 */
 		public Shape2f clip = null;
+		/** Current color.
+		 */
 		public Color color = null;
+		/** Current line width.
+		 */
 		public float lineWidth = Float.NaN;
+		/** Current miter limit.
+		 */
 		public float miterLimit = Float.NaN;
+		/** Current end cap for lines.
+		 */
 		public EpsEndCaps endCap = null;
+		/** Current line join.
+		 */
 		public EpsLineJoin lineJoin = null;
+		/** Current offset for the dashes of the lines.
+		 */
 		public float dashOffset = Float.NaN;
+		/** Current dash pattern the lines.
+		 */
 		public float[] dashes = null;
+		/** Current font.
+		 */
 		public Font font = null;
 
-		public EpsContext() {
+		/**
+		 */
+		private EpsContext() {
 			//
 		}
 
-		public EpsContext(EpsContext parent) {
+		/**
+		 * @param parent is the parent context.
+		 */
+		private EpsContext(EpsContext parent) {
 			if (parent!=null) {
 				this.clip = parent.clip;
 				this.color = parent.color;
@@ -672,5 +722,63 @@ public class EpsGraphics2D extends AbstractVectorialExporterGraphics2D {
 		}
 
 	}
+
+	/** Eps drawing mode.
+	 *  
+	 * @author $Author: galland$
+	 * @version $FullVersion$
+	 * @mavengroupid $GroupId$
+	 * @mavenartifactid $ArtifactId$
+	 */
+	public static enum DrawingMode {
+		/** Shape is drawn.
+		 */
+		SHAPE,
+		/** Interior is filled.
+		 */
+		INTERIOR,
+		/** Shape is drawn, and interior is filled.
+		 */
+		BOTH;
+
+		/** Replies if the interior is painted.
+		 * 
+		 * @return <code>true</code> if the interior is painted,
+		 * <code>false</code> otherwise.
+		 */
+		public boolean isInteriorPainted() {
+			return this==BOTH || this==INTERIOR;
+		}
+
+		/** Replies if the outline is drawn.
+		 * 
+		 * @return <code>true</code> if the outline is drawn,
+		 * <code>false</code> otherwise.
+		 */
+		public boolean isOutlineDrawn() {
+			return this==BOTH || this==SHAPE;
+		}
+
+		/** Compute the drawing mode according to the flag of enabling
+		 * of the outline and the interior.
+		 * 
+		 * @param enableOutline
+		 * @param enableFilling
+		 * @return the drawing mode, or none if nothing should be drawn.
+		 */
+		public static DrawingMode computeDrawOp(boolean enableOutline, boolean enableFilling) {
+			if (enableFilling && enableOutline) {
+				return BOTH;
+			}
+			if (enableFilling) {
+				return INTERIOR;
+			}
+			if (enableOutline) {
+				return SHAPE;
+			}
+			return null;
+		}
+
+	} // class DrawingMode
 
 }

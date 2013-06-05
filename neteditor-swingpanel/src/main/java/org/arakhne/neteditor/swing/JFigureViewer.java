@@ -774,8 +774,6 @@ implements ViewComponentContainer<Figure, G> {
 			}
 		}
 		
-		g.reset();
-
 		Iterator<Figure> iterator = this.figures.descendingIterator();
 		Figure figure;
 		while (iterator.hasNext()) {
