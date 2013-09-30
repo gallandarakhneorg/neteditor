@@ -89,7 +89,7 @@ public class EpsGraphics2D extends AbstractVectorialExporterGraphics2D {
 	public void dispose() {
 		super.dispose();
 	}
-	
+		
 	@Override
 	public void reset() {
 		super.reset();

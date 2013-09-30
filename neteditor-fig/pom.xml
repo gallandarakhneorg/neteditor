@@ -5,7 +5,6 @@
 		<artifactId>neteditor</artifactId>
 		<groupId>org.arakhne.neteditor</groupId>
 		<version>17.0-SNAPSHOT</version>
-		<relativePath>..</relativePath>
 	</parent>
 
 	<artifactId>neteditor-fig</artifactId>
@@ -14,19 +13,11 @@
 	<dependencies>
 		<dependency>
 			<groupId>org.arakhne.afc.ui</groupId>
-			<artifactId>ui-vector</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.arakhne.afc</groupId>
-			<artifactId>util</artifactId>
+			<artifactId>vector</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>org.arakhne.neteditor</groupId>
 			<artifactId>neteditor-formalism</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.arakhne.afc</groupId>
-			<artifactId>arakhneVmutils</artifactId>
 		</dependency>
 	</dependencies>
 </project>

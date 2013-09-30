@@ -2,7 +2,7 @@
  * $Id$
  * 
  * Copyright (C) 2002 Stephane GALLAND, Madhi HANNOUN, Marc BAUMGARTNER.
- * Copyright (C) 2012 Stephane GALLAND.
+ * Copyright (C) 2012-13 Stephane GALLAND.
  * 
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -35,6 +35,7 @@ import java.util.UUID;
 
 import org.arakhne.afc.progress.Progression;
 import org.arakhne.afc.progress.ProgressionUtil;
+import org.arakhne.afc.vmutil.Resources;
 import org.arakhne.neteditor.fig.figure.Figure;
 import org.arakhne.neteditor.fig.figure.coercion.CoercedFigure;
 import org.arakhne.neteditor.fig.subfigure.SubFigure;
@@ -45,7 +46,6 @@ import org.arakhne.neteditor.formalism.Edge;
 import org.arakhne.neteditor.formalism.Graph;
 import org.arakhne.neteditor.formalism.ModelObject;
 import org.arakhne.neteditor.io.xml.AbstractXMLWriter;
-import org.arakhne.vmutil.Resources;
 import org.w3c.dom.Element;
 
 /** This class permits to export the

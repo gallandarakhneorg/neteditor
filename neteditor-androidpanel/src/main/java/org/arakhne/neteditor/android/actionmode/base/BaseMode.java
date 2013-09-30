@@ -306,7 +306,7 @@ public class BaseMode extends ActionMode<Figure,DroidViewGraphics2D,Color> {
 				Rectangle2f selectionBox = bounds.clone();
 				g.logical2pixel(selectionBox);
 				paintSelectionBox(
-						g.getCanvas(),
+						g.getNativeGraphics2D(),
 						selectionBox,
 						ActionModeManager.SELECTION_FRAME_SIZE,
 						getHatchPaint(),
@@ -316,7 +316,7 @@ public class BaseMode extends ActionMode<Figure,DroidViewGraphics2D,Color> {
 		}
 		else {
 			LinearFeature linearFeature;
-			Canvas canvas = g.getCanvas();
+			Canvas canvas = g.getNativeGraphics2D();
 			Paint foreground = getForegroundPaint();
 			Paint background = getBackgroundPaint();
 			float dfs = ActionModeManager.SELECTION_FRAME_SIZE/2f;

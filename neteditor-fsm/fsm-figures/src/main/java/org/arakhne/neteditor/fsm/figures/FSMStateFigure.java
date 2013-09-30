@@ -1,7 +1,7 @@
 /* 
  * $Id$
  * 
- * Copyright (C) 2012 Stephane GALLAND.
+ * Copyright (C) 2012-13 Stephane GALLAND.
  * 
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -33,12 +33,12 @@ import org.arakhne.afc.ui.vector.Font;
 import org.arakhne.afc.ui.vector.FontMetrics;
 import org.arakhne.afc.ui.vector.FontStyle;
 import org.arakhne.afc.ui.vector.VectorToolkit;
+import org.arakhne.afc.vmutil.locale.Locale;
 import org.arakhne.neteditor.fig.figure.node.RoundRectangleNodeFigure;
 import org.arakhne.neteditor.fig.graphics.ViewGraphics2D;
 import org.arakhne.neteditor.formalism.ModelObjectEvent;
 import org.arakhne.neteditor.fsm.constructs.FSMAnchor;
 import org.arakhne.neteditor.fsm.constructs.FSMState;
-import org.arakhne.vmutil.locale.Locale;
 
 /** Figure for the nodes of the FSM.
  *  

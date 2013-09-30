@@ -32,7 +32,7 @@ import org.arakhne.afc.io.filefilter.GraphMLFileFilter;
 import org.arakhne.afc.io.filefilter.PDFFileFilter;
 import org.arakhne.afc.io.filefilter.PDFTeXFileFilter;
 import org.arakhne.afc.io.filefilter.SVGFileFilter;
-import org.arakhne.vmutil.FileSystem;
+import org.arakhne.afc.vmutil.FileSystem;
 
 /**
  * Type of vectorial pictures supported by this file filter.

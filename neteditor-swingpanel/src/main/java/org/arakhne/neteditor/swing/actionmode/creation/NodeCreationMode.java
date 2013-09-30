@@ -33,13 +33,13 @@ import org.arakhne.afc.ui.awt.AwtUtil;
 import org.arakhne.afc.ui.awt.VirtualScreenGraphics2D;
 import org.arakhne.afc.ui.event.KeyEvent;
 import org.arakhne.afc.ui.swing.undo.AbstractCallableUndoableEdit;
+import org.arakhne.afc.vmutil.locale.Locale;
 import org.arakhne.neteditor.fig.factory.FigureFactory;
 import org.arakhne.neteditor.fig.figure.Figure;
 import org.arakhne.neteditor.fig.view.ModelObjectView;
 import org.arakhne.neteditor.formalism.Graph;
 import org.arakhne.neteditor.formalism.Node;
 import org.arakhne.neteditor.swing.actionmode.ActionModeOwner;
-import org.arakhne.vmutil.locale.Locale;
 
 /** This class implements a Mode that permits to
  * create nodes

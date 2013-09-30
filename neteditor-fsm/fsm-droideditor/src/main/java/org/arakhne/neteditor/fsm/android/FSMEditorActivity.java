@@ -31,12 +31,13 @@ import java.util.UUID;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.arakhne.afc.ui.android.about.AboutDialog;
 import org.arakhne.afc.io.filefilter.FileFilter;
 import org.arakhne.afc.math.generic.Point2D;
+import org.arakhne.afc.ui.android.about.AboutDialog;
 import org.arakhne.afc.ui.undo.UndoListener;
 import org.arakhne.afc.ui.undo.UndoManager;
 import org.arakhne.afc.util.MultiValue;
+import org.arakhne.afc.vmutil.FileSystem;
 import org.arakhne.neteditor.android.actionmode.FigureActionModeManager;
 import org.arakhne.neteditor.android.actionmode.creation.BitmapDecorationCreationMode;
 import org.arakhne.neteditor.android.actionmode.creation.EllipseDecorationCreationMode;
@@ -57,7 +58,6 @@ import org.arakhne.neteditor.fsm.constructs.java.FSMJavaGenerator;
 import org.arakhne.neteditor.fsm.figures.FSMFigureFactory;
 import org.arakhne.neteditor.fsm.figures.FSMStateFigure;
 import org.arakhne.neteditor.fsm.figures.FSMTransitionFigure;
-import org.arakhne.vmutil.FileSystem;
 
 import android.content.ActivityNotFoundException;
 import android.content.Intent;

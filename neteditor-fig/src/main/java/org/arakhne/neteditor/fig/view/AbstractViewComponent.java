@@ -37,6 +37,7 @@ import org.arakhne.afc.math.continous.object2d.Point2f;
 import org.arakhne.afc.math.continous.object2d.Rectangle2f;
 import org.arakhne.afc.math.continous.object2d.Shape2f;
 import org.arakhne.afc.math.generic.Point2D;
+import org.arakhne.afc.references.WeakValueHashMap;
 import org.arakhne.afc.ui.vector.Color;
 import org.arakhne.afc.ui.vector.Colors;
 import org.arakhne.afc.ui.vector.Dimension;
@@ -46,7 +47,6 @@ import org.arakhne.afc.util.ListenerCollection;
 import org.arakhne.neteditor.fig.PropertyNames;
 import org.arakhne.neteditor.fig.figure.coercion.CoercedFigure;
 import org.arakhne.neteditor.formalism.AbstractPropertyTooler;
-import org.arakhne.util.ref.WeakValueHashMap;
 
 /** This class is the base class for all the drawable components. 
  *

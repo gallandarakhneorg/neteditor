@@ -2,7 +2,7 @@
  * $Id$
  * 
  * Copyright (C) 2002 Stephane GALLAND, Madhi HANNOUN, Marc BAUMGARTNER.
- * Copyright (C) 2012 Stephane GALLAND.
+ * Copyright (C) 2012-13 Stephane GALLAND.
  * 
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -30,11 +30,11 @@ import org.arakhne.afc.ui.actionmode.ActionPointerEvent;
 import org.arakhne.afc.ui.awt.VirtualScreenGraphics2D;
 import org.arakhne.afc.ui.swing.undo.AbstractCallableUndoableEdit;
 import org.arakhne.afc.ui.undo.Undoable;
+import org.arakhne.afc.vmutil.locale.Locale;
 import org.arakhne.neteditor.fig.figure.Figure;
 import org.arakhne.neteditor.fig.shadow.LinearFeatureShadowPainter;
 import org.arakhne.neteditor.fig.view.LinearFeature;
 import org.arakhne.neteditor.swing.graphics.TransparentViewGraphics2D;
-import org.arakhne.vmutil.locale.Locale;
 
 /** This class implements a Mode that move the control
  * points of an edge.

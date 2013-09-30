@@ -35,6 +35,7 @@ import java.util.UUID;
 
 import org.arakhne.afc.progress.Progression;
 import org.arakhne.afc.progress.ProgressionUtil;
+import org.arakhne.afc.vmutil.locale.Locale;
 import org.arakhne.neteditor.fig.figure.Figure;
 import org.arakhne.neteditor.fig.figure.ModelObjectFigure;
 import org.arakhne.neteditor.fig.subfigure.SubFigure;
@@ -48,7 +49,6 @@ import org.arakhne.neteditor.formalism.View;
 import org.arakhne.neteditor.formalism.ViewBinding;
 import org.arakhne.neteditor.io.FileCollection;
 import org.arakhne.neteditor.io.VectorialExporter;
-import org.arakhne.vmutil.locale.Locale;
 
 /** This graphic context permits to create a dot/graphviz file.
  * <p>

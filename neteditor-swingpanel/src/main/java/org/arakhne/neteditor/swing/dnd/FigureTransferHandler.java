@@ -53,6 +53,8 @@ import org.arakhne.afc.io.stream.ReaderInputStream;
 import org.arakhne.afc.math.continous.object2d.Rectangle2f;
 import org.arakhne.afc.ui.undo.Undoable;
 import org.arakhne.afc.ui.vector.VectorToolkit;
+import org.arakhne.afc.vmutil.FileSystem;
+import org.arakhne.afc.vmutil.locale.Locale;
 import org.arakhne.neteditor.fig.factory.CollisionAvoider;
 import org.arakhne.neteditor.fig.figure.decoration.BitmapFigure;
 import org.arakhne.neteditor.fig.figure.decoration.PdfFigure;
@@ -65,8 +67,6 @@ import org.arakhne.neteditor.io.gxl.GXLReader;
 import org.arakhne.neteditor.io.ngr.NGRReader;
 import org.arakhne.neteditor.swing.JFigureViewer;
 import org.arakhne.neteditor.swing.selection.JSelectionManager;
-import org.arakhne.vmutil.FileSystem;
-import org.arakhne.vmutil.locale.Locale;
 
 /** Implementation of a transfer handler dedicated to
  * the figures.

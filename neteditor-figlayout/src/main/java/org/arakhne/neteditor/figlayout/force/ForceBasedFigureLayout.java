@@ -1,7 +1,7 @@
 /* 
  * $Id$
  * 
- * Copyright (C) 2012 Stephane GALLAND
+ * Copyright (C) 2012-13 Stephane GALLAND
  * 
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -36,6 +36,7 @@ import org.arakhne.afc.math.generic.Point2D;
 import org.arakhne.afc.math.generic.Vector2D;
 import org.arakhne.afc.ui.undo.Undoable;
 import org.arakhne.afc.ui.vector.Margins;
+import org.arakhne.afc.vmutil.locale.Locale;
 import org.arakhne.neteditor.fig.figure.Figure;
 import org.arakhne.neteditor.fig.figure.coercion.CoercedFigure;
 import org.arakhne.neteditor.fig.figure.decoration.DecorationFigure;
@@ -45,7 +46,6 @@ import org.arakhne.neteditor.figlayout.AbstractFigureLayout;
 import org.arakhne.neteditor.figlayout.FigureLayoutUndoableEdit;
 import org.arakhne.neteditor.formalism.Edge;
 import org.arakhne.neteditor.formalism.Node;
-import org.arakhne.vmutil.locale.Locale;
 
 /** This class provides the implementation of a force-based
  * laying-out algorithm.

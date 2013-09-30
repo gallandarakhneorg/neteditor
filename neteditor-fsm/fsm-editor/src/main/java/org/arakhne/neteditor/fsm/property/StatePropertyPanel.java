@@ -1,7 +1,7 @@
 /* 
  * $Id$
  * 
- * Copyright (C) 2012 Stephane GALLAND.
+ * Copyright (C) 2012-13 Stephane GALLAND.
  * 
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -32,9 +32,9 @@ import javax.swing.undo.UndoableEdit;
 
 import org.arakhne.afc.ui.swing.undo.AbstractCallableUndoableEdit;
 import org.arakhne.afc.ui.undo.UndoManager;
+import org.arakhne.afc.vmutil.locale.Locale;
 import org.arakhne.neteditor.fsm.constructs.FSMState;
 import org.arakhne.neteditor.fsm.figures.FSMStateFigure;
-import org.arakhne.vmutil.locale.Locale;
 
 /** Property panel for FSM states.
  *

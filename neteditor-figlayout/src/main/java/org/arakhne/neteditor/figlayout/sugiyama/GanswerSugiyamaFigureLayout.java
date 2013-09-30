@@ -2,7 +2,7 @@
  * $Id$
  * 
  * Copyright (C) 2002 Stephane GALLAND, Madhi HANNOUN, Marc BAUMGARTNER.
- * Copyright (C) 2012 Stephane GALLAND
+ * Copyright (C) 2012-13 Stephane GALLAND
  * 
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -34,10 +34,12 @@ import java.util.TreeSet;
 import java.util.UUID;
 
 import org.arakhne.afc.math.generic.Point2D;
+import org.arakhne.afc.references.WeakTreeSet;
 import org.arakhne.afc.ui.undo.Undoable;
 import org.arakhne.afc.ui.vector.Dimension;
 import org.arakhne.afc.ui.vector.Margins;
 import org.arakhne.afc.ui.vector.VectorToolkit;
+import org.arakhne.afc.vmutil.locale.Locale;
 import org.arakhne.neteditor.fig.figure.Figure;
 import org.arakhne.neteditor.fig.figure.coercion.CoercedFigure;
 import org.arakhne.neteditor.fig.figure.decoration.DecorationFigure;
@@ -49,8 +51,6 @@ import org.arakhne.neteditor.figlayout.FigureLayoutUndoableEdit;
 import org.arakhne.neteditor.figlayout.basic.BasicGridBagFigureLayout;
 import org.arakhne.neteditor.formalism.Edge;
 import org.arakhne.neteditor.formalism.Node;
-import org.arakhne.util.ref.WeakTreeSet;
-import org.arakhne.vmutil.locale.Locale;
 
 /** This class represents the Ganswer-Sugiyama Layout Algorithm. The
  *  approach was first described by Gansner et al. in

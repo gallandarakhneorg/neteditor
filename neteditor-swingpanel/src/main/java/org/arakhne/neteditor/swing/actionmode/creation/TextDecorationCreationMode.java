@@ -29,10 +29,10 @@ import javax.swing.JOptionPane;
 
 import org.arakhne.afc.ui.actionmode.ActionModeManager;
 import org.arakhne.afc.ui.awt.VirtualScreenGraphics2D;
+import org.arakhne.afc.vmutil.locale.Locale;
 import org.arakhne.neteditor.fig.figure.Figure;
 import org.arakhne.neteditor.fig.figure.decoration.DecorationFigure;
 import org.arakhne.neteditor.fig.figure.decoration.TextFigure;
-import org.arakhne.vmutil.locale.Locale;
 
 /** This class implements a Mode that permits to
  * create texts.

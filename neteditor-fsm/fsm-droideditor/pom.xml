@@ -6,7 +6,6 @@
 		<artifactId>neteditor-fsm</artifactId>
 		<groupId>org.arakhne.neteditor.fsm</groupId>
 		<version>17.0-SNAPSHOT</version>
-		<relativePath>..</relativePath>
 	</parent>
 
 	<artifactId>fsm-droideditor</artifactId>
@@ -24,6 +23,11 @@
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
+			<groupId>org.arakhne.afc.ui</groupId>
+			<artifactId>android</artifactId>
+			<type>apklib</type>
+		</dependency>
+		<dependency>
 			<groupId>org.arakhne.neteditor.fsm</groupId>
 			<artifactId>fsm-constructs</artifactId>
 		</dependency>
@@ -34,11 +38,6 @@
 		<dependency>
 			<groupId>org.arakhne.neteditor</groupId>
 			<artifactId>neteditor-androidpanel</artifactId>
-			<type>apklib</type>
-		</dependency>
-		<dependency>
-			<groupId>org.arakhne.afc.ui</groupId>
-			<artifactId>ui-android</artifactId>
 			<type>apklib</type>
 		</dependency>
 	</dependencies>
@@ -57,7 +56,7 @@
 				</dependency>
 				<dependency>
 					<groupId>org.arakhne.afc.ui</groupId>
-					<artifactId>ui-android</artifactId>
+					<artifactId>android</artifactId>
 					<type>jar</type>
 				</dependency>
 			</dependencies>

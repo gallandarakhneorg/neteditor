@@ -5,7 +5,6 @@
 		<groupId>org.arakhne.neteditor</groupId>
 		<artifactId>neteditor</artifactId>
 		<version>17.0-SNAPSHOT</version>
-		<relativePath>..</relativePath>
 	</parent>
 
 	<artifactId>neteditor-androidpanel</artifactId>
@@ -24,7 +23,12 @@
 		</dependency>
 		<dependency>
 			<groupId>org.arakhne.afc.ui</groupId>
-			<artifactId>ui-vector-android</artifactId>
+			<artifactId>vector-android</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.arakhne.afc.ui</groupId>
+			<artifactId>android</artifactId>
+			<type>apklib</type>
 		</dependency>
 		<dependency>
 			<groupId>org.arakhne.neteditor</groupId>
@@ -38,11 +42,6 @@
 			<groupId>org.arakhne.neteditor</groupId>
 			<artifactId>neteditor-io</artifactId>
 		</dependency>
-		<dependency>
-			<groupId>org.arakhne.afc.ui</groupId>
-			<artifactId>ui-android</artifactId>
-			<type>apklib</type>
-		</dependency>
 	</dependencies>
 
 	<profiles>
@@ -54,7 +53,7 @@
 			<dependencies>
 				<dependency>
 					<groupId>org.arakhne.afc.ui</groupId>
-					<artifactId>ui-android</artifactId>
+					<artifactId>android</artifactId>
 					<type>jar</type>
 				</dependency>
 			</dependencies>

@@ -1,7 +1,7 @@
 /* 
  * $Id$
  * 
- * Copyright (C) 2012 Stephane GALLAND.
+ * Copyright (C) 2012-13 Stephane GALLAND.
  * 
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -36,12 +36,12 @@ import javax.xml.transform.stream.StreamResult;
 
 import org.arakhne.afc.math.continous.object2d.Rectangle2f;
 import org.arakhne.afc.progress.ProgressionUtil;
+import org.arakhne.afc.vmutil.locale.Locale;
 import org.arakhne.neteditor.fig.figure.Figure;
 import org.arakhne.neteditor.fig.view.ViewComponentContainer;
 import org.arakhne.neteditor.formalism.Graph;
 import org.arakhne.neteditor.io.AbstractVectorialExporter;
 import org.arakhne.neteditor.io.VectorialExporterException;
-import org.arakhne.vmutil.locale.Locale;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;

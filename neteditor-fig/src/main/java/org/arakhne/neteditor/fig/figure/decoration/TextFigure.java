@@ -29,8 +29,8 @@ import org.arakhne.afc.math.continous.object2d.Rectangle2f;
 import org.arakhne.afc.ui.vector.Color;
 import org.arakhne.afc.ui.vector.Font;
 import org.arakhne.afc.ui.vector.VectorToolkit;
+import org.arakhne.afc.vmutil.locale.Locale;
 import org.arakhne.neteditor.fig.graphics.ViewGraphics2D;
-import org.arakhne.vmutil.locale.Locale;
 
 /** A decoration figure that is drawing a text.
  *

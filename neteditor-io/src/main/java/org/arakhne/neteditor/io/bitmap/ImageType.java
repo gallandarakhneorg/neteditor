@@ -28,7 +28,7 @@ import org.arakhne.afc.io.filefilter.FileFilter;
 import org.arakhne.afc.io.filefilter.GIFFileFilter;
 import org.arakhne.afc.io.filefilter.JPEGFileFilter;
 import org.arakhne.afc.io.filefilter.PNGFileFilter;
-import org.arakhne.vmutil.FileSystem;
+import org.arakhne.afc.vmutil.FileSystem;
 
 
 /** Types of supported image formats supported

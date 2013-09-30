@@ -47,6 +47,8 @@ import org.arakhne.afc.ui.awt.VirtualScreenGraphics2D;
 import org.arakhne.afc.ui.event.KeyEvent;
 import org.arakhne.afc.ui.swing.undo.AbstractCallableUndoableEdit;
 import org.arakhne.afc.ui.undo.Undoable;
+import org.arakhne.afc.vmutil.Resources;
+import org.arakhne.afc.vmutil.locale.Locale;
 import org.arakhne.neteditor.fig.figure.BlockFigure;
 import org.arakhne.neteditor.fig.figure.Figure;
 import org.arakhne.neteditor.fig.figure.ResizeDirection;
@@ -54,8 +56,6 @@ import org.arakhne.neteditor.fig.selection.SelectionManager;
 import org.arakhne.neteditor.fig.view.LinearFeature;
 import org.arakhne.neteditor.swing.actionmode.ActionModeUtil;
 import org.arakhne.neteditor.swing.actionmode.DifferedMouseEvent;
-import org.arakhne.vmutil.Resources;
-import org.arakhne.vmutil.locale.Locale;
 
 /** This class implements a Mode that interpretes user inputs as
  *  selecting one or more figure. Clicking on a 

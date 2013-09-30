@@ -26,9 +26,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 
-import org.arakhne.vmutil.FileSystem;
-import org.arakhne.vmutil.Resources;
-import org.arakhne.vmutil.URISchemeType;
+import org.arakhne.afc.vmutil.FileSystem;
+import org.arakhne.afc.vmutil.Resources;
+import org.arakhne.afc.vmutil.URISchemeType;
 import org.xml.sax.EntityResolver;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;

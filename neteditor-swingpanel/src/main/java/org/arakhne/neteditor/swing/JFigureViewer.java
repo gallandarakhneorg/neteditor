@@ -97,6 +97,7 @@ import org.arakhne.afc.ui.vector.Dimension;
 import org.arakhne.afc.ui.vector.VectorGraphics2D;
 import org.arakhne.afc.ui.vector.VectorToolkit;
 import org.arakhne.afc.ui.vector.awt.DelegatedVectorGraphics2D;
+import org.arakhne.afc.vmutil.locale.Locale;
 import org.arakhne.neteditor.fig.factory.CollisionAvoider;
 import org.arakhne.neteditor.fig.factory.FigureFactory;
 import org.arakhne.neteditor.fig.figure.BlockFigure;
@@ -138,7 +139,6 @@ import org.arakhne.neteditor.swing.event.FigureEvent;
 import org.arakhne.neteditor.swing.event.FigureListener;
 import org.arakhne.neteditor.swing.graphics.DelegatedViewGraphics2D;
 import org.arakhne.neteditor.swing.selection.JSelectionManager;
-import org.arakhne.vmutil.locale.Locale;
 
 /** This class provides a viewer for manipulating graphical network
  *  The editor (JFigurePanel) is the central class of the graph editing
@@ -2424,7 +2424,7 @@ implements ViewComponentContainer<Figure, G> {
 			if (g instanceof ViewGraphics2D) return (ViewGraphics2D)g;
 			if (g instanceof DelegatedVectorGraphics2D<?>) {
 				DelegatedVectorGraphics2D<? extends LODGraphics2D> dvtg = (DelegatedVectorGraphics2D<?  extends LODGraphics2D>)g;
-				LODGraphics2D g2d = dvtg.getDelegatedGraphics2D();
+				LODGraphics2D g2d = dvtg.getNativeGraphics2D();
 				if (g2d instanceof ViewGraphics2D) return (ViewGraphics2D)g2d;
 				DelegatedViewGraphics2D<LODGraphics2D> vg = new DelegatedViewGraphics2D<LODGraphics2D>(g2d);
 				return vg;

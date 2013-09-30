@@ -112,6 +112,9 @@ import org.arakhne.afc.ui.swing.undo.UndoableAction;
 import org.arakhne.afc.ui.undo.UndoListener;
 import org.arakhne.afc.ui.undo.UndoManager;
 import org.arakhne.afc.ui.undo.Undoable;
+import org.arakhne.afc.vmutil.FileSystem;
+import org.arakhne.afc.vmutil.Resources;
+import org.arakhne.afc.vmutil.locale.Locale;
 import org.arakhne.neteditor.fig.figure.Figure;
 import org.arakhne.neteditor.fig.figure.decoration.PolylineFigure;
 import org.arakhne.neteditor.fig.figure.decoration.TextFigure;
@@ -167,9 +170,6 @@ import org.arakhne.neteditor.swing.actionmode.creation.TextDecorationCreationMod
 import org.arakhne.neteditor.swing.event.FigureEvent;
 import org.arakhne.neteditor.swing.event.FigureListener;
 import org.arakhne.neteditor.swing.selection.JSelectionManager;
-import org.arakhne.vmutil.FileSystem;
-import org.arakhne.vmutil.Resources;
-import org.arakhne.vmutil.locale.Locale;
 
 /** This is a simple Finite State Machine editor based on
  * the NetEditor API

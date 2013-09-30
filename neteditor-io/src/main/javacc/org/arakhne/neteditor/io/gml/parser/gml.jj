@@ -1,7 +1,7 @@
 /* 
  * $Id$
  * 
- * Copyright (C) 2012 Stephane GALLAND.
+ * Copyright (C) 2012-13 Stephane GALLAND.
  * 
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -31,7 +31,7 @@ package org.arakhne.neteditor.io.gml.parser;
 import org.arakhne.neteditor.io.gml.GMLException;
 import org.arakhne.neteditor.io.gml.GMLConstants;
 
-import org.arakhne.util.text.TextUtil;
+import org.arakhne.afc.util.text.TextUtil;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;

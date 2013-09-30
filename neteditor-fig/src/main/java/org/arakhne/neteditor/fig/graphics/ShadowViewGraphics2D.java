@@ -80,6 +80,11 @@ public class ShadowViewGraphics2D implements ViewGraphics2D {
 	}
 	
 	@Override
+	public final Object getNativeGraphics2D() {
+		return this.delegate.getNativeGraphics2D();
+	}
+	
+	@Override
 	public final boolean isShadowDrawing() {
 		return true;
 	}

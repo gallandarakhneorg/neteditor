@@ -25,12 +25,12 @@ import java.util.Collection;
 
 import org.arakhne.afc.ui.undo.Undoable;
 import org.arakhne.afc.ui.vector.Margins;
+import org.arakhne.afc.vmutil.locale.Locale;
 import org.arakhne.neteditor.fig.figure.Figure;
 import org.arakhne.neteditor.fig.figure.coercion.CoercedFigure;
 import org.arakhne.neteditor.fig.figure.edge.EdgeFigure;
 import org.arakhne.neteditor.figlayout.AbstractDirectionBasedFigureLayout;
 import org.arakhne.neteditor.figlayout.FigureLayoutUndoableEdit;
-import org.arakhne.vmutil.locale.Locale;
 
 /** Laying out figures on a grid. This laying out algorithm assumes that
  * all the given nodes are decorations.

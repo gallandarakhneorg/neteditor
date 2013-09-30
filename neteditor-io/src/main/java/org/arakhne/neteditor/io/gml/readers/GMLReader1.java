@@ -30,6 +30,7 @@ import java.util.UUID;
 
 import org.arakhne.afc.progress.Progression;
 import org.arakhne.afc.progress.ProgressionUtil;
+import org.arakhne.afc.vmutil.locale.Locale;
 import org.arakhne.neteditor.fig.figure.Figure;
 import org.arakhne.neteditor.fig.figure.ModelObjectFigure;
 import org.arakhne.neteditor.fig.figure.coercion.CoercedFigure;
@@ -40,7 +41,6 @@ import org.arakhne.neteditor.formalism.Graph;
 import org.arakhne.neteditor.formalism.ModelObject;
 import org.arakhne.neteditor.formalism.Node;
 import org.arakhne.neteditor.io.gml.GMLException;
-import org.arakhne.vmutil.locale.Locale;
 import org.w3c.dom.Element;
 
 /** This class permits to read the

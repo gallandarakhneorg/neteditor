@@ -24,12 +24,12 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
+import org.arakhne.afc.references.WeakArrayList;
 import org.arakhne.neteditor.formalism.AbstractAnchor;
 import org.arakhne.neteditor.formalism.AnchorLocation;
 import org.arakhne.neteditor.formalism.Graph;
 import org.arakhne.neteditor.formalism.ModelObject;
 import org.arakhne.neteditor.formalism.ModelObjectEvent;
-import org.arakhne.util.ref.WeakArrayList;
 
 /** Define an anchor with the standard implementation.
  *  

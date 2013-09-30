@@ -33,11 +33,11 @@ import org.arakhne.afc.io.filefilter.PDFFileFilter;
 import org.arakhne.afc.ui.actionmode.ActionModeManager;
 import org.arakhne.afc.ui.awt.VirtualScreenGraphics2D;
 import org.arakhne.afc.ui.swing.FileFilterSwing;
+import org.arakhne.afc.vmutil.FileSystem;
 import org.arakhne.neteditor.fig.figure.Figure;
 import org.arakhne.neteditor.fig.figure.decoration.BitmapFigure;
 import org.arakhne.neteditor.fig.figure.decoration.DecorationFigure;
 import org.arakhne.neteditor.fig.figure.decoration.PdfFigure;
-import org.arakhne.vmutil.FileSystem;
 
 /** This class implements a Mode that permits to
  * create PDF viewers.

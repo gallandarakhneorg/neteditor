@@ -30,6 +30,7 @@ import org.arakhne.afc.ui.actionmode.ActionMode;
 import org.arakhne.afc.ui.actionmode.ActionPointerEvent;
 import org.arakhne.afc.ui.awt.VirtualScreenGraphics2D;
 import org.arakhne.afc.ui.swing.undo.AbstractCallableUndoableEdit;
+import org.arakhne.afc.vmutil.locale.Locale;
 import org.arakhne.neteditor.fig.figure.Figure;
 import org.arakhne.neteditor.fig.figure.ResizeDirection;
 import org.arakhne.neteditor.fig.selection.SelectionManager;
@@ -37,7 +38,6 @@ import org.arakhne.neteditor.fig.shadow.ComposedShadowPainter;
 import org.arakhne.neteditor.fig.shadow.ShadowPainter;
 import org.arakhne.neteditor.swing.actionmode.ActionModeUtil;
 import org.arakhne.neteditor.swing.graphics.TransparentViewGraphics2D;
-import org.arakhne.vmutil.locale.Locale;
 
 /** This class implements a Mode that resize the node figures
  * and decoration figures.

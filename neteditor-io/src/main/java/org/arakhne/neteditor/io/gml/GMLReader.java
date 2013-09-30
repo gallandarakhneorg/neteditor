@@ -35,6 +35,8 @@ import javax.xml.parsers.DocumentBuilderFactory;
 
 import org.arakhne.afc.progress.ProgressionInputStream;
 import org.arakhne.afc.progress.ProgressionUtil;
+import org.arakhne.afc.vmutil.FileSystem;
+import org.arakhne.afc.vmutil.locale.Locale;
 import org.arakhne.neteditor.fig.view.ViewComponent;
 import org.arakhne.neteditor.formalism.Graph;
 import org.arakhne.neteditor.io.NetEditorContentType;
@@ -42,8 +44,6 @@ import org.arakhne.neteditor.io.gml.parser.GMLParser;
 import org.arakhne.neteditor.io.gml.readers.AbstractGMLReader;
 import org.arakhne.neteditor.io.resource.ResourceRepository;
 import org.arakhne.neteditor.io.xml.AbstractXMLToolReader;
-import org.arakhne.vmutil.FileSystem;
-import org.arakhne.vmutil.locale.Locale;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 

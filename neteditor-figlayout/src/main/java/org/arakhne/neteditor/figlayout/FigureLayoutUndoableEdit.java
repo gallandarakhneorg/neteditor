@@ -25,7 +25,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.arakhne.afc.math.generic.Point2D;
-import org.arakhne.afc.ui.swing.undo.AbstractCallableUndoableEdit;
+import org.arakhne.afc.ui.undo.AbstractUndoable;
 import org.arakhne.afc.ui.undo.Undoable;
 import org.arakhne.neteditor.fig.figure.Figure;
 import org.arakhne.neteditor.fig.figure.edge.EdgeFigure;
@@ -39,7 +39,7 @@ import org.arakhne.neteditor.fig.figure.edge.EdgeFigure;
  * @mavenartifactid $ArtifactId$
  * @since 16.0
  */
-public class FigureLayoutUndoableEdit extends AbstractCallableUndoableEdit {
+public class FigureLayoutUndoableEdit extends AbstractUndoable {
 
 	private static final long serialVersionUID = 5414039762016942941L;
 
@@ -103,14 +103,14 @@ public class FigureLayoutUndoableEdit extends AbstractCallableUndoableEdit {
 	}
 
 	@Override
-	public void doEdit() {
+	protected void doEdit() {
 		for(Change c : this.changes) {
 			c.doEdit();
 		}
 	}
 
 	@Override
-	public void undoEdit() {
+	protected void undoEdit() {
 		for(int i=this.changes.size()-1; i>=0; --i) {
 			this.changes.get(i).undoEdit();
 		}

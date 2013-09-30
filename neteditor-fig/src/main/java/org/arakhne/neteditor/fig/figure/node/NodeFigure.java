@@ -378,7 +378,6 @@ public abstract class NodeFigure<N extends Node<?,? super N,? super A,?>,A exten
 	 * if <code>null</code> the anchor will be set to fit the bounds of
 	 * node figure. 
 	 */
-	@SuppressWarnings("static-method")
 	protected Rectangle2f getPreferredBoundsForAnchor(AnchorFigure<A> figure) {
 		return null;
 	}

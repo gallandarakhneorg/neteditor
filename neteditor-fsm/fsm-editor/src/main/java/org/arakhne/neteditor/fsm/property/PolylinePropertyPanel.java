@@ -1,7 +1,7 @@
 /* 
  * $Id$
  * 
- * Copyright (C) 2012 Stephane GALLAND.
+ * Copyright (C) 2012-13 Stephane GALLAND.
  * 
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -41,9 +41,9 @@ import org.arakhne.afc.ui.swing.JColorSelector.ColorButtonModelListener;
 import org.arakhne.afc.ui.swing.undo.AbstractCallableUndoableEdit;
 import org.arakhne.afc.ui.undo.UndoManager;
 import org.arakhne.afc.ui.vector.VectorToolkit;
+import org.arakhne.afc.vmutil.locale.Locale;
 import org.arakhne.neteditor.fig.figure.decoration.PolylineFigure;
 import org.arakhne.neteditor.fig.view.ViewComponentConstants;
-import org.arakhne.vmutil.locale.Locale;
 
 /** Property panel for polyline and polygon decorations.
  *

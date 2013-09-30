@@ -35,6 +35,7 @@ import java.util.UUID;
 
 import org.arakhne.afc.progress.Progression;
 import org.arakhne.afc.progress.ProgressionUtil;
+import org.arakhne.afc.vmutil.Resources;
 import org.arakhne.neteditor.fig.figure.Figure;
 import org.arakhne.neteditor.fig.figure.coercion.CoercedFigure;
 import org.arakhne.neteditor.fig.subfigure.SubFigure;
@@ -48,7 +49,6 @@ import org.arakhne.neteditor.formalism.View;
 import org.arakhne.neteditor.formalism.ViewBinding;
 import org.arakhne.neteditor.io.svg.SvgExporter;
 import org.arakhne.neteditor.io.xml.AbstractXMLWriter;
-import org.arakhne.vmutil.Resources;
 import org.w3c.dom.Element;
 
 /** This class permits to export the

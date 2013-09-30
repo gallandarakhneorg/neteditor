@@ -23,8 +23,8 @@
 package org.arakhne.neteditor.io ;
 
 import org.arakhne.afc.progress.Progression;
+import org.arakhne.afc.vmutil.locale.Locale;
 import org.arakhne.neteditor.io.resource.ResourceRepository;
-import org.arakhne.vmutil.locale.Locale;
 
 
 /** Abstract implementation of a NetEditorReader.

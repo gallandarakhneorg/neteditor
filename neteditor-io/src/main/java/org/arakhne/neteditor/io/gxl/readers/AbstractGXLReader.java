@@ -30,12 +30,12 @@ import java.util.Map;
 import java.util.TreeMap;
 
 import org.arakhne.afc.progress.Progression;
+import org.arakhne.afc.vmutil.locale.Locale;
 import org.arakhne.neteditor.io.NetEditorContentType;
 import org.arakhne.neteditor.io.gxl.GXLConstants;
 import org.arakhne.neteditor.io.gxl.GXLException;
 import org.arakhne.neteditor.io.gxl.GXLReader;
 import org.arakhne.neteditor.io.xml.AbstractXMLReader;
-import org.arakhne.vmutil.locale.Locale;
 import org.w3c.dom.Element;
 
 /** This abstract class permits to read a

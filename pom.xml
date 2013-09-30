@@ -11,7 +11,9 @@
 	<url>http://www.arakhne.org/neteditor.html</url>
 
 	<properties>
-		<year>2013</year>
+		<afc.version>10.0-SNAPSHOT</afc.version>
+		<neteditor.version>17.0-SNAPSHOT</neteditor.version>
+	    <year>2013</year>
 		<sourceEncoding>UTF-8</sourceEncoding>
 		<copyrighters>NetEditor Developers</copyrighters>
 		<android.sdk.path>/opt/android-sdk</android.sdk.path>
@@ -26,121 +28,120 @@
 	<dependencyManagement>
 		<dependencies>
 			<dependency>
-				<groupId>org.arakhne.afc</groupId>
+				<groupId>org.arakhne.afc.core</groupId>
 				<artifactId>util</artifactId>
-				<version>1.1-SNAPSHOT</version>
+				<version>${afc.version}</version>
 			</dependency>
 			<dependency>
-				<groupId>org.arakhne.afc</groupId>
+				<groupId>org.arakhne.afc.core</groupId>
 				<artifactId>math</artifactId>
-				<version>1.1-SNAPSHOT</version>
+				<version>${afc.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.arakhne.afc.ui</groupId>
-				<artifactId>ui-base</artifactId>
-				<version>1.1-SNAPSHOT</version>
+				<artifactId>base</artifactId>
+				<version>${afc.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.arakhne.afc.ui</groupId>
-				<artifactId>ui-awt</artifactId>
-				<version>1.1-SNAPSHOT</version>
+				<artifactId>awt</artifactId>
+				<version>${afc.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.arakhne.afc.ui</groupId>
-				<artifactId>ui-swing</artifactId>
-				<version>1.1-SNAPSHOT</version>
+				<artifactId>swing</artifactId>
+				<version>${afc.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.arakhne.afc.ui</groupId>
-				<artifactId>ui-vector</artifactId>
-				<version>1.1-SNAPSHOT</version>
+				<artifactId>vector</artifactId>
+				<version>${afc.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.arakhne.afc.ui</groupId>
-				<artifactId>ui-vector-awt</artifactId>
-				<version>1.1-SNAPSHOT</version>
+				<artifactId>vector-awt</artifactId>
+				<version>${afc.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.arakhne.afc.ui</groupId>
-				<artifactId>ui-vector-android</artifactId>
-				<version>1.1-SNAPSHOT</version>
+				<artifactId>vector-android</artifactId>
+				<version>${afc.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.arakhne.afc.ui</groupId>
-				<artifactId>ui-android</artifactId>
-				<version>1.1-SNAPSHOT</version>
+				<artifactId>android</artifactId>
+				<version>${afc.version}</version>
 				<type>apklib</type>
 			</dependency>
 			<dependency>
 				<groupId>org.arakhne.afc.ui</groupId>
-				<artifactId>ui-android</artifactId>
-				<version>1.1-SNAPSHOT</version>
+				<artifactId>android</artifactId>
+				<version>${afc.version}</version>
 				<type>jar</type>
 			</dependency>
-			
+			<dependency>
+				<groupId>org.arakhne.afc.core</groupId>
+				<artifactId>vmutils</artifactId>
+				<version>${afc.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.arakhne.afc.core</groupId>
+				<artifactId>references</artifactId>
+				<version>${afc.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.arakhne.afc.core</groupId>
+				<artifactId>text</artifactId>
+				<version>${afc.version}</version>
+			</dependency>
+						
 			<dependency>
 				<groupId>org.arakhne.neteditor</groupId>
 				<artifactId>neteditor-formalism</artifactId>
-				<version>${project.version}</version>
+				<version>${neteditor.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.arakhne.neteditor</groupId>
 				<artifactId>neteditor-fig</artifactId>
-				<version>${project.version}</version>
+				<version>${neteditor.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.arakhne.neteditor</groupId>
 				<artifactId>neteditor-figlayout</artifactId>
-				<version>${project.version}</version>
+				<version>${neteditor.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.arakhne.neteditor</groupId>
 				<artifactId>neteditor-io</artifactId>
-				<version>${project.version}</version>
+				<version>${neteditor.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.arakhne.neteditor</groupId>
 				<artifactId>neteditor-swingpanel</artifactId>
-				<version>${project.version}</version>
+				<version>${neteditor.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.arakhne.neteditor</groupId>
 				<artifactId>neteditor-androidpanel</artifactId>
-				<version>${project.version}</version>
+				<version>${neteditor.version}</version>
 				<type>apklib</type>
 			</dependency>
 			<dependency>
 				<groupId>org.arakhne.neteditor</groupId>
 				<artifactId>neteditor-androidpanel</artifactId>
-				<version>${project.version}</version>
+				<version>${neteditor.version}</version>
 				<type>jar</type>
 			</dependency>
 			
 			<dependency>
 				<groupId>org.arakhne.neteditor.fsm</groupId>
 				<artifactId>fsm-constructs</artifactId>
-				<version>${project.version}</version>
+				<version>${neteditor.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.arakhne.neteditor.fsm</groupId>
 				<artifactId>fsm-figures</artifactId>
-				<version>${project.version}</version>
-			</dependency>
-
-			<dependency>
-				<groupId>org.arakhne.afc</groupId>
-				<artifactId>arakhneVmutils</artifactId>
-				<version>7.3-SNAPSHOT</version>
-			</dependency>
-			<dependency>
-				<groupId>org.arakhne.afc</groupId>
-				<artifactId>arakhneRefs</artifactId>
-				<version>5.11-SNAPSHOT</version>
-			</dependency>
-			<dependency>
-				<groupId>org.arakhne.afc</groupId>
-				<artifactId>arakhneText</artifactId>
-				<version>4.3-SNAPSHOT</version>
+				<version>${neteditor.version}</version>
 			</dependency>
 
 			<dependency>

@@ -82,6 +82,11 @@ public abstract class AbstractVectorialExporterGraphics2D extends AbstractVector
 	}
 	
 	@Override
+	public final Object getNativeGraphics2D() {
+		return null;
+	}
+
+	@Override
 	public void dispose() {
 		super.dispose();
 		this.stack.clear();

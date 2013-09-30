@@ -1,7 +1,7 @@
 /* 
  * $Id$
  * 
- * Copyright (C) 2012 Stephane GALLAND.
+ * Copyright (C) 2012-13 Stephane GALLAND.
  * 
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -23,8 +23,8 @@ package org.arakhne.neteditor.fsm.property ;
 import javax.swing.undo.UndoableEdit;
 
 import org.arakhne.afc.ui.swing.undo.AbstractCallableUndoableEdit;
+import org.arakhne.afc.vmutil.locale.Locale;
 import org.arakhne.neteditor.fig.figure.Figure;
-import org.arakhne.vmutil.locale.Locale;
 
 /** Undo action for names of figures.
  * 

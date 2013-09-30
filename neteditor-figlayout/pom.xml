@@ -12,10 +12,6 @@
 
 	<dependencies>
 		<dependency>
-			<groupId>org.arakhne.afc.ui</groupId>
-			<artifactId>ui-swing</artifactId>
-		</dependency>
-		<dependency>
 			<groupId>org.arakhne.neteditor</groupId>
 			<artifactId>neteditor-fig</artifactId>
 		</dependency>

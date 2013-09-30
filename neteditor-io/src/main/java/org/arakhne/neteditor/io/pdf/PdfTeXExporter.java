@@ -29,9 +29,9 @@ import java.io.PrintWriter;
 
 import org.arakhne.afc.io.filefilter.PDFFileFilter;
 import org.arakhne.afc.math.continous.object2d.Rectangle2f;
+import org.arakhne.afc.vmutil.FileSystem;
 import org.arakhne.neteditor.io.FileCollection;
 import org.arakhne.neteditor.io.tex.TexGenerator;
-import org.arakhne.vmutil.FileSystem;
 
 
 /** This exporter permits to create a PDF file with

@@ -45,7 +45,10 @@ import java.util.UUID;
 
 import org.arakhne.afc.progress.Progression;
 import org.arakhne.afc.progress.ProgressionUtil;
+import org.arakhne.afc.text.Base64Coder;
+import org.arakhne.afc.text.TextUtil;
 import org.arakhne.afc.ui.vector.Image;
+import org.arakhne.afc.vmutil.ExternalizableResource;
 import org.arakhne.neteditor.fig.figure.Figure;
 import org.arakhne.neteditor.fig.figure.ModelObjectFigure;
 import org.arakhne.neteditor.fig.figure.coercion.CoercedFigure;
@@ -60,9 +63,6 @@ import org.arakhne.neteditor.formalism.ModelObject;
 import org.arakhne.neteditor.formalism.Node;
 import org.arakhne.neteditor.io.AbstractNetEditorWriter;
 import org.arakhne.neteditor.io.resource.ResourceRepository;
-import org.arakhne.util.text.Base64Coder;
-import org.arakhne.util.text.TextUtil;
-import org.arakhne.vmutil.ExternalizableResource;
 
 /** This class permits to export the
  *  <strong>graph-model</strong> into the GML format.

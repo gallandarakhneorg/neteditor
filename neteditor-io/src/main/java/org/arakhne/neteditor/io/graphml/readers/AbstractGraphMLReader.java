@@ -30,12 +30,12 @@ import java.util.TreeMap;
 
 import org.arakhne.afc.progress.Progression;
 import org.arakhne.afc.progress.ProgressionUtil;
+import org.arakhne.afc.vmutil.locale.Locale;
 import org.arakhne.neteditor.io.NetEditorContentType;
 import org.arakhne.neteditor.io.graphml.GraphMLConstants;
 import org.arakhne.neteditor.io.graphml.GraphMLException;
 import org.arakhne.neteditor.io.graphml.GraphMLReader;
 import org.arakhne.neteditor.io.xml.AbstractXMLReader;
-import org.arakhne.vmutil.locale.Locale;
 import org.w3c.dom.Element;
 
 /** This abstract class permits to read a

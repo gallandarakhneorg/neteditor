@@ -26,7 +26,7 @@ import java.util.Collections;
 import java.util.Map;
 import java.util.UUID;
 
-import org.arakhne.util.ref.WeakValueTreeMap;
+import org.arakhne.afc.references.WeakValueTreeMap;
 
 /** This class manage the views associated to a model element.
  * This manager allows only one view per view container.
