@@ -352,13 +352,11 @@ public class SvgGraphics2D extends AbstractVectorialExporterGraphics2D {
 		}
 	}
 	
-	private void setDrawingAttributes(Element node, boolean enableOutline, boolean enableFilling, boolean invertFillingOutlineColors) {
-		if (isInteriorPainted() && enableFilling) {
-			Color color = invertFillingOutlineColors ? getOutlineColor() : getFillColor();
+	private static void setPaintFor(Element node, boolean enablePaint, Color fillColor) {
+		if (enablePaint) {
+			Color color = fillColor;
 			if (color==null) {
-				color = invertFillingOutlineColors ?
-							ViewComponentConstants.DEFAULT_LINE_COLOR :
-								ViewComponentConstants.DEFAULT_FILL_COLOR;
+				color = ViewComponentConstants.DEFAULT_FILL_COLOR;
 			}
 			node.setAttribute("fill", toSVG(color)); //$NON-NLS-1$
 			node.setAttribute("fill-opacity", Float.toString(color.getAlpha()/255f)); //$NON-NLS-1$
@@ -366,19 +364,19 @@ public class SvgGraphics2D extends AbstractVectorialExporterGraphics2D {
 		else {
 			node.setAttribute("fill", "none"); //$NON-NLS-1$ //$NON-NLS-2$
 		}
-		if (isOutlineDrawn() && enableOutline) {
-			Stroke stroke = getStroke();
+	}
+
+	private static void setStrokeFor(Element node, boolean enableStroke, Stroke stroke, Color lineColor) {
+		if (enableStroke) {
 			float width = 1f;
 			String linecap = "butt"; //$NON-NLS-1$
 			String linejoin = "miter"; //$NON-NLS-1$
 			float miterLimit = 4f;
 			String dashArray = null;
 			float dashOffset = 0f;
-			Color color = invertFillingOutlineColors ? getFillColor() : getOutlineColor();
+			Color color = lineColor;
 			if (color==null) {
-				color = invertFillingOutlineColors ?
-							ViewComponentConstants.DEFAULT_FILL_COLOR :
-								ViewComponentConstants.DEFAULT_LINE_COLOR;
+				color = ViewComponentConstants.DEFAULT_LINE_COLOR;
 			}
 
 			width = stroke.getLineWidth();
@@ -439,22 +437,13 @@ public class SvgGraphics2D extends AbstractVectorialExporterGraphics2D {
 		}
 	}
 	
-	private Element createInternalTextFor(String text) {
-		Element textN = this.xmldocument.createElement(tag("text")); //$NON-NLS-1$
-		textN.appendChild(this.xmldocument.createTextNode(text));
-		
-		Rectangle2f r = getCurrentViewComponentBounds();
-		Point2D position = computeTextPosition(text, r, TextAlignment.CENTER_ALIGN, TextAlignment.CENTER_ALIGN);
-		Font font = getFont();
-		
-		textN.setAttribute("x", Double.toString(position.getX()));  //$NON-NLS-1$
-		textN.setAttribute("y", Double.toString(position.getY()));  //$NON-NLS-1$
-		textN.setAttribute("font-family", font.getFamily());  //$NON-NLS-1$
-		textN.setAttribute("font-size", Float.toString(font.getSize()));  //$NON-NLS-1$
-		
-		setDrawingAttributes(textN, false, true, true);
-		
-		return textN;
+	private void setTextDrawingAttributes(Element node) {
+		setPaintFor(node, true, getOutlineColor());
+	}
+
+	private void setDrawingAttributes(Element node) {
+		setPaintFor(node, isInteriorPainted(), getFillColor());
+		setStrokeFor(node, isOutlineDrawn(), getStroke(), getOutlineColor());
 	}
 	
 	/**
@@ -529,7 +518,7 @@ public class SvgGraphics2D extends AbstractVectorialExporterGraphics2D {
 
 		textN.appendChild(this.xmldocument.createTextNode(str));
 		
-		setDrawingAttributes(textN, false, true, true);
+		setTextDrawingAttributes(textN);
 		
 		postDrawing();
 	}
@@ -570,7 +559,7 @@ public class SvgGraphics2D extends AbstractVectorialExporterGraphics2D {
 			
 			textN.appendChild(this.xmldocument.createTextNode(str));
 			
-			setDrawingAttributes(textN, false, true, true);
+			setTextDrawingAttributes(textN);
 
 			postDrawing();
 		}
@@ -621,7 +610,7 @@ public class SvgGraphics2D extends AbstractVectorialExporterGraphics2D {
 		Element pathN = this.xmldocument.createElement(tag("path")); //$NON-NLS-1$
 		this.svgCurrentNode.appendChild(pathN);
 		pathN.setAttribute("d", points.toString()); //$NON-NLS-1$
-		setDrawingAttributes(pathN, true, true, false);
+		setDrawingAttributes(pathN);
 		
 		postDrawing();
 	}
@@ -638,7 +627,7 @@ public class SvgGraphics2D extends AbstractVectorialExporterGraphics2D {
 		ovalN.setAttribute("cy", Double.toString(ellipse.getCenterY())); //$NON-NLS-1$
 		ovalN.setAttribute("rx", Double.toString(ellipse.getWidth()/2)); //$NON-NLS-1$
 		ovalN.setAttribute("ry", Double.toString(ellipse.getHeight()/2)); //$NON-NLS-1$
-		setDrawingAttributes(ovalN, true, true, false);
+		setDrawingAttributes(ovalN);
 		exportInternalText(ovalN);
 		
 		postDrawing();
@@ -652,7 +641,7 @@ public class SvgGraphics2D extends AbstractVectorialExporterGraphics2D {
 		ovalN.setAttribute("cx", Double.toString(circle.getX())); //$NON-NLS-1$
 		ovalN.setAttribute("cy", Double.toString(circle.getY())); //$NON-NLS-1$
 		ovalN.setAttribute("r", Double.toString(circle.getRadius())); //$NON-NLS-1$
-		setDrawingAttributes(ovalN, true, true, false);
+		setDrawingAttributes(ovalN);
 		exportInternalText(ovalN);
 		
 		postDrawing();
@@ -679,7 +668,20 @@ public class SvgGraphics2D extends AbstractVectorialExporterGraphics2D {
 			this.svgCurrentNode.appendChild(element);
 		}
 		if (gN!=null && text!=null && !text.isEmpty()) {
-			Element textN = createInternalTextFor(text);
+			Element textN = this.xmldocument.createElement(tag("text")); //$NON-NLS-1$
+			textN.appendChild(this.xmldocument.createTextNode(text));
+			
+			Rectangle2f r = getCurrentViewComponentBounds();
+			Point2D position = computeTextPosition(text, r, TextAlignment.CENTER_ALIGN, TextAlignment.CENTER_ALIGN);
+			Font font = getFont();
+			
+			textN.setAttribute("x", Double.toString(position.getX()));  //$NON-NLS-1$
+			textN.setAttribute("y", Double.toString(position.getY()));  //$NON-NLS-1$
+			textN.setAttribute("font-family", font.getFamily());  //$NON-NLS-1$
+			textN.setAttribute("font-size", Float.toString(font.getSize()));  //$NON-NLS-1$
+			
+			setTextDrawingAttributes(textN);
+			
 			gN.appendChild(textN);
 			textN.setAttribute("clip-path", "url(#"+clipPathId+")"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 		}
@@ -697,7 +699,7 @@ public class SvgGraphics2D extends AbstractVectorialExporterGraphics2D {
 		ovalN.setAttribute("y1", Double.toString(line.getY1())); //$NON-NLS-1$
 		ovalN.setAttribute("x2", Double.toString(line.getX2())); //$NON-NLS-1$
 		ovalN.setAttribute("y2", Double.toString(line.getY2())); //$NON-NLS-1$
-		setDrawingAttributes(ovalN, true, true, false);
+		setDrawingAttributes(ovalN);
 		exportInternalText(ovalN);
 		
 		postDrawing();
@@ -715,7 +717,7 @@ public class SvgGraphics2D extends AbstractVectorialExporterGraphics2D {
 		rectN.setAttribute("y", Double.toString(rectangle.getMinY())); //$NON-NLS-1$
 		rectN.setAttribute("width", Double.toString(rectangle.getWidth())); //$NON-NLS-1$
 		rectN.setAttribute("height", Double.toString(rectangle.getHeight())); //$NON-NLS-1$
-		setDrawingAttributes(rectN, true, true, false);
+		setDrawingAttributes(rectN);
 		exportInternalText(rectN);
 		
 		postDrawing();
@@ -735,7 +737,7 @@ public class SvgGraphics2D extends AbstractVectorialExporterGraphics2D {
 		rectN.setAttribute("height", Double.toString(rectangle.getHeight())); //$NON-NLS-1$
 		rectN.setAttribute("rx", Double.toString(rectangle.getArcWidth())); //$NON-NLS-1$
 		rectN.setAttribute("ry", Double.toString(rectangle.getArcHeight())); //$NON-NLS-1$
-		setDrawingAttributes(rectN, true, true, false);
+		setDrawingAttributes(rectN);
 		exportInternalText(rectN);
 		
 		postDrawing();
