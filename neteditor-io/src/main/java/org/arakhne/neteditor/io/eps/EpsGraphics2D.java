@@ -42,6 +42,7 @@ import org.arakhne.afc.math.matrix.Transform2D;
 import org.arakhne.afc.ui.TextAlignment;
 import org.arakhne.afc.ui.vector.Color;
 import org.arakhne.afc.ui.vector.Font;
+import org.arakhne.afc.ui.vector.GlyphList;
 import org.arakhne.afc.ui.vector.Image;
 import org.arakhne.afc.ui.vector.ImageObserver;
 import org.arakhne.afc.ui.vector.Stroke;
@@ -296,8 +297,7 @@ public class EpsGraphics2D extends AbstractVectorialExporterGraphics2D {
 		
 		Color c = getOutlineColor();
 		if (c==null) c = ViewComponentConstants.DEFAULT_LINE_COLOR;
-		setTextAttributes(c);
-		drawEpsString(context, x, y, str);
+		drawEpsString(context, x, y, str, c);
 		
 		grestore();
 		
@@ -310,36 +310,63 @@ public class EpsGraphics2D extends AbstractVectorialExporterGraphics2D {
 	 * @param x is the position of the text.
 	 * @param y is the position of the text.
 	 * @param str is the text to draw.
+	 * @param color is the color of the text.
 	 */
-	protected void drawEpsString(EpsContext context, float x, float y, String str) {
+	protected void drawEpsString(EpsContext context, float x, float y, String str, Color color) {
 		Font font = getFont();
-		if ((font==null && context.font!=null)
-			||(font!=null && !font.equals(context.font))) {
-			context.font = font;
-			
-			if (font!=null) {
-				String psName = font.getPSName().replace('.', ',');
-				float fontSize = getFont().getSize();
-		
-				gwrite("/"); //$NON-NLS-1$
-				gwrite(psName);
-				gwriteln(" findfont "); //$NON-NLS-1$
-				gwrite(Float.toString(fontSize));
-				gwriteln(" scalefont"); //$NON-NLS-1$
-				gwriteln("setfont"); //$NON-NLS-1$
-			}
+		GlyphList glyphList = font.createGlyphList(this, str);
+		Shape2f outline = glyphList.getOutline(x, y);
+		if (outline!=null) {
+			String pathDescription = computeEpsPath(outline.getPathIterator());
+			drawPathOnly(pathDescription, DrawingMode.INTERIOR, color, null);
 		}
 
-		// Move the text at the right position
-		gwrite(Float.toString(EpsUtil.toEpsX(x)));
-		gwrite(" "); //$NON-NLS-1$
-		gwrite(Float.toString(EpsUtil.toEpsY(y)));
-		gwriteln(" moveto"); //$NON-NLS-1$
+//		Font font = getFont();
+//		if ((font==null && context.font!=null)
+//			||(font!=null && !font.equals(context.font))) {
+//			context.font = font;
+//			
+//			if (font!=null) {
+//				String psName = extractFontFamily(font).replace('.', ',');
+//				float fontSize = getFont().getSize();
+//		
+//				gwrite("/"); //$NON-NLS-1$
+//				gwrite(psName);
+//				gwriteln(" findfont "); //$NON-NLS-1$
+//				gwrite(Float.toString(fontSize));
+//				gwriteln(" scalefont"); //$NON-NLS-1$
+//				gwriteln("setfont"); //$NON-NLS-1$
+//			}
+//		}
+//
+//		// Move the text at the right position
+//		gwrite(Float.toString(EpsUtil.toEpsX(x)));
+//		gwrite(" "); //$NON-NLS-1$
+//		gwrite(Float.toString(EpsUtil.toEpsY(y)));
+//		gwriteln(" moveto"); //$NON-NLS-1$
+//
+//		String text = EpsUtil.toEps(str.replaceAll("[\r\n]+", "")); //$NON-NLS-1$ //$NON-NLS-2$
+//		gwrite("("); //$NON-NLS-1$
+//		gwrite(text);
+//		gwriteln(") show"); //$NON-NLS-1$
+	}
 
-		String text = EpsUtil.toEps(str.replaceAll("[\r\n]+", "")); //$NON-NLS-1$ //$NON-NLS-2$
-		gwrite("("); //$NON-NLS-1$
-		gwrite(text);
-		gwriteln(") show"); //$NON-NLS-1$
+	private void drawPathOnly(String pathDescription, DrawingMode mode, Color fillingColor, Color lineColor) {
+		gwriteln("newpath"); //$NON-NLS-1$
+		gwriteln(pathDescription);
+
+		if (mode.isInteriorPainted()) {
+			gsave();
+			setDrawingAttributes(DrawingMode.INTERIOR, lineColor, fillingColor);
+			gwriteln("fill"); //$NON-NLS-1$
+			grestore();
+		}
+		if (mode.isOutlineDrawn()) {
+			gsave();
+			setDrawingAttributes(DrawingMode.SHAPE, lineColor, fillingColor);
+			gwriteln("stroke"); //$NON-NLS-1$
+			grestore();
+		}
 	}
 
 	@Override
@@ -350,28 +377,19 @@ public class EpsGraphics2D extends AbstractVectorialExporterGraphics2D {
 
 		gsave();
 		
-		gwriteln("newpath"); //$NON-NLS-1$
-		gwriteln(epsPath);
-
 		Color fillingColor = getFillColor();
 		if (fillingColor==null) fillingColor = ViewComponentConstants.DEFAULT_FILL_COLOR;
 
 		Color lineColor = getOutlineColor();
 		if (lineColor==null) lineColor = ViewComponentConstants.DEFAULT_LINE_COLOR;
-
-		if (isInteriorPainted()) {
-			gsave();
-			setDrawingAttributes(DrawingMode.INTERIOR, lineColor, fillingColor);
-			gwriteln("fill"); //$NON-NLS-1$
-			grestore();
-		}
-		if (isOutlineDrawn()) {
-			gsave();
-			setDrawingAttributes(DrawingMode.SHAPE, lineColor, fillingColor);
-			gwriteln("stroke"); //$NON-NLS-1$
-			grestore();
-		}
 		
+		DrawingMode mode = DrawingMode.computeDrawOp(isOutlineDrawn(), isInteriorPainted());
+		if (mode!=null) {
+			drawPathOnly(epsPath,
+					mode,
+					fillingColor, lineColor);
+		}
+
 		String text = getInteriorText();
 		if (text!=null && !text.isEmpty()) {
 			gwriteln("initclip"); //$NON-NLS-1$
@@ -384,8 +402,7 @@ public class EpsGraphics2D extends AbstractVectorialExporterGraphics2D {
 					TextAlignment.CENTER_ALIGN, TextAlignment.CENTER_ALIGN);
 			Color c = getOutlineColor();
 			if (c==null) c = ViewComponentConstants.DEFAULT_LINE_COLOR;
-			setTextAttributes(c);
-			drawEpsString(this.context.peek(), p.getX(), p.getY(), text);
+			drawEpsString(this.context.peek(), p.getX(), p.getY(), text, c);
 		}
 		
 		grestore();
@@ -497,14 +514,6 @@ public class EpsGraphics2D extends AbstractVectorialExporterGraphics2D {
 		return this.globalBuffer.toString();
 	}
 	
-	/** Set the attributes for the text, just before drawing this text.
-	 * 
-	 * @param color is the color of the text.
-	 */
-	protected void setTextAttributes(Color color) {
-		setDrawingAttributes(DrawingMode.BOTH, color, color);
-	}
-
 	/** Set the attributes for drawing a shape.
 	 * 
 	 * @param mode is the mode of drawing.

@@ -45,7 +45,6 @@ import org.arakhne.neteditor.io.tex.TexGenerator;
 public class EpsTeXGraphics2D extends EpsGraphics2D {
 
 	private final StringBuilder texMacros = new StringBuilder();
-	private String lastFontDefinition = null;
 	
 	/** Construct a new PdfGraphics2D.
 	 * 
@@ -82,20 +81,15 @@ public class EpsTeXGraphics2D extends EpsGraphics2D {
 	}
 	
 	@Override
-	protected void setTextAttributes(Color color) {
+	protected void drawEpsString(EpsContext context, float x, float y, String str, Color color) {
 		Font font = getFont();
 		FontMetrics fm = getFontMetrics(font);
-		this.lastFontDefinition = TexGenerator.buildFontString(font, fm);
-	}
-	
-	@Override
-	protected void drawEpsString(EpsContext context, float x, float y, String str) {
 		Rectangle2f drawingArea = getDocumentBounds();
 		float tx = TexGenerator.toTeXX(x, drawingArea);
 		float ty = TexGenerator.toTeXY(y, drawingArea);
-		this.texMacros.append(TexGenerator.buildTeXTString(tx, ty, str, this.lastFontDefinition));
+		String lastFontDefinition = TexGenerator.buildFontString(font, fm);
+		this.texMacros.append(TexGenerator.buildTeXTString(tx, ty, str, lastFontDefinition));
 		this.texMacros.append("\n"); //$NON-NLS-1$
-		this.lastFontDefinition = null;
 	}
 
 }

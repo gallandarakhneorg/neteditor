@@ -45,6 +45,7 @@ import org.arakhne.afc.ui.TextAlignment;
 import org.arakhne.afc.ui.vector.Color;
 import org.arakhne.afc.ui.vector.Font;
 import org.arakhne.afc.ui.vector.FontComparator;
+import org.arakhne.afc.ui.vector.GlyphList;
 import org.arakhne.afc.ui.vector.Image;
 import org.arakhne.afc.ui.vector.ImageObserver;
 import org.arakhne.afc.ui.vector.Stroke;
@@ -302,14 +303,6 @@ public class PdfGraphics2D extends AbstractVectorialExporterGraphics2D {
 		return Collections.unmodifiableMap(this.imageResources);
 	}
 
-	/** Change the attributes for drawing the texts.
-	 * 
-	 * @param color is the text color
-	 */
-	protected void setTextAttributes(Color color) {
-		setDrawingAttributes(DrawingMode.BOTH, color, color);
-	}
-
 	/** Change the attributes for drawing the shapes (including texts).
 	 * 
 	 * @param mode is the mode of drawing.
@@ -317,9 +310,9 @@ public class PdfGraphics2D extends AbstractVectorialExporterGraphics2D {
 	 * @param fillingColor is the color of the interior.
 	 */
 	protected void setDrawingAttributes(DrawingMode mode, Color outlineColor, Color fillingColor) {
-		assert(outlineColor!=null);
-		assert(fillingColor!=null);
+		assert(mode!=null);
 		if (mode.isInteriorPainted()) {
+			assert(fillingColor!=null) : "Fill color needed to paint the interior"; //$NON-NLS-1$
 			double alpha = fillingColor.getAlpha() / 255.;
 			if (alpha!=this.currentTransparency) {
 				String resourceId = getTransparencyResource(alpha);
@@ -335,6 +328,7 @@ public class PdfGraphics2D extends AbstractVectorialExporterGraphics2D {
 		}
 
 		if (mode.isOutlineDrawn()) {
+			assert(outlineColor!=null) : "Line color needed to paint the outline"; //$NON-NLS-1$
 			double alpha = outlineColor.getAlpha() / 255.;
 			if (alpha!=this.currentTransparency) {
 				String resourceId = getTransparencyResource(alpha);
@@ -466,8 +460,7 @@ public class PdfGraphics2D extends AbstractVectorialExporterGraphics2D {
 
 		Color c = getOutlineColor();
 		if (c==null) c = ViewComponentConstants.DEFAULT_LINE_COLOR;
-		setTextAttributes(c);
-		drawPdfString(x, y, str);
+		drawPdfString(x, y, str, c);
 
 		if (clip!=null) {
 			setClip(oldClip);
@@ -481,9 +474,17 @@ public class PdfGraphics2D extends AbstractVectorialExporterGraphics2D {
 	 * @param x is the position of the text
 	 * @param y is the position of the text
 	 * @param str is the string to draw.
+	 * @param color is the color of the text
 	 */
-	protected void drawPdfString(float x, float y, String str) {
-		float fontSize = getFont().getSize();
+	protected void drawPdfString(float x, float y, String str, Color color) {
+		Font font = getFont();
+		GlyphList glyphList = font.createGlyphList(this, str);
+		Shape2f outline = glyphList.getOutline(x, y);
+		if (outline!=null) {
+			drawPathOnly(outline.getPathIterator(), DrawingMode.INTERIOR, color, null);
+		}
+		
+		/*float fontSize = getFont().getSize();
 
 		// Start text and save current graphics state
 		writeln("q BT"); //$NON-NLS-1$
@@ -503,7 +504,7 @@ public class PdfGraphics2D extends AbstractVectorialExporterGraphics2D {
 		writeln("(", text, ") Tj");  //$NON-NLS-1$//$NON-NLS-2$
 
 		// End text and restore previous graphics state
-		writeln("ET Q"); //$NON-NLS-1$
+		writeln("ET Q"); //$NON-NLS-1$*/
 	}
 
 	private static String computePdfPath(Iterator<PathElement2f> iterator, Transform2D transform) {
@@ -602,17 +603,15 @@ public class PdfGraphics2D extends AbstractVectorialExporterGraphics2D {
 				isInteriorPainted());
 
 		preDrawing();
-
+		
 		if (mode!=null) {
 			Color fillingColor = getFillColor();
 			if (fillingColor==null) fillingColor = ViewComponentConstants.DEFAULT_FILL_COLOR;
-	
+
 			Color lineColor = getOutlineColor();
 			if (lineColor==null) lineColor = ViewComponentConstants.DEFAULT_LINE_COLOR;
-	
-			setDrawingAttributes(mode, lineColor, fillingColor);
 
-			writeln(computePdfPath(pathIterator, this.currentTransform), " ", mode.getPdfDrawingOperator()); //$NON-NLS-1$
+			drawPathOnly(pathIterator, mode, fillingColor, lineColor);
 		}
 
 		String text = getInteriorText();
@@ -623,11 +622,15 @@ public class PdfGraphics2D extends AbstractVectorialExporterGraphics2D {
 					TextAlignment.CENTER_ALIGN, TextAlignment.CENTER_ALIGN);
 			Color c = getOutlineColor();
 			if (c==null) c = ViewComponentConstants.DEFAULT_LINE_COLOR;
-			setTextAttributes(c);
-			drawPdfString(p.getX(), p.getY(), text);
+			drawPdfString(p.getX(), p.getY(), text, c);
 		}
 
 		postDrawing();
+	}
+	
+	private void drawPathOnly(PathIterator2f pathIterator, DrawingMode mode, Color fillingColor, Color lineColor) {
+		setDrawingAttributes(mode, lineColor, fillingColor);
+		writeln(computePdfPath(pathIterator, this.currentTransform), " ", mode.getPdfDrawingOperator()); //$NON-NLS-1$
 	}
 
 	@Override

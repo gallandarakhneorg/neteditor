@@ -46,7 +46,6 @@ public class PdfTeXGraphics2D extends PdfGraphics2D {
 
 	private final StringBuilder texMacros = new StringBuilder();
 	private final Rectangle2f drawingArea;
-	private String lastFontDefinition = null;
 	
 	/** Construct a new PdfGraphics2D.
 	 * 
@@ -84,19 +83,14 @@ public class PdfTeXGraphics2D extends PdfGraphics2D {
 	}
 	
 	@Override
-	protected void setTextAttributes(Color color) {
+	protected void drawPdfString(float x, float y, String str, Color color) {
 		Font font = getFont();
 		FontMetrics fm = getFontMetrics(font);
-		this.lastFontDefinition = TexGenerator.buildFontString(font, fm);
-	}
-	
-	@Override
-	protected void drawPdfString(float x, float y, String str) {
 		float tx = TexGenerator.toTeXX(x, this.drawingArea);
 		float ty = TexGenerator.toTeXY(y, this.drawingArea);
-		this.texMacros.append(TexGenerator.buildTeXTString(tx, ty, str, this.lastFontDefinition));
+		String lastFontDefinition = TexGenerator.buildFontString(font, fm);
+		this.texMacros.append(TexGenerator.buildTeXTString(tx, ty, str, lastFontDefinition));
 		this.texMacros.append("\n"); //$NON-NLS-1$
-		this.lastFontDefinition = null;
 	}
 
 }

@@ -1,7 +1,7 @@
 /* 
  * $Id$
  * 
- * Copyright (C) 2012 Stephane GALLAND.
+ * Copyright (C) 2012-13 Stephane GALLAND.
  * 
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -30,8 +30,6 @@ import java.util.Map.Entry;
 import java.util.TreeMap;
 
 import org.arakhne.afc.math.continous.object2d.Rectangle2f;
-import org.arakhne.afc.ui.vector.Font;
-import org.arakhne.afc.ui.vector.FontMetrics;
 import org.arakhne.afc.ui.vector.Image;
 import org.arakhne.neteditor.io.AbstractVectorialExporter;
 
@@ -48,7 +46,9 @@ import org.arakhne.neteditor.io.AbstractVectorialExporter;
  */
 public class PdfExporter extends AbstractVectorialExporter<PdfGraphics2D, PdfOutputStream> {
 	
-	private static final char CR = 0x0A;
+	/** Character for the new line in the PDF file.
+	 */
+	protected static final char CR = 0x0A;
 	
 	/**
 	 */
@@ -260,80 +260,6 @@ public class PdfExporter extends AbstractVectorialExporter<PdfGraphics2D, PdfOut
 		int objectId = idResources+1;
 		Map<Integer,String> differedOutput = new TreeMap<Integer, String>();
 		
-		// Add resources for fonts
-		Map<Font,String> fonts = graphicContext.getFontResources();
-		if (!fonts.isEmpty()) {
-			writeln(stream, " /Font <<"); //$NON-NLS-1$
-			for (Entry<Font,String> entry : fonts.entrySet()) {
-				Font font = entry.getKey();
-				String resourceId = entry.getValue();
-				String psName = font.getPSName().replaceAll("[.-]", ","); //$NON-NLS-1$ //$NON-NLS-2$
-				FontMetrics fm = graphicContext.getFontMetrics(font);
-				Rectangle2f fontBounds = fm.getMaxCharBounds();
-				int fontFlags = 0;
-				if (font.isItalic()) {
-					fontFlags |= 1<<6;
-				}
-				if (font.isBold()) {
-					fontFlags |= 1<<18;
-				}
-				
-				write(stream, "  /"); //$NON-NLS-1$
-				write(stream, resourceId);
-				writeln(stream, " << /Type /Font"); //$NON-NLS-1$
-				writeln(stream, " /Subtype /TrueType"); //$NON-NLS-1$
-				write(stream, " /BaseFont /"); //$NON-NLS-1$
-				writeln(stream, psName);
-				write(stream, " /FontDescriptor "); //$NON-NLS-1$
-				write(stream, objectId);
-				writeln(stream, " 0 R"); //$NON-NLS-1$
-				writeln(stream, " >>"); //$NON-NLS-1$
-				
-				StringBuilder b = new StringBuilder();
-				b.append(objectId);
-				b.append(" 0 obj"); //$NON-NLS-1$
-				b.append(CR);
-				b.append("<<"); //$NON-NLS-1$
-				b.append(CR);
-				b.append("/Type /FontDescriptor"); //$NON-NLS-1$
-				b.append(CR);
-				b.append("/FontName "); //$NON-NLS-1$
-				b.append(psName);
-				b.append(CR);
-				b.append("/Flags "); //$NON-NLS-1$
-				b.append(fontFlags);
-				b.append(CR);
-				b.append("/FontBBox [0 0 "); //$NON-NLS-1$
-				b.append(fontBounds.getWidth());
-				b.append(" "); //$NON-NLS-1$
-				b.append(fontBounds.getHeight());
-				b.append("]"); //$NON-NLS-1$
-				b.append(CR);
-				b.append("/ItalicAngle "); //$NON-NLS-1$
-				b.append(font.getItalicAngle());
-				b.append(CR);
-				b.append("/Ascent "); //$NON-NLS-1$
-				b.append(fm.getAscent());
-				b.append(CR);
-				b.append("/Descent "); //$NON-NLS-1$
-				b.append(-fm.getDescent());
-				b.append(CR);
-				b.append("/Leading "); //$NON-NLS-1$
-				b.append(fm.getLeading());
-				b.append(CR);
-				b.append("/CapHeight "); //$NON-NLS-1$
-				b.append(fm.getMaxAscent());
-				b.append(CR);
-				b.append(">>"); //$NON-NLS-1$
-				b.append(CR);
-				b.append("endobj"); //$NON-NLS-1$
-				b.append(CR);
-				differedOutput.put(objectId, b.toString());
-				++objectId;
-			}
-			writeln(stream, " >>"); //$NON-NLS-1$
-		}
-
 		// Add resources for images
 		Map<String,Image> images = graphicContext.getImageResources();
 		if (!images.isEmpty()) {
