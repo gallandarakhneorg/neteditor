@@ -62,7 +62,7 @@ import org.arakhne.neteditor.fig.view.ViewComponentConstants;
  * @mavenartifactid $ArtifactId$
  */
 public abstract class AbstractVectorialExporterGraphics2D extends AbstractVectorGraphics2D implements ViewGraphics2D {
-
+	
 	/** Is the current transformation.
 	 */
 	protected final Transform2D currentTransform = new Transform2D();
@@ -81,6 +81,15 @@ public abstract class AbstractVectorialExporterGraphics2D extends AbstractVector
 		this.font = VectorToolkit.font();
 	}
 	
+	/** Extract and normalize the font family of the given font.
+	 *  
+	 * @param font is the font to parse
+	 * @return the font family name.
+	 */
+	protected String extractFontFamily(Font font) {
+		return font.getPhysicalPSName();
+	}
+
 	@Override
 	public final Object getNativeGraphics2D() {
 		return null;

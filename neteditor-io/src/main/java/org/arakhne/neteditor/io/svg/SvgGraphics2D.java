@@ -514,7 +514,7 @@ public class SvgGraphics2D extends AbstractVectorialExporterGraphics2D {
 		textN.setAttribute("x", Float.toString(x)); //$NON-NLS-1$
 		textN.setAttribute("y", Float.toString(y)); //$NON-NLS-1$
 		textN.setAttribute("font-size", Float.toString(font.getSize())); //$NON-NLS-1$
-		textN.setAttribute("font-family", font.getFamily()); //$NON-NLS-1$
+		textN.setAttribute("font-family", extractFontFamily(font)); //$NON-NLS-1$
 
 		textN.appendChild(this.xmldocument.createTextNode(str));
 		
@@ -554,7 +554,7 @@ public class SvgGraphics2D extends AbstractVectorialExporterGraphics2D {
 			textN.setAttribute("x", Float.toString(x)); //$NON-NLS-1$
 			textN.setAttribute("y", Float.toString(y)); //$NON-NLS-1$
 			textN.setAttribute("font-size", Float.toString(font.getSize())); //$NON-NLS-1$
-			textN.setAttribute("font-family", font.getFamily()); //$NON-NLS-1$
+			textN.setAttribute("font-family", extractFontFamily(font)); //$NON-NLS-1$
 			textN.setAttribute("clip-path", "url(#"+clipPathId+")"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 			
 			textN.appendChild(this.xmldocument.createTextNode(str));
@@ -677,7 +677,7 @@ public class SvgGraphics2D extends AbstractVectorialExporterGraphics2D {
 			
 			textN.setAttribute("x", Double.toString(position.getX()));  //$NON-NLS-1$
 			textN.setAttribute("y", Double.toString(position.getY()));  //$NON-NLS-1$
-			textN.setAttribute("font-family", font.getFamily());  //$NON-NLS-1$
+			textN.setAttribute("font-family", extractFontFamily(font));  //$NON-NLS-1$
 			textN.setAttribute("font-size", Float.toString(font.getSize()));  //$NON-NLS-1$
 			
 			setTextDrawingAttributes(textN);
