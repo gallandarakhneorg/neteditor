@@ -1,6 +1,6 @@
 h1. About NetEditor
 
-The "Arakhn&ecirc;.org Network Editor":http://www.arakhne.org/neteditor/ (NetEditor) is a free Java component that permits to edit and show connected-graphs. NetEditor is composed by a drawing area in which you can draw nodes and edges.
+The "Arakhn&ecirc;.org Network Editor":http://www.arakhne.org/neteditor/ (NetEditor) is a free java component that permits to edit and show graphs. NetEditor is composed by a drawing area in which you can draw nodes and edges.
 
 NetEditor supports the following features:
 * *separation of the visual-language constructs and the drawings;*
@@ -11,49 +11,49 @@ NetEditor supports the following features:
 * clipboard and Drag&Drop management;
 * exporting into graphical formats : GIF, JPEG, PNG, BMP;
 * exporting into vectorial formats : SVG, PDF, Encapsulated Postscript, PDF, Graphviz DOT, GXL, GraphML, GML...;
-* save and load into GML, GraphML, GXL, or NGR (zipped GML/GraphML/GXL) files.
+* saving into and loading from GML, GraphML, GXL, or NGR (zipped GML/GraphML/GXL) files.
 
-This version of NetEditor is an original idea of Mahdi HANNOUN and "Stéphane GALLAND":http://www.arakhne.org/homes/galland/. In 2001, we decide to develop a new graph-editing library because existing ones don't support our needs, or are to difficult to extend.</p>
+NetEditor was originally proposed by Mahdi HANNOUN and "Stéphane GALLAND":http://www.arakhne.org/homes/galland/. In 2001, they decide to develop a new graph-editing library because the existing ones don't support their needs, or were to difficult to extend. Since 2010, "Stéphane GALLAND":http://www.arakhne.org/homes/galland/ is developping and maintaining a new version of NetEditor, which is based on the "Arakhn&ecirc;.org Foundation Classes":http://www.arakhne.org/afc.html
 
 p=. !http://www.arakhne.org/neteditor/screen.png!
 
 h1. Definition of a Graph-based Graphical Language
 
-NetEditor is designed to create editors for Visual Languages. NetEditor assumes the language constructs is separated than the graphical representations of these constructs. 
+NetEditor is designed to create editors for "Visual Programmaing Languages":http://en.wikipedia.org/wiki/Visual_programming_language. It assumes that the language constructs are defined independently from the graphical representations of these constructs. 
 
 h2. Language Constructs Specification
 
-NetEditor assumes all the language constructs is expressed with a graph designed with the three following concepts:
-* *Node:* a node is a point in a graph. A node is linked to other nodes throough edges.
-* *Edge:* an edge a connection between two nodes. An edge may be directed or not. An edge is not directly linked to nodes but to the anchors of the nodes. An edge has a start anchor and an end anchor.
-* *Anchor:* an anchor is a connection point between a node and an edge. An anchor is defined inside a single node. Many edge could be connected to one anchor.
+In NetEditor, the language constructs are defined by a graph based on the three following concepts:
+* *Node:* a node is a point in a graph. A node is linked to other nodes with edges.
+* *Edge:* an edge is a connection between two nodes. An edge may be directed or not. It is not directly connected to nodes, but it is connected to the anchors of the nodes. An edge has a start anchor and an end anchor.
+* *Anchor:* an anchor is a connection point between a node and an edge. An anchor is defined inside/for a single node. Many edge could be connected to one anchor.
 
 The language of the diagram that should be edited by NetEditor must be defined with Java classes that are extending the node, edge and anchor classes.
 
 h2. Language Constructs Figures
 
-Each language construct (node, edge and anchor) may be associated to one graphical representation (also named the view of the construct). This graphical representation is in charge of the rendering of the construct's information on on a Java panel (Swing or Android).
+Each language construct (node, edge and anchor) may be associated to one graphical representation (also named the view of the construct). This graphical representation is in charge of the rendering of the construct's information on on a graphical panel (Swing, Android, PDF, Postscript...)
 
-h2. Example: a simple Finite State Machine editor
+h2. Example: a simple editor for finite state ùachine
 
-To illustrate the use of NetEditor, a simple Finite State Machine editor is provided. A tutorial explains to to create this editor step-by-step: "FSM Editor Tutorial.":http://www.arakhne.org/neteditor/tutorial.html 
+To illustrate the use of NetEditor, a simple editor of finite state machine is provided. A tutorial explains how to create this editor step-by-step: "FSM Editor Tutorial.":http://www.arakhne.org/neteditor/tutorial.html 
 
 h1. Installation and Usage
 
-NetEditor is a Java library designed to be used with "Maven.":http://maven.apache.org/
-Maven is a software project management and compilation tool. Based on the project object model (POM) of the project (written inside the file _pom.xml_), Maven can manage the project's builds, the reports and documentation. It is also able to retreive the Java librairies on the Web, which are inside the dependencies of the project.
+NetEditor is a java library designed to be compiled and used with "maven.":http://maven.apache.org/
+Maven is a software project management and compilation tool. Based on the project object model (POM) of the project (written inside the file _pom.xml_), maven can manage the project's builds, the reports and the documentation. It is also able to retreive the Java librairies, which are inside the dependencies of the project, on the Web.
 
-Maven's primary goal is to allow a developer to manage the complete state of a development effort in the shortest period of time. In order to attain this goal, there are several areas of concern that Maven attempts to deal with:
-* Making the build process easy
-* Providing a uniform build system
-* Providing quality project information
-* Providing guidelines for best practices development
-* Allowing transparent migration to new features
+Maven's primary goal is to allow a developer to manage the complete state of a development effort in the shortest period of time. In order to attain this goal, there are several areas of concern that maven attempts to deal with:
+* Making the build process easy;
+* Providing a uniform build system;
+* Providing quality project information;
+* Providing guidelines for best practices development;
+* Allowing transparent migration to new features.
 
-Because NetEditor is a Maven project, *we recommend to use Maven and add the "Arakhne.org Maven repository.":http://www.arakhne.org/maven.html inside our POM.*
+Because NetEditor is a maven project, *we recommend to use maven and add the "Arakhn&ecirc;.org maven repository":http://www.arakhne.org/maven.html inside our POM file.*
 This repository will allow you to obtain the NetEditor libraries with less efforts.
 
-If you do not want to use Maven, you should dowload manually the Java libraries in the dependencies of NetEditor:
+If you do not want to use maven, you should dowload manually the java libraries that are required by NetEditor:
 * NetEditor libraries: http://download.tuxfamily.org/arakhne/maven/org/arakhne/neteditor/
 * Arakhne Foundation Classes:
 ** Arakhne virtual machine utilities: http://www.arakhne.org/arakhneVmutils
