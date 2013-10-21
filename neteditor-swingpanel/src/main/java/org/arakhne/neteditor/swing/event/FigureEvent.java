@@ -24,7 +24,7 @@ package org.arakhne.neteditor.swing.event ;
 import java.util.EventObject;
 
 import org.arakhne.neteditor.fig.figure.Figure;
-import org.arakhne.neteditor.swing.JFigureViewer;
+import org.arakhne.neteditor.swing.JFigureView;
 
 /** Event that is describing any change in a JFigureViewer.
  *  
@@ -47,19 +47,19 @@ public class FigureEvent extends EventObject {
 	 * @param added
 	 * @param changed
 	 */
-	public FigureEvent(JFigureViewer<?> source, Figure removed, Figure added, Figure changed) {
+	public FigureEvent(JFigureView<?> source, Figure removed, Figure added, Figure changed) {
 		super(source);
 		this.removed = removed;
 		this.added = added;
 		this.changed = changed;
 	}
-	
+
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
-	public JFigureViewer<?> getSource() {
-		return (JFigureViewer<?>)super.getSource();
+	public JFigureView<?> getSource() {
+		return (JFigureView<?>)super.getSource();
 	}
 	
 	/** Replies the added figure.

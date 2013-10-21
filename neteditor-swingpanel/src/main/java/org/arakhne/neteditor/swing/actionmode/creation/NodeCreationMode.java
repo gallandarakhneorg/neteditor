@@ -21,18 +21,16 @@
  */
 package org.arakhne.neteditor.swing.actionmode.creation ;
 
-import java.awt.Color;
-import java.awt.geom.Rectangle2D;
 import java.util.UUID;
 
+import org.arakhne.afc.math.continous.object2d.Rectangle2f;
 import org.arakhne.afc.math.generic.Point2D;
 import org.arakhne.afc.ui.actionmode.ActionMode;
 import org.arakhne.afc.ui.actionmode.ActionModeManager;
 import org.arakhne.afc.ui.actionmode.ActionPointerEvent;
-import org.arakhne.afc.ui.awt.AwtUtil;
-import org.arakhne.afc.ui.awt.VirtualScreenGraphics2D;
 import org.arakhne.afc.ui.event.KeyEvent;
 import org.arakhne.afc.ui.swing.undo.AbstractCallableUndoableEdit;
+import org.arakhne.afc.ui.vector.Color;
 import org.arakhne.afc.vmutil.locale.Locale;
 import org.arakhne.neteditor.fig.factory.FigureFactory;
 import org.arakhne.neteditor.fig.figure.Figure;
@@ -40,6 +38,7 @@ import org.arakhne.neteditor.fig.view.ModelObjectView;
 import org.arakhne.neteditor.formalism.Graph;
 import org.arakhne.neteditor.formalism.Node;
 import org.arakhne.neteditor.swing.actionmode.ActionModeOwner;
+import org.arakhne.neteditor.swing.graphics.SwingViewGraphics2D;
 
 /** This class implements a Mode that permits to
  * create nodes
@@ -52,17 +51,17 @@ import org.arakhne.neteditor.swing.actionmode.ActionModeOwner;
  * @mavengroupid $GroupId$
  * @mavenartifactid $ArtifactId$
  */
-public abstract class NodeCreationMode<G extends Graph<?,N,?,?>, N extends Node<G,?,?,?>> extends ActionMode<Figure,VirtualScreenGraphics2D,java.awt.Color> {
+public abstract class NodeCreationMode<G extends Graph<?,N,?,?>, N extends Node<G,?,?,?>> extends ActionMode<Figure,SwingViewGraphics2D,Color> {
 
 	private Point2D hit = null;
-	private final Rectangle2D bounds = new Rectangle2D.Float();
+	private final Rectangle2f bounds = new Rectangle2f();
 
 	/** Construct a new NodeCreationMode with the given parent.
 	 *
 	 * @param modeManager a reference to the ModeManager that
 	 *                    contains this Mode.
 	 */
-	public NodeCreationMode(ActionModeManager<Figure,VirtualScreenGraphics2D,java.awt.Color> modeManager) { 
+	public NodeCreationMode(ActionModeManager<Figure,SwingViewGraphics2D,Color> modeManager) { 
 		super(modeManager);
 	}
 
@@ -117,7 +116,7 @@ public abstract class NodeCreationMode<G extends Graph<?,N,?,?>, N extends Node<
 			}
 			else {
 				this.hit = event.getPosition();
-				this.bounds.setFrameFromDiagonal(
+				this.bounds.setFromCorners(
 						this.hit.getX(),
 						this.hit.getY(),
 						this.hit.getX(),
@@ -135,7 +134,7 @@ public abstract class NodeCreationMode<G extends Graph<?,N,?,?>, N extends Node<
 	public void pointerDragged(ActionPointerEvent event) {
 		if (this.hit!=null) {
 			Point2D p = event.getPosition();
-			this.bounds.setFrameFromDiagonal(
+			this.bounds.setFromCorners(
 					this.hit.getX(),
 					this.hit.getY(),
 					p.getX(),
@@ -168,7 +167,7 @@ public abstract class NodeCreationMode<G extends Graph<?,N,?,?>, N extends Node<
 	 * @param bounds are the bounds to associated to the node.
 	 */
 	@SuppressWarnings("unchecked")
-	protected void createNodeAt(Rectangle2D bounds) {
+	protected void createNodeAt(Rectangle2f bounds) {
 		ActionModeOwner<G> container = (ActionModeOwner<G>)getModeManagerOwner();
 		G graph = container.getGraph();
 		FigureFactory<G> factory = container.getFigureFactory();
@@ -179,8 +178,8 @@ public abstract class NodeCreationMode<G extends Graph<?,N,?,?>, N extends Node<
 						getModeManager().getViewID(),
 						graph,
 						newNode,
-						(float)bounds.getX(),
-						(float)bounds.getY());
+						bounds.getMinX(),
+						bounds.getMinY());
 				if (figure!=null) {
 					Undo<G,N> undoCmd = new Undo<G,N>(graph, bounds, newNode, figure,
 							getModeManager().getViewID());
@@ -203,13 +202,11 @@ public abstract class NodeCreationMode<G extends Graph<?,N,?,?>, N extends Node<
 	 * {@inheritDoc}
 	 */
 	@Override
-	public void paint(VirtualScreenGraphics2D g) {
+	public void paint(SwingViewGraphics2D g) {
 		if (this.hit!=null && !this.bounds.isEmpty()) {
 			Color border = getModeManagerOwner().getSelectionBackground();
-			Color background = AwtUtil.makeTransparentColor(border);
-			g.setColor(background);
-			g.fill(this.bounds);
-			g.setColor(border);
+			Color background = border.transparentColor();
+			g.setColors(background, border);
 			g.draw(this.bounds);
 		}
 	}
@@ -228,7 +225,7 @@ public abstract class NodeCreationMode<G extends Graph<?,N,?,?>, N extends Node<
 		private static final long serialVersionUID = -7896116415216393426L;
 
 		private final G graph;
-		private final Rectangle2D bounds;
+		private final Rectangle2f bounds;
 		private final N object;
 		private final Figure figure;
 		private final UUID view;
@@ -240,9 +237,9 @@ public abstract class NodeCreationMode<G extends Graph<?,N,?,?>, N extends Node<
 		 * @param figure
 		 * @param view
 		 */
-		public Undo(G graph, Rectangle2D bounds, N object, Figure figure, UUID view) {
+		public Undo(G graph, Rectangle2f bounds, N object, Figure figure, UUID view) {
 			this.graph = graph;
-			this.bounds = (Rectangle2D)bounds.clone();
+			this.bounds = bounds.clone();
 			this.object = object;
 			this.figure = figure;
 			this.view = view;
@@ -257,12 +254,12 @@ public abstract class NodeCreationMode<G extends Graph<?,N,?,?>, N extends Node<
 				h = this.figure.getHeight();
 			}
 			else {
-				w = (float)this.bounds.getWidth();
-				h = (float)this.bounds.getHeight();
+				w = this.bounds.getWidth();
+				h = this.bounds.getHeight();
 			}
 			this.figure.setBounds(
-					(float)this.bounds.getX(),
-					(float)this.bounds.getY(),
+					this.bounds.getMinX(),
+					this.bounds.getMinY(),
 					w, h);
 			this.figure.setViewUUID(this.view);
 			if (this.figure instanceof ModelObjectView<?>) {

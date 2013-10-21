@@ -29,9 +29,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ComponentEvent;
 import java.awt.event.ComponentListener;
 import java.awt.event.InputEvent;
-import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
-import java.awt.event.MouseEvent;
 import java.awt.geom.GeneralPath;
 import java.awt.geom.Line2D;
 import java.awt.geom.Rectangle2D;
@@ -42,7 +39,6 @@ import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.EventListener;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -66,28 +62,26 @@ import org.arakhne.afc.math.continous.object2d.Shape2f;
 import org.arakhne.afc.math.generic.Point2D;
 import org.arakhne.afc.math.generic.Vector2D;
 import org.arakhne.afc.math.matrix.Transform2D;
+import org.arakhne.afc.ui.CenteringTransform;
 import org.arakhne.afc.ui.Graphics2DLOD;
 import org.arakhne.afc.ui.MouseCursor;
 import org.arakhne.afc.ui.ZoomableContext;
 import org.arakhne.afc.ui.actionmode.SelectableInteractionEvent;
 import org.arakhne.afc.ui.actionmode.SelectableInteractionListener;
 import org.arakhne.afc.ui.awt.AwtUtil;
-import org.arakhne.afc.ui.awt.DefaultLODGraphics2D;
 import org.arakhne.afc.ui.awt.ExceptionListener;
-import org.arakhne.afc.ui.awt.LODGraphics2D;
 import org.arakhne.afc.ui.event.PointerEvent;
 import org.arakhne.afc.ui.selection.Selectable;
 import org.arakhne.afc.ui.selection.SelectionEvent;
 import org.arakhne.afc.ui.selection.SelectionListener;
 import org.arakhne.afc.ui.selection.SelectionManager;
 import org.arakhne.afc.ui.swing.JPopupTextField;
-import org.arakhne.afc.ui.swing.event.KeyEventSwing;
-import org.arakhne.afc.ui.swing.event.PointerEventSwing;
 import org.arakhne.afc.ui.swing.undo.AbstractCallableUndoableEdit;
 import org.arakhne.afc.ui.swing.undo.UndoManagerSwing;
 import org.arakhne.afc.ui.swing.undo.UndoableGroupSwing;
-import org.arakhne.afc.ui.swing.zoompanel.ZoomableGraphics2D;
-import org.arakhne.afc.ui.swing.zoompanel.ZoomablePanel;
+import org.arakhne.afc.ui.swing.zoom.AbstractDocumentWrapper;
+import org.arakhne.afc.ui.swing.zoom.ZoomableGraphics2D;
+import org.arakhne.afc.ui.swing.zoom.ZoomableView;
 import org.arakhne.afc.ui.undo.UndoManager;
 import org.arakhne.afc.ui.undo.Undoable;
 import org.arakhne.afc.ui.undo.UndoableGroup;
@@ -96,7 +90,6 @@ import org.arakhne.afc.ui.vector.Colors;
 import org.arakhne.afc.ui.vector.Dimension;
 import org.arakhne.afc.ui.vector.VectorGraphics2D;
 import org.arakhne.afc.ui.vector.VectorToolkit;
-import org.arakhne.afc.ui.vector.awt.DelegatedVectorGraphics2D;
 import org.arakhne.afc.vmutil.locale.Locale;
 import org.arakhne.neteditor.fig.factory.CollisionAvoider;
 import org.arakhne.neteditor.fig.factory.FigureFactory;
@@ -138,6 +131,7 @@ import org.arakhne.neteditor.swing.dnd.FigureTransferHandler;
 import org.arakhne.neteditor.swing.event.FigureEvent;
 import org.arakhne.neteditor.swing.event.FigureListener;
 import org.arakhne.neteditor.swing.graphics.DelegatedViewGraphics2D;
+import org.arakhne.neteditor.swing.graphics.SwingViewGraphics2D;
 import org.arakhne.neteditor.swing.selection.JSelectionManager;
 
 /** This class provides a viewer for manipulating graphical network
@@ -155,10 +149,10 @@ import org.arakhne.neteditor.swing.selection.JSelectionManager;
  * @mavengroupid $GroupId$
  * @mavenartifactid $ArtifactId$
  */
-public class JFigureViewer<G extends Graph<?,?,?,?>> extends ZoomablePanel
+public class JFigureView<G extends Graph<?,?,?,?>> extends ZoomableView
 implements ViewComponentContainer<Figure, G> {
 
-	private static final long serialVersionUID = 2277117769809745385L;
+	private static final long serialVersionUID = 4276337184657293505L;
 
 	/** Precision in pixels for the clicking action (in pixels).
 	 */
@@ -170,6 +164,8 @@ implements ViewComponentContainer<Figure, G> {
 
 
 	private final UUID viewID = UUID.randomUUID();
+	
+	private final ViewDocumentWrapper documentWrapper;
 
 	private volatile LinkedList<Figure> figures = new LinkedList<Figure>();
 
@@ -212,6 +208,10 @@ implements ViewComponentContainer<Figure, G> {
 	 */
 	protected final ReentrantLock deletionLock = new ReentrantLock();
 
+	/** Handler for events.
+	 */
+	private final EventHandler eventHandler = new EventHandler();
+
 	/** Construct a new JFigurePanel.
 	 *
 	 * @param supportedGraphType is the type supported by this viewer.
@@ -222,27 +222,45 @@ implements ViewComponentContainer<Figure, G> {
 	 * is removed; <code>false</code> to permits to the user to select
 	 * the figure or the model object to be removed.
 	 */
-	public JFigureViewer(Class<G> supportedGraphType, G g, FigureFactory<G> figureFactory, boolean isAlwaysRemovingModelObjects) {
-		super();
+	public JFigureView(Class<G> supportedGraphType, G g, FigureFactory<G> figureFactory, boolean isAlwaysRemovingModelObjects) {
+		this(new ViewDocumentWrapper(), supportedGraphType, g, figureFactory, isAlwaysRemovingModelObjects);
+	}
+	
+	/** Construct a new JFigurePanel.
+	 *
+	 * @param documentWrapper is the wrapper to the document.
+	 * @param supportedGraphType is the type supported by this viewer.
+	 * @param g is the graph to display.
+	 * @param figureFactory is the factory for figures.
+	 * @param isAlwaysRemovingModelObjects is <code>true</code> to allow this
+	 * base mode to remove the model objects each time an associated figure
+	 * is removed; <code>false</code> to permits to the user to select
+	 * the figure or the model object to be removed.
+	 */
+	private JFigureView(ViewDocumentWrapper documentWrapper, Class<G> supportedGraphType, G g, FigureFactory<G> figureFactory, boolean isAlwaysRemovingModelObjects) {
+		super(documentWrapper);
 		assert(supportedGraphType!=null);
 		assert(g!=null);
 		assert(figureFactory!=null);
+		assert(documentWrapper!=null);
+
+		this.documentWrapper = documentWrapper;
+		this.documentWrapper.setView(this);
 		this.isAlwaysRemovingModelObjects = isAlwaysRemovingModelObjects;
 		this.supportedGraphType = supportedGraphType;
 		this.graph = g;
 		this.figureFactory = figureFactory;
 		this.figureFactory.addCollisionAvoider(this.collisionAvoider);
-		this.graph.addModelObjectListener(getEventHandler(ModelObjectListener.class));
+		this.graph.addModelObjectListener(this.eventHandler);
 		setAntiAliased(true);
 
 		this.selectionManager = new JSelectionManager();
 		this.undoManager = new UndoManagerSwing();
 		this.mode = new ModeManagerOwner();
 
-		this.selectionManager.addSelectionListener(getEventHandler(EventHandler.class));
-		addFigureListener(getEventHandler(EventHandler.class));
-		addKeyListener(getEventHandler(KeyListener.class));
-		this.mode.addSelectableInteractionListener(getEventHandler(SelectableInteractionListener.class));
+		this.selectionManager.addSelectionListener(this.eventHandler);
+		addFigureListener(this.eventHandler);
+		this.mode.addSelectableInteractionListener(this.eventHandler);
 
 		setFocusTraversalKeysEnabled(false);
 		setFocusable(true);
@@ -335,7 +353,7 @@ implements ViewComponentContainer<Figure, G> {
 	public boolean isEditable() {
 		return this.isEditable;
 	}
-	
+
 	/** Replies if the selection manager is enabled
 	 * 
 	 * @return <code>true</code> if the selection manager is enabled.
@@ -343,7 +361,7 @@ implements ViewComponentContainer<Figure, G> {
 	public boolean isSelectionEnabled() {
 		return this.isSelectionEnabled;
 	}
-	
+
 	/** Set if the selection manager is enabled
 	 * 
 	 * @param enable
@@ -355,7 +373,7 @@ implements ViewComponentContainer<Figure, G> {
 				this.selectionManager.clear();
 		}
 	}
-	
+
 
 	/** Set if this viewer is interactively editable.
 	 * 
@@ -416,7 +434,7 @@ implements ViewComponentContainer<Figure, G> {
 	 * 
 	 * @return the precision of the clicks (in pixels).
 	 */
-	public float getClickPrecision() {
+	public float getHitPrecision() {
 		return this.hitPrecision;
 	}
 
@@ -434,30 +452,21 @@ implements ViewComponentContainer<Figure, G> {
 		}
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	protected EventListener createEventHandler() {
-		return new EventHandler();
-	}
-
 	private void removeFigureListeners(Figure figure) {
-		figure.removeViewComponentChangeListener(getEventHandler(ViewComponentChangeListener.class));
-		figure.removeViewComponentPropertyChangeListener(getEventHandler(ViewComponentPropertyChangeListener.class));
-		figure.removeViewComponentRepaintListener(getEventHandler(ViewComponentLayoutListener.class));
+		figure.removeViewComponentChangeListener(this.eventHandler);
+		figure.removeViewComponentPropertyChangeListener(this.eventHandler);
+		figure.removeViewComponentRepaintListener(this.eventHandler);
 		if (figure instanceof ModelObjectFigure<?>)
-			((ModelObjectFigure<?>)figure).removeViewComponentBindingListener(
-					getEventHandler(ViewComponentBindingListener.class));
+			((ModelObjectFigure<?>)figure).removeViewComponentBindingListener(this.eventHandler);
 	}
 
 	private void addFigureListeners(Figure figure) {
-		figure.addViewComponentChangeListener(getEventHandler(ViewComponentChangeListener.class));
-		figure.addViewComponentPropertyChangeListener(getEventHandler(ViewComponentPropertyChangeListener.class));
-		figure.addViewComponentRepaintListener(getEventHandler(ViewComponentLayoutListener.class));
+		figure.addViewComponentChangeListener(this.eventHandler);
+		figure.addViewComponentPropertyChangeListener(this.eventHandler);
+		figure.addViewComponentRepaintListener(this.eventHandler);
 		if (figure instanceof ModelObjectFigure<?>)
 			((ModelObjectFigure<?>)figure).addViewComponentBindingListener(
-					getEventHandler(ViewComponentBindingListener.class));
+					this.eventHandler);
 	}
 
 	/**
@@ -532,10 +541,9 @@ implements ViewComponentContainer<Figure, G> {
 	 */
 	public synchronized void setGraph(G g) {
 		if (g!=null && g!=this.graph) {
-			ModelObjectListener eh = getEventHandler(ModelObjectListener.class);
 			G old = this.graph;
 			if (this.graph!=null) 
-				this.graph.removeModelObjectListener(eh);
+				this.graph.removeModelObjectListener(this.eventHandler);
 			this.graph = g;
 			Iterator<Figure> iterator = this.figures.iterator();
 			Figure fig;
@@ -546,9 +554,9 @@ implements ViewComponentContainer<Figure, G> {
 				iterator.remove();
 			}
 			this.documentBounds = null;
-			this.graph.addModelObjectListener(eh);
+			this.graph.addModelObjectListener(this.eventHandler);
 			firePropertyChange("graph", old, this.graph); //$NON-NLS-1$
-			refreshWorkspaceSize();
+			onUpdateViewParameters();
 			repaint();
 		}
 	}
@@ -592,8 +600,8 @@ implements ViewComponentContainer<Figure, G> {
 			this.documentBounds = null;
 			component.setViewComponentContainer(this);
 			addFigureListeners(component);
-			refreshWorkspaceSize();
-			if (firstComponent) setZoomFactorForPixelRatio(1);
+			onUpdateViewParameters();
+			if (firstComponent) setScalingFactorForPixelRatio(1f);
 			fireFigureAdded(component);
 		}
 		return position;
@@ -634,7 +642,7 @@ implements ViewComponentContainer<Figure, G> {
 						((ModelObjectFigure<?>)component).setModelObject(null);
 					}
 					this.documentBounds = null;
-					refreshWorkspaceSize();
+					onUpdateViewParameters();
 					fireFigureRemoved(component);
 					repaint();
 				}
@@ -656,7 +664,7 @@ implements ViewComponentContainer<Figure, G> {
 			fig.setViewComponentContainer(null);
 			removeFigureListeners(fig);
 			this.documentBounds = null;
-			refreshWorkspaceSize();
+			onUpdateViewParameters();
 			fireFigureRemoved(fig);
 		}
 		return fig;
@@ -677,7 +685,7 @@ implements ViewComponentContainer<Figure, G> {
 			}
 
 			this.documentBounds = null;
-			refreshWorkspaceSize();
+			onUpdateViewParameters();
 
 			for(Figure fig : oldFigures) {
 				fireFigureRemoved(fig);
@@ -773,7 +781,7 @@ implements ViewComponentContainer<Figure, G> {
 				sg.popRenderingContext();
 			}
 		}
-		
+
 		Iterator<Figure> iterator = this.figures.descendingIterator();
 		Figure figure;
 		while (iterator.hasNext()) {
@@ -786,21 +794,96 @@ implements ViewComponentContainer<Figure, G> {
 			figure.paint(g);
 			g.popRenderingContext();
 		}
-
+		
 		VectorToolkit.finalizeDrawing(g);		
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
-	protected void paintPanel(ZoomableGraphics2D gzoom) {
-		if (isOutsideGrayed() && !gzoom.isPrinting()) {
+	protected float getPreferredFocusX() {
+		Rectangle2f r = getViewBounds();
+		if (r!=null) return r.getCenterX();
+		return 0f;
+	}
+
+	@Override
+	protected float getPreferredFocusY() {
+		Rectangle2f r = getViewBounds();
+		if (r!=null) return r.getCenterY();
+		return 0f;
+	}
+
+	@Override
+	protected void onDrawView(Graphics2D canvas, float scaleFactor, CenteringTransform centeringTransform) {
+		SwingViewGraphics2D gzoom = new SwingViewGraphics2D(
+				canvas,
+				scaleFactor,
+				centeringTransform,
+				getBackgroundColor(),
+				getLOD()==Graphics2DLOD.HIGH_LEVEL_OF_DETAIL || isAntiAliased(),
+				getScalingSensitivity(),
+				getFocusX(),
+				getFocusY(),
+				getMinScalingFactor(),
+				getMaxScalingFactor());
+
+		if (isOutsideGrayed()) {
 			paintOutsideGrayed(gzoom);
 		}
 		if (isAxisDrawn()) paintAxis(gzoom);
-		paintViewComponents(new DelegatedViewGraphics2D<ZoomableGraphics2D>(gzoom));
+		paintViewComponents(gzoom);
 		getModeManager().paint(gzoom);
+	}
+
+	@Override
+	protected void onClick(PointerEvent e) {
+		getModeManager().pointerClicked(e);
+	}
+
+	@Override
+	protected void onLongClick(PointerEvent e) {
+		getModeManager().pointerLongClicked(e);
+	}
+
+	@Override
+	protected void onPointerDragged(PointerEvent e) {
+		getModeManager().pointerDragged(e);
+	}
+	
+	@Override
+	protected void onPointerMoved(PointerEvent e) {
+		getModeManager().pointerMoved(e);
+	}
+
+	@Override
+	protected void onPointerPressed(PointerEvent e) {
+		requestFocusInWindow();
+		getModeManager().pointerPressed(e);
+	}
+
+	@Override
+	protected void onPointerReleased(PointerEvent e) {
+		getModeManager().pointerReleased(e);
+	}
+	
+	@Override
+	protected void onKeyPressed(org.arakhne.afc.ui.event.KeyEvent e) {
+		getModeManager().keyPressed(e);
+	}
+	
+	@Override
+	protected void onKeyReleased(org.arakhne.afc.ui.event.KeyEvent e) {
+		getModeManager().keyReleased(e);
+	}
+	
+	@Override
+	protected void onKeyTyped(org.arakhne.afc.ui.event.KeyEvent e) {
+		getModeManager().keyTyped(e);
+	}
+	
+	@Override
+	protected void onUpdateViewParameters() {
+		super.onUpdateViewParameters();
+		this.documentWrapper.fireChange();
 	}
 
 	/** Paint the outside of the workspace with gray.
@@ -808,20 +891,15 @@ implements ViewComponentContainer<Figure, G> {
 	 * @param g
 	 */
 	protected void paintOutsideGrayed(ZoomableGraphics2D g) {
+		Graphics2D rg = g.getNativeGraphics2D();
 		java.awt.Color c = getBackground();
 		java.awt.Color lightLightGray = c.darker();
 		java.awt.Dimension dim = getSize(); 
-		g.setColor(lightLightGray);
-		g.fill(new Rectangle2D.Double(
-				g.pixel2logical_x(0),
-				g.pixel2logical_y(0),
-				g.pixel2logical_size((float)dim.getWidth()),
-				g.pixel2logical_size((float)dim.getHeight())));
-		Rectangle2D docBounds = getDocumentRect();
+		rg.setColor(lightLightGray);
+		rg.fill(new Rectangle2D.Double(0, 0, dim.getWidth(), dim.getHeight()));
+		Rectangle2f docBounds = getViewBounds();
 		if (docBounds!=null && !docBounds.isEmpty()) {
-			g.clearRect(
-					(float)docBounds.getX(), (float)docBounds.getY(),
-					(float)docBounds.getWidth(), (float)docBounds.getHeight());
+			g.clear(docBounds);
 		}
 	}
 
@@ -847,11 +925,12 @@ implements ViewComponentContainer<Figure, G> {
 		float x0 = g.logical2pixel_x(0);
 		float y0 = g.logical2pixel_y(0);
 
-		Graphics2D rg = g.getRenderingGraphics();
+		Graphics2D rg = g.getNativeGraphics2D();
+		rg.setFont(rg.getFont().deriveFont(10f));
 		rg.setColor(java.awt.Color.DARK_GRAY);
 		rg.draw(path);
-		rg.drawString("x", 15, 5); //$NON-NLS-1$
-		rg.drawString("y", 5, 15); //$NON-NLS-1$
+		rg.drawString("x", 17, 8); //$NON-NLS-1$
+		rg.drawString("y", 2, 23); //$NON-NLS-1$
 
 		rg.setColor(java.awt.Color.LIGHT_GRAY);
 		rg.draw(new Line2D.Float(x0, 0, x0, getHeight()));
@@ -866,7 +945,7 @@ implements ViewComponentContainer<Figure, G> {
 	 */
 	public void repaint(Figure figure) {
 		if (figure==null) repaint();
-		else repaint(figure.getDamagedBounds());
+		else repaint(figure.getBounds());
 	}
 
 	/** Repaint the graphical area around the figures associated to
@@ -879,36 +958,22 @@ implements ViewComponentContainer<Figure, G> {
 		if (obj!=null) {
 			ViewComponent vc = obj.getViewBinding().getView(getUUID(), ViewComponent.class);
 			if (vc!=null) {
-				repaint(vc.getDamagedBounds());
+				repaint(vc.getBounds());
 				return ;
 			}
 		}
 		repaint();
 	}
 
-	/** Repaint the area of the component that is corresponding
-	 * to the given bounds.
-	 * 
-	 * @param bounds
-	 */
-	public void repaint(Rectangle2f bounds) {
-		if (bounds==null) repaint();
-		else repaint(
-				(int)logical2pixel_x(bounds.getMinX()) - 2,
-				(int)logical2pixel_y(bounds.getMinY()) - 2,
-				(int)logical2pixel_size(bounds.getWidth()) + 4,
-				(int)logical2pixel_size(bounds.getHeight()) + 4);
-	}
-
 	/** Compute and reply the bounds of the entire document.
 	 * 
 	 * @return the bounds of the entire document.
 	 */
-	protected Rectangle2f calcDocumentBounds() {
+	protected Rectangle2f calcViewBounds() {
 		Rectangle2f r = null;
 		Rectangle2f rr;
 		for(Figure figure : this.figures) {
-			rr = figure.getDamagedBounds();
+			rr = figure.getBounds();
 			assert(rr!=null);
 			if (r==null) r = rr.clone();
 			else Rectangle2f.union(r, rr, r);
@@ -920,36 +985,13 @@ implements ViewComponentContainer<Figure, G> {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public final Rectangle2f getComponentBounds() {
+	public final Rectangle2f getViewBounds() {
 		Rectangle2f r = (this.documentBounds==null) ? null : this.documentBounds.get();
 		if (r==null) {
-			r = calcDocumentBounds();
+			r = calcViewBounds();
 			this.documentBounds = new SoftReference<Rectangle2f>(r);
 		}
 		return r;
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public Rectangle2D getDocumentRect() {
-		Rectangle2f bb = getComponentBounds();
-		if (bb==null) return null;
-		return new Rectangle2D.Float(
-				bb.getMinX(),
-				bb.getMinY(),
-				bb.getWidth(),
-				bb.getHeight());
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public Rectangle2D getVisibleDocumentRect() {
-		// All the view components are visible, ie displayed.
-		return getDocumentRect();
 	}
 
 	/** Replies the figures in the container.
@@ -965,6 +1007,8 @@ implements ViewComponentContainer<Figure, G> {
 	 * its shape. If you want to test the point against
 	 * the bounds of the figures, please use
 	 * {@link #getFigureWithBoundsAt(float, float)}.
+	 * This function uses the precision of the clicks, which
+	 * is replied by {@link #getHitPrecision()}.
 	 * 
 	 * @param x
 	 * @param y
@@ -972,7 +1016,7 @@ implements ViewComponentContainer<Figure, G> {
 	 * @see #getFigureWithBoundsAt(float, float)
 	 */
 	public Figure getFigureAt(float x, float y) {
-		float precision = pixel2logical_size(getClickPrecision());
+		float precision = pixel2logical_size(getHitPrecision());
 		Circle2f circle = new Circle2f(x, y, precision);
 		for(Figure figure : this.figures) {
 			if (figure.intersects(circle)) {
@@ -982,21 +1026,25 @@ implements ViewComponentContainer<Figure, G> {
 		return null;
 	}
 
-	/** Replies the figure that has its bounds with the specified
+	/** Replies the figu with the precision re that has its bounds with the specified
 	 * point inside. If you want to test the point against
 	 * the shape of the figures, please use
 	 * {@link #getFigureAt(float, float)}.
+	 * This function uses the precision of the clicks, which
+	 * is replied by {@link #getHitPrecision()}.
 	 * 
 	 * @param x
 	 * @param y
 	 * @return the hit figure, or <code>null</code> if none.
 	 */
 	public Figure getFigureWithBoundsAt(float x, float y) {
-		float precision = pixel2logical_size(getClickPrecision());
+		float precision = pixel2logical_size(getHitPrecision());
 		Rectangle2f clickRect = new Rectangle2f();
 		clickRect.setFromCorners(x-precision, y-precision, x+precision, y+precision);
+		Rectangle2f figureBounds;
 		for(Figure figure : this.figures) {
-			if (figure.intersects(clickRect)) {
+			figureBounds = figure.getBounds();
+			if (figureBounds!=null && figureBounds.intersects(clickRect)) {
 				return figure;
 			}
 		}
@@ -1024,9 +1072,12 @@ implements ViewComponentContainer<Figure, G> {
 	 * @return the hit figures, never <code>null</code>.
 	 */
 	public Set<Figure> getFiguresIn(Rectangle2f bounds) {
+		assert(bounds!=null);
+		Rectangle2f figureBounds;
 		Set<Figure> figures = new TreeSet<Figure>();
 		for(Figure figure : this.figures) {
-			if (figure.contains(bounds)) {
+			figureBounds = figure.getBounds();
+			if (figureBounds!=null && bounds.contains(figureBounds)) {
 				figures.add(figure);
 			}
 		}
@@ -1053,8 +1104,10 @@ implements ViewComponentContainer<Figure, G> {
 	 * @return the hit figure, or <code>null</code>.
 	 */
 	public Figure getFigureIn(Rectangle2f bounds) {
+		Rectangle2f figureBounds;
 		for(Figure figure : this.figures) {
-			if (figure.contains(bounds)) {
+			figureBounds = figure.getBounds();
+			if (figureBounds!=null && bounds.contains(figureBounds)) {
 				return figure;
 			}
 		}
@@ -1072,8 +1125,8 @@ implements ViewComponentContainer<Figure, G> {
 			this.figures.set(idx, o);
 			this.figures.set(idx-1, figure);
 
-			Rectangle2f r = figure.getDamagedBounds();
-			r = o.getDamagedBounds().createUnion(r);
+			Rectangle2f r = figure.getBounds();
+			r = o.getBounds().createUnion(r);
 
 			repaint(r);
 		}
@@ -1090,8 +1143,8 @@ implements ViewComponentContainer<Figure, G> {
 			this.figures.set(idx, o);
 			this.figures.set(idx+1, figure);
 
-			Rectangle2f r = figure.getDamagedBounds();
-			r = o.getDamagedBounds().createUnion(r);
+			Rectangle2f r = figure.getBounds();
+			r = o.getBounds().createUnion(r);
 
 			repaint(r);
 		}
@@ -1417,7 +1470,7 @@ implements ViewComponentContainer<Figure, G> {
 		 * @param mousePosition
 		 */
 		public EmbeddedTextFigureEditor(
-				JFigureViewer<?> component,
+				JFigureView<?> component,
 				TextFigure figure,
 				Point2D mousePosition) {
 			super(component,
@@ -1435,7 +1488,7 @@ implements ViewComponentContainer<Figure, G> {
 					component.logical2pixel_y(figure.getY()));
 
 			Font font = component.getFont();
-			font = component.logical2pixel(font);
+			font = font.deriveFont(component.logical2pixel_size(font.getSize2D()));
 			getTextField().setFont(font);
 			getTextField().setBorder(null);
 
@@ -1478,7 +1531,7 @@ implements ViewComponentContainer<Figure, G> {
 		 */
 		@Override
 		protected void onPopupFieldClosed() {
-			((JFigureViewer<?>)getOwner()).closePopupEditor();
+			((JFigureView<?>)getOwner()).closePopupEditor();
 		}
 
 		/**
@@ -1498,7 +1551,7 @@ implements ViewComponentContainer<Figure, G> {
 		 */
 		@Override
 		public void componentHidden(ComponentEvent e) {
-			((JFigureViewer<?>)getOwner()).closePopupEditor();
+			((JFigureView<?>)getOwner()).closePopupEditor();
 		}
 
 		/**
@@ -1508,7 +1561,7 @@ implements ViewComponentContainer<Figure, G> {
 		public void propertyChange(PropertyChangeEvent evt) {
 			if ("zoomFactor".equals(evt.getPropertyName()) //$NON-NLS-1$
 					||"targetPoint".equals(evt.getPropertyName())) { //$NON-NLS-1$
-				((JFigureViewer<?>)getOwner()).closePopupEditor();
+				((JFigureView<?>)getOwner()).closePopupEditor();
 			}
 		}
 
@@ -1525,362 +1578,6 @@ implements ViewComponentContainer<Figure, G> {
 		}
 
 	} // class EmbeddedTextFigureEditor
-
-	/**
-	 * @author $Author: hannoun$
-	 * @author $Author: galland$
-	 * @author $Author: baumgartner$
-	 * @version $FullVersion$
-	 * @mavengroupid $GroupId$
-	 * @mavenartifactid $ArtifactId$
-	 */
-	protected class EventHandler extends ZoomablePanel.EventHandler
-	implements ViewComponentLayoutListener, ModelObjectListener,
-	ViewComponentBindingListener, SelectionListener, FigureListener, KeyListener,
-	SelectableInteractionListener, ViewComponentChangeListener, ViewComponentPropertyChangeListener {
-
-		/**
-		 */
-		public EventHandler() {
-			//
-		}
-
-		/**
-		 * {@inheritDoc}
-		 */
-		@Override
-		public void selectionChanged(SelectionEvent event) {
-			repaint();
-		}
-
-		/**
-		 * {@inheritDoc}
-		 */
-		@Override
-		public void figureAdded(FigureEvent event) {
-			//
-		}
-
-		/**
-		 * {@inheritDoc}
-		 */
-		@Override
-		public void figureRemoved(FigureEvent event) {
-			getSelectionManager().remove(event.getRemovedFigure());
-		}
-
-		/**
-		 * {@inheritDoc}
-		 */
-		@Override
-		public void figureChanged(FigureEvent event) {
-			//
-		}
-
-		/**
-		 * {@inheritDoc}
-		 */
-		@Override
-		public void mouseClicked(MouseEvent event) {
-			super.mouseClicked(event);
-			getModeManager().pointerClicked(new PointerEventSwing(event));
-		}
-
-		/**
-		 * {@inheritDoc}
-		 */
-		@Override
-		public void mouseDragged(MouseEvent event) {
-			super.mouseDragged(event);
-			getModeManager().pointerDragged(new PointerEventSwing(event));
-		}
-
-		/**
-		 * {@inheritDoc}
-		 */
-		@Override
-		public void mouseEntered(MouseEvent e) {
-			super.mouseEntered(e);
-		}
-
-		/**
-		 * {@inheritDoc}
-		 */
-		@Override
-		public void mouseExited(MouseEvent e) {
-			super.mouseExited(e);
-		}
-
-		/**
-		 * {@inheritDoc}
-		 */
-		@Override
-		public void mouseMoved(MouseEvent event) {
-			super.mouseMoved(event);
-			getModeManager().pointerMoved(new PointerEventSwing(event));
-		}
-
-		/**
-		 * {@inheritDoc}
-		 */
-		@Override
-		public void mousePressed(MouseEvent event) {
-			super.mousePressed(event);
-			getModeManager().pointerPressed(new PointerEventSwing(event));
-			requestFocusInWindow();
-		}
-
-		/**
-		 * {@inheritDoc}
-		 */
-		@Override
-		public void mouseReleased(MouseEvent event) {
-			super.mouseReleased(event);
-			getModeManager().pointerReleased(new PointerEventSwing(event));
-		}
-
-		/**
-		 * {@inheritDoc}
-		 */
-		@Override
-		public void keyTyped(KeyEvent e) {
-			getModeManager().keyTyped(new KeyEventSwing(e));
-		}
-
-		/**
-		 * {@inheritDoc}
-		 */
-		@Override
-		public void keyPressed(KeyEvent e) {
-			getModeManager().keyPressed(new KeyEventSwing(e));
-			requestFocusInWindow();
-		}
-
-		/**
-		 * {@inheritDoc}
-		 */
-		@Override
-		public void keyReleased(KeyEvent e) {
-			getModeManager().keyReleased(new KeyEventSwing(e));
-		}
-
-		/**
-		 * {@inheritDoc}
-		 */
-		@Override
-		public void actionPerformed(SelectableInteractionEvent event) {
-			if (!event.isConsumed() && event.getSource() instanceof TextFigure) {
-				Point2D p = null;
-				if (event.getPointerEvent()!=null) {
-					PointerEvent evt = event.getPointerEvent();
-					p = new Point2f(evt.getX(), evt.getY());
-				}
-				openPopupEditor(
-						(TextFigure)event.getSource(),
-						p);
-				event.consume();
-			}
-		}
-
-		/**
-		 * {@inheritDoc}
-		 */
-		@Override
-		public void popupPerformed(SelectableInteractionEvent event) {
-			//
-		}
-
-		/**
-		 * {@inheritDoc}
-		 */
-		@Override
-		public boolean figureDeletionPerformed(Selectable figure, boolean deleteModel) {
-			return true;
-		}
-
-		/**
-		 * {@inheritDoc}
-		 */
-		@SuppressWarnings("synthetic-access")
-		@Override
-		public void componentRepaint(ViewComponent component, boolean boundsChanged) {
-			if (boundsChanged) {
-				JFigureViewer.this.documentBounds = null;
-				refreshWorkspaceSize();
-			}
-			Rectangle2f bb = component.getDamagedBounds();
-			repaint(bb);
-		}
-
-		/**
-		 * {@inheritDoc}
-		 */
-		@Override
-		public void collisionAvoidance(ViewComponent component) {
-			if (component instanceof Figure) {
-				Rectangle2f componentBounds = component.getBounds().clone();
-				CollisionAvoider avoider = getCollisionAvoider();
-				Set<ViewComponent> myself = Collections.singleton(component);
-				Rectangle2f collide = avoider.detectCollision(
-						componentBounds, myself);
-				Vector2D v = null;
-				if (collide!=null) {
-					do {
-						v = componentBounds.avoidCollisionWith(collide, v);
-						collide = avoider.detectCollision(
-								componentBounds, myself);
-					}
-					while (collide!=null);
-
-					component.setBounds(
-							componentBounds.getMinX(),
-							componentBounds.getMinY(),
-							componentBounds.getWidth(),
-							componentBounds.getHeight());
-				}
-			}
-		}
-
-		/**
-		 * {@inheritDoc}
-		 */
-		@Override
-		public void componentCreation(Figure parent, ModelObject modelObject) {
-			getFigureFactory().createSubFigureInside(
-					getUUID(),
-					getGraph(),
-					parent,
-					modelObject);
-		}
-
-		/**
-		 * {@inheritDoc}
-		 */
-		@Override
-		public void componentRemoval(Figure parent, SubFigure subfigure) {
-			getFigureFactory().removeSubFigureFrom(
-					getUUID(),
-					getGraph(),
-					parent,
-					subfigure);
-		}
-
-		/**
-		 * {@inheritDoc}
-		 */
-		@Override
-		public void componentAddition(Figure figure) {
-			assert(figure!=null);
-			JFigureViewer.this.addFigure(figure);
-		}
-
-		/**
-		 * {@inheritDoc}
-		 */
-		@Override
-		public void componentRemoval(Figure figure) {
-			assert(figure!=null);
-			JFigureViewer.this.removeFigure(figure);
-		}
-
-		/**
-		 * {@inheritDoc}
-		 */
-		@Override
-		public void modelPropertyChanged(ModelObjectEvent event) {
-			// Nothing to repaint, because an repainting event
-			// will arrive from the figure itself
-		}
-
-		/**
-		 * {@inheritDoc}
-		 */
-		@Override
-		public void modelContainerChanged(ModelObjectEvent event) {
-			// Nothing to repaint, because an repainting event
-			// will arrive from the figure itself
-		}
-
-		/**
-		 * {@inheritDoc}
-		 */
-		@Override
-		public void modelLinkChanged(ModelObjectEvent event) {
-			// Nothing to repaint, because an repainting event
-			// will arrive from the figure itself
-		}
-
-		/**
-		 * {@inheritDoc}
-		 */
-		@Override
-		public void modelContentChanged(ModelObjectEvent event) {
-			// Nothing to repaint, because an repainting event
-			// will arrive from the figure itself
-		}
-
-		/**
-		 * {@inheritDoc}
-		 */
-		@Override
-		public void modelComponentAdded(ModelObjectEvent event) {
-			if (isFigureAutomaticallyAdded() && event.getSource()==getGraph()) {
-				ModelObject addedObject = event.getAddedObject();
-				if (addedObject!=null) {
-					Figure figure = addedObject.getViewBinding().getView(getUUID(), Figure.class);
-					if (figure==null) {
-						FigureFactory<G> factory = getFigureFactory();
-						Rectangle2D bb = getVisibleDocumentRect();
-						figure = factory.createFigureFor(
-								getUUID(),
-								new Rectangle2f(
-										(float)bb.getMinX(),
-										(float)bb.getMinY(),
-										(float)bb.getWidth(),
-										(float)bb.getHeight()),
-										getGraph(), addedObject);
-					}
-					if (figure!=null) addFigure(figure);
-				}
-			}
-		}
-
-		/**
-		 * {@inheritDoc}
-		 */
-		@Override
-		public void modelComponentRemoved(ModelObjectEvent event) {
-			if (event.getSource()==getGraph()) {
-				Figure fig = event.getRemovedObject().getViewBinding().getView(getUUID(), Figure.class);
-				if (fig!=null) {
-					removeFigure(fig);
-				}
-			}
-		}
-
-		/**
-		 * {@inheritDoc}
-		 */
-		@Override
-		public void propertyChange(ViewComponentPropertyChangeEvent event) {
-			ViewComponent vc = event.getSource();
-			if (vc instanceof Figure) {
-				fireFigureChanged((Figure)vc);
-			}
-		}
-
-		/**
-		 * {@inheritDoc}
-		 */
-		@Override
-		public void componentChange(ViewComponentChangeEvent event) {
-			ViewComponent vc = event.getSource();
-			if (vc instanceof Figure) {
-				fireFigureChanged((Figure)vc);
-			}
-		}
-
-	} // class EventHandler
 
 	/**
 	 * @author $Author: galland$
@@ -1902,9 +1599,9 @@ implements ViewComponentContainer<Figure, G> {
 		@Override
 		public boolean isCollisionFree(Rectangle2f bounds, Set<? extends ViewComponent> exceptions) {
 			Rectangle2f r;
-			for(Figure figure : JFigureViewer.this) {
+			for(Figure figure : JFigureView.this) {
 				if (figure instanceof BlockFigure && !exceptions.contains(figure)) {
-					r = figure.getDamagedBounds();
+					r = figure.getBounds();
 					if (r!=null && !r.isEmpty()
 							&& r.intersects(bounds)) {
 						return false;
@@ -1920,9 +1617,9 @@ implements ViewComponentContainer<Figure, G> {
 		@Override
 		public Rectangle2f detectCollision(Rectangle2f bounds, Set<? extends ViewComponent> exceptions) {
 			Rectangle2f r;
-			for(Figure figure : JFigureViewer.this) {
+			for(Figure figure : JFigureView.this) {
 				if (figure instanceof BlockFigure && !exceptions.contains(figure)) {
-					r = figure.getDamagedBounds();
+					r = figure.getBounds();
 					if (r!=null && !r.isEmpty()
 							&& r.intersects(bounds)) {
 						return r;
@@ -1969,7 +1666,7 @@ implements ViewComponentContainer<Figure, G> {
 
 		@Override
 		public void doEdit() {
-			UUID newViewId = JFigureViewer.this.getUUID();
+			UUID newViewId = JFigureView.this.getUUID();
 
 			if (this.addedFigure instanceof Figure) {
 				Figure aFigure = (Figure)this.addedFigure;
@@ -1992,10 +1689,10 @@ implements ViewComponentContainer<Figure, G> {
 					ViewBinding binding = this.modelObject.getViewBinding();
 					View old = binding.replaceView(oldViewId, newViewId);
 					if (old instanceof Figure && old!=this.addedFigure) {
-						JFigureViewer.this.removeFigure((Figure)old);
+						JFigureView.this.removeFigure((Figure)old);
 					}
 				}
-				JFigureViewer.this.addFigure(aFigure);
+				JFigureView.this.addFigure(aFigure);
 			}
 			else if (this.addedFigure instanceof SubFigure) {
 				if (this.modelObject!=null) {
@@ -2013,7 +1710,7 @@ implements ViewComponentContainer<Figure, G> {
 		public void undoEdit() {
 			if (this.addedFigure instanceof Figure) {
 				Figure aFigure = (Figure)this.addedFigure;
-				JFigureViewer.this.removeFigure(aFigure, false);
+				JFigureView.this.removeFigure(aFigure, false);
 			}
 		}
 
@@ -2022,7 +1719,7 @@ implements ViewComponentContainer<Figure, G> {
 		 */
 		@Override
 		public String getPresentationName() {
-			return Locale.getString(JFigureViewer.class, "UNDO_PRESENTATION_ADD_FIGURE", this.addedFigure.getName()); //$NON-NLS-1$
+			return Locale.getString(JFigureView.class, "UNDO_PRESENTATION_ADD_FIGURE", this.addedFigure.getName()); //$NON-NLS-1$
 		}
 
 	} // class FigureUndo
@@ -2066,26 +1763,26 @@ implements ViewComponentContainer<Figure, G> {
 		@SuppressWarnings("unchecked")
 		@Override
 		public void doEdit() {
-			boolean isAuto = JFigureViewer.this.isFigureAutomaticallyAdded();
-			JFigureViewer.this.setFigureAutomaticallyAdded(false);
+			boolean isAuto = JFigureView.this.isFigureAutomaticallyAdded();
+			JFigureView.this.setFigureAutomaticallyAdded(false);
 			try {
 				this.target.moveFromGraph(this.source);
 			}
 			finally {
-				JFigureViewer.this.setFigureAutomaticallyAdded(isAuto);
+				JFigureView.this.setFigureAutomaticallyAdded(isAuto);
 			}
 		}
 
 		@SuppressWarnings("unchecked")
 		@Override
 		public void undoEdit() {
-			boolean isAuto = JFigureViewer.this.isFigureAutomaticallyAdded();
-			JFigureViewer.this.setFigureAutomaticallyAdded(false);
+			boolean isAuto = JFigureView.this.isFigureAutomaticallyAdded();
+			JFigureView.this.setFigureAutomaticallyAdded(false);
 			try {
 				this.source.moveFromGraph(this.target, this.ids);
 			}
 			finally {
-				JFigureViewer.this.setFigureAutomaticallyAdded(isAuto);
+				JFigureView.this.setFigureAutomaticallyAdded(isAuto);
 			}
 		}
 
@@ -2114,7 +1811,7 @@ implements ViewComponentContainer<Figure, G> {
 		@Override
 		public String getPresentationName() {
 			String label = super.getPresentationName();
-			return Locale.getString(JFigureViewer.class, "UNDO_PRESENTATION_ADD", label); //$NON-NLS-1$
+			return Locale.getString(JFigureView.class, "UNDO_PRESENTATION_ADD", label); //$NON-NLS-1$
 		}
 
 		/**
@@ -2180,10 +1877,10 @@ implements ViewComponentContainer<Figure, G> {
 			if (this.figure!=null) {
 				String txt = this.figure.toString();
 				if (txt!=null && !txt.isEmpty()) {
-					return Locale.getString(JFigureViewer.class, "UNDO_PRESENTATION_DECORATION_ADDITION_1", txt); //$NON-NLS-1$
+					return Locale.getString(JFigureView.class, "UNDO_PRESENTATION_DECORATION_ADDITION_1", txt); //$NON-NLS-1$
 				}
 			}
-			return Locale.getString(JFigureViewer.class, "UNDO_PRESENTATION_DECORATION_ADDITION_n"); //$NON-NLS-1$
+			return Locale.getString(JFigureView.class, "UNDO_PRESENTATION_DECORATION_ADDITION_n"); //$NON-NLS-1$
 		}
 
 	} // class DecorationFigureAdditionUndo
@@ -2218,10 +1915,10 @@ implements ViewComponentContainer<Figure, G> {
 			if (this.figure!=null) {
 				String txt = this.figure.toString();
 				if (txt!=null && !txt.isEmpty()) {
-					return Locale.getString(JFigureViewer.class, "UNDO_PRESENTATION_FIGURE_REMOVAL_1", txt); //$NON-NLS-1$
+					return Locale.getString(JFigureView.class, "UNDO_PRESENTATION_FIGURE_REMOVAL_1", txt); //$NON-NLS-1$
 				}
 			}
-			return Locale.getString(JFigureViewer.class, "UNDO_PRESENTATION_FIGURE_REMOVAL_n"); //$NON-NLS-1$
+			return Locale.getString(JFigureView.class, "UNDO_PRESENTATION_FIGURE_REMOVAL_n"); //$NON-NLS-1$
 		}
 
 
@@ -2295,14 +1992,14 @@ implements ViewComponentContainer<Figure, G> {
 			}
 			boolean b = false;
 			try {
-				JFigureViewer.this.deletionLock.lock();
-				b = JFigureViewer.this.skipFigureModelUnlink;
-				JFigureViewer.this.skipFigureModelUnlink = !this.disconnectFigureAndModel;
+				JFigureView.this.deletionLock.lock();
+				b = JFigureView.this.skipFigureModelUnlink;
+				JFigureView.this.skipFigureModelUnlink = !this.disconnectFigureAndModel;
 				((Graph)getGraph()).removeEdge(this.edge);
 			}
 			finally {
-				JFigureViewer.this.skipFigureModelUnlink = b;
-				JFigureViewer.this.deletionLock.unlock();
+				JFigureView.this.skipFigureModelUnlink = b;
+				JFigureView.this.deletionLock.unlock();
 			}
 		}
 
@@ -2359,9 +2056,9 @@ implements ViewComponentContainer<Figure, G> {
 
 			boolean b = false;
 			try {
-				JFigureViewer.this.deletionLock.lock();
-				b = JFigureViewer.this.skipFigureModelUnlink;
-				JFigureViewer.this.skipFigureModelUnlink = !this.disconnectFigureAndModel;
+				JFigureView.this.deletionLock.lock();
+				b = JFigureView.this.skipFigureModelUnlink;
+				JFigureView.this.skipFigureModelUnlink = !this.disconnectFigureAndModel;
 
 				this.linkedEdges.clear();
 				for(Edge edge : this.node.getEdges()) {
@@ -2376,8 +2073,8 @@ implements ViewComponentContainer<Figure, G> {
 				((Graph)getGraph()).removeNode(this.node);
 			}
 			finally {
-				JFigureViewer.this.skipFigureModelUnlink = b;
-				JFigureViewer.this.deletionLock.unlock();
+				JFigureView.this.skipFigureModelUnlink = b;
+				JFigureView.this.deletionLock.unlock();
 			}
 		}
 
@@ -2418,25 +2115,10 @@ implements ViewComponentContainer<Figure, G> {
 			return createViewGraphics(g, antialiasing, isForPrinting, g.getLOD());
 		}
 
-		@SuppressWarnings("unchecked")
 		@Override
 		public ViewGraphics2D createViewGraphics(VectorGraphics2D g, boolean antialiasing, boolean isForPrinting, Graphics2DLOD lod) {
 			if (g instanceof ViewGraphics2D) return (ViewGraphics2D)g;
-			if (g instanceof DelegatedVectorGraphics2D<?>) {
-				DelegatedVectorGraphics2D<? extends LODGraphics2D> dvtg = (DelegatedVectorGraphics2D<?  extends LODGraphics2D>)g;
-				LODGraphics2D g2d = dvtg.getNativeGraphics2D();
-				if (g2d instanceof ViewGraphics2D) return (ViewGraphics2D)g2d;
-				DelegatedViewGraphics2D<LODGraphics2D> vg = new DelegatedViewGraphics2D<LODGraphics2D>(g2d);
-				return vg;
-			}
-			if (g instanceof Graphics2D) {
-				Graphics2D g2d = (Graphics2D)g;
-				DefaultLODGraphics2D lodg = new DefaultLODGraphics2D(
-						g2d, null, antialiasing, isForPrinting, lod);
-				DelegatedViewGraphics2D<DefaultLODGraphics2D> vg = new DelegatedViewGraphics2D<DefaultLODGraphics2D>(lodg);
-				return vg;
-			}
-			throw new IllegalArgumentException("cannot embed the given VectorGraphics2D into a ViewGraphics2D"); //$NON-NLS-1$
+			return new DelegatedViewGraphics2D(g);
 		}
 
 	}
@@ -2469,22 +2151,22 @@ implements ViewComponentContainer<Figure, G> {
 
 		@Override
 		public boolean isAlwaysRemovingModelObjects() {
-			return JFigureViewer.this.isAlwaysRemovingModelObjects();
+			return JFigureView.this.isAlwaysRemovingModelObjects();
 		}
 
 		@Override
 		public Object getUIComponent() {
-			return JFigureViewer.this;
+			return JFigureView.this;
 		}
 
 		@Override
 		public void requestFocus() {
-			JFigureViewer.this.requestFocus();
+			JFigureView.this.requestFocus();
 		}
 
 		@Override
 		public SelectionManager<? super Figure> getSelectionManager() {
-			return JFigureViewer.this.getSelectionManager();
+			return JFigureView.this.getSelectionManager();
 		}
 
 		@Override
@@ -2494,123 +2176,123 @@ implements ViewComponentContainer<Figure, G> {
 
 		@Override
 		public UndoManager getUndoManager() {
-			return JFigureViewer.this.getUndoManager();
+			return JFigureView.this.getUndoManager();
 		}
 
 		@Override
 		public void setCursor(MouseCursor cursor) {
-			JFigureViewer.this.setCursor(AwtUtil.getCursor(cursor));
+			JFigureView.this.setCursor(AwtUtil.getCursor(cursor));
 		}
 
 		@Override
 		public void repaint(Rectangle2f bounds) {
-			JFigureViewer.this.repaint(bounds);
+			JFigureView.this.repaint(bounds);
 		}
 
 		@Override
 		public void repaint() {
-			JFigureViewer.this.repaint();
+			JFigureView.this.repaint();
 		}
 
 		@Override
 		public float getClickPrecision() {
-			return JFigureViewer.this.getClickPrecision();
+			return JFigureView.this.getHitPrecision();
 		}
 
 		@Override
 		public ZoomableContext getZoomableContext() {
-			return JFigureViewer.this.getZoomableContext();
+			return JFigureView.this;
 		}
 
 		@Override
 		public void cut() {
-			JFigureViewer.this.cut();
+			JFigureView.this.cut();
 		}
 
 		@Override
 		public void copy() {
-			JFigureViewer.this.copy();
+			JFigureView.this.copy();
 		}
 
 		@Override
 		public void paste() {
-			JFigureViewer.this.paste();
+			JFigureView.this.paste();
 		}
 
 		@Override
 		public boolean isEditable() {
-			return JFigureViewer.this.isEnabled() && JFigureViewer.this.isEditable();
+			return JFigureView.this.isEnabled() && JFigureView.this.isEditable();
 		}
 
 		@Override
 		public boolean isSelectionEnabled() {
-			return JFigureViewer.this.isEnabled() && JFigureViewer.this.isSelectionEnabled();
+			return JFigureView.this.isEnabled() && JFigureView.this.isSelectionEnabled();
 		}
 
 		@Override
 		public void fireError(Throwable error) {
-			JFigureViewer.this.fireError(error);
+			JFigureView.this.fireError(error);
 		}
 
 		@Override
 		public int getFigureCount() {
-			return JFigureViewer.this.getFigureCount();
+			return JFigureView.this.getFigureCount();
 		}
 
 		@Override
 		public Collection<? extends Figure> getFigures() {
-			return JFigureViewer.this.getFigures();
+			return JFigureView.this.getFigures();
 		}
 
 		@Override
 		public Figure getFigureAt(int index) {
-			return JFigureViewer.this.getFigureAt(index);
+			return JFigureView.this.getFigureAt(index);
 		}
 
 		@Override
 		public Figure getFigureAt(float x, float y) {
-			return JFigureViewer.this.getFigureAt(x,y);
+			return JFigureView.this.getFigureAt(x,y);
 		}
 
 		@Override
 		public Figure getFigureWithBoundsAt(float x, float y) {
-			return JFigureViewer.this.getFigureWithBoundsAt(x, y);
+			return JFigureView.this.getFigureWithBoundsAt(x, y);
 		}
 
 		@Override
 		public Set<Figure> getFiguresOn(Shape2f bounds) {
-			return JFigureViewer.this.getFiguresOn(bounds);
+			return JFigureView.this.getFiguresOn(bounds);
 		}
 
 		@Override
 		public Set<Figure> getFiguresIn(Rectangle2f bounds) {
-			return JFigureViewer.this.getFiguresIn(bounds);
+			return JFigureView.this.getFiguresIn(bounds);
 		}
-		
+
 		@Override
 		public Figure getFigureIn(Rectangle2f area) {
-			return JFigureViewer.this.getFigureIn(area);
+			return JFigureView.this.getFigureIn(area);
 		}
-		
+
 		@Override
 		public Figure getFigureOn(Shape2f area) {
-			return JFigureViewer.this.getFigureOn(area);
+			return JFigureView.this.getFigureOn(area);
 		}
 
 		@Override
-		public java.awt.Color getSelectionBackground() {
-			return JFigureViewer.this.getSelectionBackground();
+		public Color getSelectionBackground() {
+			return JFigureView.this.getSelectionBackgroundColor();
 		}
 
 		@Override
-		public java.awt.Color getSelectionForeground() {
-			return JFigureViewer.this.getSelectionForeground();
+		public Color getSelectionForeground() {
+			return JFigureView.this.getSelectionForegroundColor();
 		}
 
 		@Override
 		public Undoable removeFigure(boolean deleteModel,
 				boolean disconnectFigureAndModel, Figure figure) {
-			if (!figure.isLocked() && JFigureViewer.this.isEditable()) {
+			if (!figure.isLocked() && JFigureView.this.isEditable()) {
 				if (deleteModel && figure instanceof ModelObjectFigure<?>) {
 					ModelObject object = ((ModelObjectFigure<?>)figure).getModelObject();
 					if (object!=null) {
@@ -2638,11 +2320,11 @@ implements ViewComponentContainer<Figure, G> {
 				boolean disconnectFigureAndModel,
 				Iterable<? extends Figure> figures) {
 			assert(figures!=null);
-			if (JFigureViewer.this.isEditable()) {
+			if (JFigureView.this.isEditable()) {
 				List<ModelObjectFigure<?>> removeModels = new ArrayList<ModelObjectFigure<?>>();
 				List<Figure> removeFigures = new ArrayList<Figure>();
 				Figure lastFigure = null;
-	
+
 				for(Figure figure : figures) {
 					if (!figure.isLocked()) {
 						if (figure instanceof ModelObjectFigure<?> && deleteModel) {
@@ -2657,7 +2339,7 @@ implements ViewComponentContainer<Figure, G> {
 						}
 					}
 				}
-	
+
 				String label;
 				if ((removeModels.size()+removeFigures.size())>1) {
 					label = Locale.getString("UNDO_PRESENTATION_FIGURE_REMOVAL_n"); //$NON-NLS-1$
@@ -2671,28 +2353,28 @@ implements ViewComponentContainer<Figure, G> {
 						label = Locale.getString("UNDO_PRESENTATION_FIGURE_REMOVAL_0"); //$NON-NLS-1$
 					}
 				}
-				
+
 				UndoableGroup group = new UndoableGroup(label);
-	
+
 				for(ModelObjectFigure<?> figure : removeModels) {
 					group.add(removeFigure(deleteModel, disconnectFigureAndModel, figure));
 				}
-	
+
 				for(Figure figure : removeFigures) {
 					group.add(removeFigure(false, false, figure));
 				}
-				
+
 				group.end();
-				
+
 				if (!group.isEmpty()) return group;
 			}
-			
+
 			return null;
 		}
 
 		@Override
 		public Undoable addFigure(Figure figure) {
-			if (figure instanceof DecorationFigure && JFigureViewer.this.isEditable()) {
+			if (figure instanceof DecorationFigure && JFigureView.this.isEditable()) {
 				DecorationFigureAdditionUndo undo = new DecorationFigureAdditionUndo(
 						figure.getBounds(), (DecorationFigure)figure);
 				undo.doEdit();
@@ -2703,14 +2385,308 @@ implements ViewComponentContainer<Figure, G> {
 
 		@Override
 		public G getGraph() {
-			return JFigureViewer.this.getGraph();
+			return JFigureView.this.getGraph();
 		}
 
 		@Override
 		public FigureFactory<G> getFigureFactory() {
-			return JFigureViewer.this.getFigureFactory();
+			return JFigureView.this.getFigureFactory();
 		}
 
 	}
+
+	/**
+	 * @author $Author: galland$
+	 * @version $Name$ $Revision$ $Date$
+	 * @mavengroupid $GroupId$
+	 * @mavenartifactid $ArtifactId$
+	 */
+	private static class ViewDocumentWrapper extends AbstractDocumentWrapper {
+
+		private WeakReference<JFigureView<?>> view;
+		
+		/**
+		 */
+		public ViewDocumentWrapper() {
+			//
+		}
+		
+		public void setView(JFigureView<?> view) {
+			this.view = new WeakReference<JFigureView<?>>(view);
+		}
+		
+		@Override
+		public Rectangle2f getDocumentBounds() {
+			JFigureView<?> view = this.view==null ? null : this.view.get();
+			if (view==null) return null;
+			return view.getViewBounds();
+		}
+
+	}
+
+		
+	/**
+	 * @author $Author: hannoun$
+	 * @author $Author: galland$
+	 * @author $Author: baumgartner$
+	 * @version $FullVersion$
+	 * @mavengroupid $GroupId$
+	 * @mavenartifactid $ArtifactId$
+	 */
+	private class EventHandler implements ViewComponentLayoutListener, ModelObjectListener,
+	SelectionListener, ViewComponentChangeListener, ViewComponentPropertyChangeListener,
+	ViewComponentBindingListener, FigureListener, SelectableInteractionListener {
+
+		/**
+		 */
+		public EventHandler() {
+			//
+		}
+
+		/**
+		 * {@inheritDoc}
+		 */
+		@Override
+		public void selectionChanged(SelectionEvent event) {
+			repaint();
+		}
+
+		/**
+		 * {@inheritDoc}
+		 */
+		@Override
+		public void figureAdded(FigureEvent event) {
+			//
+		}
+
+		/**
+		 * {@inheritDoc}
+		 */
+		@Override
+		public void figureRemoved(FigureEvent event) {
+			getSelectionManager().remove(event.getRemovedFigure());
+		}
+
+		/**
+		 * {@inheritDoc}
+		 */
+		@Override
+		public void figureChanged(FigureEvent event) {
+			//
+		}
+
+		/**
+		 * {@inheritDoc}
+		 */
+		@Override
+		public void actionPerformed(SelectableInteractionEvent event) {
+			if (!event.isConsumed() && event.getSource() instanceof TextFigure) {
+				Point2D p = null;
+				if (event.getPointerEvent()!=null) {
+					PointerEvent evt = event.getPointerEvent();
+					p = new Point2f(evt.getX(), evt.getY());
+				}
+				openPopupEditor(
+						(TextFigure)event.getSource(),
+						p);
+				event.consume();
+			}
+		}
+
+		/**
+		 * {@inheritDoc}
+		 */
+		@Override
+		public void popupPerformed(SelectableInteractionEvent event) {
+			//
+		}
+
+		/**
+		 * {@inheritDoc}
+		 */
+		@Override
+		public boolean figureDeletionPerformed(Selectable figure, boolean deleteModel) {
+			return true;
+		}
+
+		/**
+		 * {@inheritDoc}
+		 */
+		@SuppressWarnings("synthetic-access")
+		@Override
+		public void componentRepaint(ViewComponent component, boolean boundsChanged) {
+			if (boundsChanged) {
+				JFigureView.this.documentBounds = null;
+				onUpdateViewParameters();
+			}
+			Rectangle2f bb = component.getBounds();
+			repaint(bb);
+		}
+
+		/**
+		 * {@inheritDoc}
+		 */
+		@Override
+		public void collisionAvoidance(ViewComponent component) {
+			if (component instanceof Figure) {
+				Rectangle2f componentBounds = component.getBounds().clone();
+				CollisionAvoider avoider = getCollisionAvoider();
+				Set<ViewComponent> myself = Collections.singleton(component);
+				Rectangle2f collide = avoider.detectCollision(
+						componentBounds, myself);
+				Vector2D v = null;
+				if (collide!=null) {
+					do {
+						v = componentBounds.avoidCollisionWith(collide, v);
+						collide = avoider.detectCollision(
+								componentBounds, myself);
+					}
+					while (collide!=null);
+
+					component.setBounds(
+							componentBounds.getMinX(),
+							componentBounds.getMinY(),
+							componentBounds.getWidth(),
+							componentBounds.getHeight());
+				}
+			}
+		}
+
+		/**
+		 * {@inheritDoc}
+		 */
+		@Override
+		public void componentCreation(Figure parent, ModelObject modelObject) {
+			getFigureFactory().createSubFigureInside(
+					getUUID(),
+					getGraph(),
+					parent,
+					modelObject);
+		}
+
+		/**
+		 * {@inheritDoc}
+		 */
+		@Override
+		public void componentRemoval(Figure parent, SubFigure subfigure) {
+			getFigureFactory().removeSubFigureFrom(
+					getUUID(),
+					getGraph(),
+					parent,
+					subfigure);
+		}
+
+		/**
+		 * {@inheritDoc}
+		 */
+		@Override
+		public void componentAddition(Figure figure) {
+			assert(figure!=null);
+			JFigureView.this.addFigure(figure);
+		}
+
+		/**
+		 * {@inheritDoc}
+		 */
+		@Override
+		public void componentRemoval(Figure figure) {
+			assert(figure!=null);
+			JFigureView.this.removeFigure(figure);
+		}
+
+		/**
+		 * {@inheritDoc}
+		 */
+		@Override
+		public void modelPropertyChanged(ModelObjectEvent event) {
+			// Nothing to repaint, because an repainting event
+			// will arrive from the figure itself
+		}
+
+		/**
+		 * {@inheritDoc}
+		 */
+		@Override
+		public void modelContainerChanged(ModelObjectEvent event) {
+			// Nothing to repaint, because an repainting event
+			// will arrive from the figure itself
+		}
+
+		/**
+		 * {@inheritDoc}
+		 */
+		@Override
+		public void modelLinkChanged(ModelObjectEvent event) {
+			// Nothing to repaint, because an repainting event
+			// will arrive from the figure itself
+		}
+
+		/**
+		 * {@inheritDoc}
+		 */
+		@Override
+		public void modelContentChanged(ModelObjectEvent event) {
+			// Nothing to repaint, because an repainting event
+			// will arrive from the figure itself
+		}
+
+		/**
+		 * {@inheritDoc}
+		 */
+		@Override
+		public void modelComponentAdded(ModelObjectEvent event) {
+			if (isFigureAutomaticallyAdded() && event.getSource()==getGraph()) {
+				ModelObject addedObject = event.getAddedObject();
+				if (addedObject!=null) {
+					Figure figure = addedObject.getViewBinding().getView(getUUID(), Figure.class);
+					if (figure==null) {
+						FigureFactory<G> factory = getFigureFactory();
+						Rectangle2f bb = getViewBounds();
+						figure = factory.createFigureFor(
+								getUUID(),
+								bb,
+								getGraph(), addedObject);
+					}
+					if (figure!=null) addFigure(figure);
+				}
+			}
+		}
+
+		/**
+		 * {@inheritDoc}
+		 */
+		@Override
+		public void modelComponentRemoved(ModelObjectEvent event) {
+			if (event.getSource()==getGraph()) {
+				Figure fig = event.getRemovedObject().getViewBinding().getView(getUUID(), Figure.class);
+				if (fig!=null) {
+					removeFigure(fig);
+				}
+			}
+		}
+
+		/**
+		 * {@inheritDoc}
+		 */
+		@Override
+		public void propertyChange(ViewComponentPropertyChangeEvent event) {
+			ViewComponent vc = event.getSource();
+			if (vc instanceof Figure) {
+				fireFigureChanged((Figure)vc);
+			}
+		}
+
+		/**
+		 * {@inheritDoc}
+		 */
+		@Override
+		public void componentChange(ViewComponentChangeEvent event) {
+			ViewComponent vc = event.getSource();
+			if (vc instanceof Figure) {
+				fireFigureChanged((Figure)vc);
+			}
+		}
+
+	} // class EventHandler
 
 }

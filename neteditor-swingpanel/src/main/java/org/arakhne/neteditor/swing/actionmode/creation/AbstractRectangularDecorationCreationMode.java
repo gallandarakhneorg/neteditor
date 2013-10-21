@@ -21,21 +21,19 @@
  */
 package org.arakhne.neteditor.swing.actionmode.creation ;
 
-import java.awt.Color;
-import java.awt.Shape;
-import java.awt.geom.Rectangle2D;
-
+import org.arakhne.afc.math.continous.object2d.Rectangle2f;
+import org.arakhne.afc.math.continous.object2d.Shape2f;
 import org.arakhne.afc.math.generic.Point2D;
 import org.arakhne.afc.ui.actionmode.ActionMode;
 import org.arakhne.afc.ui.actionmode.ActionModeManager;
 import org.arakhne.afc.ui.actionmode.ActionModeManagerOwner;
 import org.arakhne.afc.ui.actionmode.ActionPointerEvent;
-import org.arakhne.afc.ui.awt.AwtUtil;
-import org.arakhne.afc.ui.awt.VirtualScreenGraphics2D;
 import org.arakhne.afc.ui.event.KeyEvent;
 import org.arakhne.afc.ui.undo.Undoable;
+import org.arakhne.afc.ui.vector.Color;
 import org.arakhne.neteditor.fig.figure.Figure;
 import org.arakhne.neteditor.fig.figure.decoration.DecorationFigure;
+import org.arakhne.neteditor.swing.graphics.SwingViewGraphics2D;
 
 /** This class implements a Mode that permits to
  * create decorations based on the drawing of
@@ -47,10 +45,11 @@ import org.arakhne.neteditor.fig.figure.decoration.DecorationFigure;
  * @mavengroupid $GroupId$
  * @mavenartifactid $ArtifactId$
  */
-public abstract class AbstractRectangularDecorationCreationMode extends ActionMode<Figure,VirtualScreenGraphics2D,java.awt.Color> {
+public abstract class AbstractRectangularDecorationCreationMode
+extends ActionMode<Figure,SwingViewGraphics2D,Color> {
 
 	private Point2D hit = null;
-	private final Rectangle2D bounds = new Rectangle2D.Float();
+	private final Rectangle2f bounds = new Rectangle2f();
 
 	/** Construct a new AbstractDecorationCreationMode with the given parent.
 	 *
@@ -58,7 +57,7 @@ public abstract class AbstractRectangularDecorationCreationMode extends ActionMo
 	 * @param modeManager a reference to the ModeManager that
 	 *                    contains this Mode.
 	 */
-	public AbstractRectangularDecorationCreationMode(boolean persistent, ActionModeManager<Figure,VirtualScreenGraphics2D,java.awt.Color> modeManager) { 
+	public AbstractRectangularDecorationCreationMode(boolean persistent, ActionModeManager<Figure,SwingViewGraphics2D,Color> modeManager) { 
 		super(modeManager);
 		setPersistent(persistent);
 	}
@@ -116,7 +115,7 @@ public abstract class AbstractRectangularDecorationCreationMode extends ActionMo
 			}
 			else {
 				this.hit = event.getPosition();
-				this.bounds.setFrameFromDiagonal(
+				this.bounds.setFromCorners(
 						this.hit.getX(),
 						this.hit.getY(),
 						this.hit.getX(),
@@ -134,7 +133,7 @@ public abstract class AbstractRectangularDecorationCreationMode extends ActionMo
 	public void pointerDragged(ActionPointerEvent event) {
 		if (this.hit!=null) {
 			Point2D p = event.getPosition();
-			this.bounds.setFrameFromDiagonal(
+			this.bounds.setFromCorners(
 					this.hit.getX(),
 					this.hit.getY(),
 					p.getX(),
@@ -167,15 +166,15 @@ public abstract class AbstractRectangularDecorationCreationMode extends ActionMo
 	 * @param bounds are the bounds to associated to the node.
 	 */
 	@SuppressWarnings("unchecked")
-	protected void createNodeAt(Rectangle2D bounds) {
+	protected void createNodeAt(Rectangle2f bounds) {
 		ActionModeManagerOwner<Figure,?,?> container = getModeManagerOwner();
 		DecorationFigure newFigure = createFigure();
 		if (newFigure!=null) {
 			newFigure.setBounds(
-					(float)bounds.getMinX(),
-					(float)bounds.getMinY(),
-					(float)bounds.getWidth(),
-					(float)bounds.getHeight());
+					bounds.getMinX(),
+					bounds.getMinY(),
+					bounds.getWidth(),
+					bounds.getHeight());
 			Undoable undo = container.addFigure(newFigure);
 			if (container.isSelectionEnabled())
 				container.getSelectionManager().setSelection(newFigure);
@@ -193,15 +192,13 @@ public abstract class AbstractRectangularDecorationCreationMode extends ActionMo
 	 * {@inheritDoc}
 	 */
 	@Override
-	public void paint(VirtualScreenGraphics2D g) {
+	public void paint(SwingViewGraphics2D g) {
 		if (this.hit!=null && !this.bounds.isEmpty()) {
-			Shape shp = getShape(this.bounds);
+			Shape2f shp = getShape(this.bounds);
 			if (shp!=null) {
 				Color border = getModeManagerOwner().getSelectionBackground();
-				Color background = AwtUtil.makeTransparentColor(border);
-				g.setColor(background);
-				g.fill(shp);
-				g.setColor(border);
+				Color background = border.transparentColor();
+				g.setColors(background, border);
 				g.draw(shp);
 			}
 		}
@@ -212,6 +209,6 @@ public abstract class AbstractRectangularDecorationCreationMode extends ActionMo
 	 * @param bounds
 	 * @return the shape
 	 */
-	protected abstract Shape getShape(Rectangle2D bounds);
+	protected abstract Shape2f getShape(Rectangle2f bounds);
 
 }

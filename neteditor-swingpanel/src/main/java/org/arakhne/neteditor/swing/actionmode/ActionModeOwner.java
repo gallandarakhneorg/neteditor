@@ -21,10 +21,11 @@
 package org.arakhne.neteditor.swing.actionmode ;
 
 import org.arakhne.afc.ui.actionmode.ActionModeManagerOwner;
-import org.arakhne.afc.ui.awt.VirtualScreenGraphics2D;
+import org.arakhne.afc.ui.vector.Color;
 import org.arakhne.neteditor.fig.factory.FigureFactory;
 import org.arakhne.neteditor.fig.figure.Figure;
 import org.arakhne.neteditor.formalism.Graph;
+import org.arakhne.neteditor.swing.graphics.SwingViewGraphics2D;
 
 /** This interface describes a container of modes.
  * 
@@ -34,7 +35,7 @@ import org.arakhne.neteditor.formalism.Graph;
  * @mavengroupid $GroupId$
  * @mavenartifactid $ArtifactId$
  */
-public interface ActionModeOwner<G extends Graph<?,?,?,?>> extends ActionModeManagerOwner<Figure,VirtualScreenGraphics2D,java.awt.Color> {
+public interface ActionModeOwner<G extends Graph<?,?,?,?>> extends ActionModeManagerOwner<Figure,SwingViewGraphics2D,Color> {
 	
 	/** Returns the graph.
 	 * 

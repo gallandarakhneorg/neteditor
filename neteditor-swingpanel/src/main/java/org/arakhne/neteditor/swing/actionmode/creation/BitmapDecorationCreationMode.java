@@ -21,8 +21,6 @@
  */
 package org.arakhne.neteditor.swing.actionmode.creation ;
 
-import java.awt.Shape;
-import java.awt.geom.Rectangle2D;
 import java.io.File;
 import java.io.IOException;
 import java.util.prefs.Preferences;
@@ -31,14 +29,17 @@ import javax.swing.JComponent;
 import javax.swing.JFileChooser;
 
 import org.arakhne.afc.io.filefilter.FileFilter;
+import org.arakhne.afc.math.continous.object2d.Rectangle2f;
+import org.arakhne.afc.math.continous.object2d.Shape2f;
 import org.arakhne.afc.ui.actionmode.ActionModeManager;
-import org.arakhne.afc.ui.awt.VirtualScreenGraphics2D;
 import org.arakhne.afc.ui.swing.FileFilterSwing;
+import org.arakhne.afc.ui.vector.Color;
 import org.arakhne.afc.vmutil.FileSystem;
 import org.arakhne.neteditor.fig.figure.Figure;
 import org.arakhne.neteditor.fig.figure.decoration.BitmapFigure;
 import org.arakhne.neteditor.fig.figure.decoration.DecorationFigure;
 import org.arakhne.neteditor.io.bitmap.ImageType;
+import org.arakhne.neteditor.swing.graphics.SwingViewGraphics2D;
 
 /** This class implements a Mode that permits to
  * create bitmaps.
@@ -57,7 +58,7 @@ public class BitmapDecorationCreationMode extends AbstractRectangularDecorationC
          * @param modeManager a reference to the ModeManager that
          *                    contains this Mode.
          */
-        public BitmapDecorationCreationMode(boolean persistent, ActionModeManager<Figure,VirtualScreenGraphics2D,java.awt.Color> modeManager) { 
+        public BitmapDecorationCreationMode(boolean persistent, ActionModeManager<Figure,SwingViewGraphics2D,Color> modeManager) { 
                 super(persistent, modeManager);
         }
 
@@ -75,7 +76,7 @@ public class BitmapDecorationCreationMode extends AbstractRectangularDecorationC
          * {@inheritDoc}
          */
         @Override
-        protected Shape getShape(Rectangle2D bounds) {
+        protected Shape2f getShape(Rectangle2f bounds) {
                 return bounds;
         }
 

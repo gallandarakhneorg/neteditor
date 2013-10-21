@@ -22,8 +22,8 @@
 package org.arakhne.neteditor.swing.graphics;
 
 import org.arakhne.afc.ui.Graphics2DLOD;
-import org.arakhne.afc.ui.awt.VirtualScreenGraphics2D;
 import org.arakhne.afc.ui.vector.Color;
+import org.arakhne.afc.ui.vector.VectorGraphics2D;
 
 /** Implementation of a graphics context which is
  * delagating to another graphics context but
@@ -34,12 +34,12 @@ import org.arakhne.afc.ui.vector.Color;
  * @mavengroupid $GroupId$
  * @mavenartifactid $ArtifactId$
  */
-public class TransparentViewGraphics2D extends DelegatedViewGraphics2D<VirtualScreenGraphics2D> {
+public class TransparentViewGraphics2D extends DelegatedViewGraphics2D {
 
 	/**
 	 * @param context
 	 */
-	public TransparentViewGraphics2D(VirtualScreenGraphics2D context) {
+	public TransparentViewGraphics2D(VectorGraphics2D context) {
 		super(context);
 	}
 	

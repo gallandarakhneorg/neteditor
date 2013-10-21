@@ -21,11 +21,11 @@
  */
 package org.arakhne.neteditor.swing.actionmode.creation ;
 
-import java.awt.geom.GeneralPath;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
+import org.arakhne.afc.math.continous.object2d.Path2f;
 import org.arakhne.afc.math.continous.object2d.Point2f;
 import org.arakhne.afc.math.continous.object2d.Shape2f;
 import org.arakhne.afc.math.generic.Point2D;
@@ -33,9 +33,9 @@ import org.arakhne.afc.ui.MouseCursor;
 import org.arakhne.afc.ui.actionmode.ActionMode;
 import org.arakhne.afc.ui.actionmode.ActionModeManager;
 import org.arakhne.afc.ui.actionmode.ActionPointerEvent;
-import org.arakhne.afc.ui.awt.VirtualScreenGraphics2D;
 import org.arakhne.afc.ui.event.KeyEvent;
 import org.arakhne.afc.ui.swing.undo.AbstractCallableUndoableEdit;
+import org.arakhne.afc.ui.vector.Color;
 import org.arakhne.afc.vmutil.locale.Locale;
 import org.arakhne.neteditor.fig.anchor.AnchorFigure;
 import org.arakhne.neteditor.fig.figure.Figure;
@@ -45,6 +45,7 @@ import org.arakhne.neteditor.formalism.Anchor;
 import org.arakhne.neteditor.formalism.Edge;
 import org.arakhne.neteditor.formalism.Graph;
 import org.arakhne.neteditor.swing.actionmode.ActionModeOwner;
+import org.arakhne.neteditor.swing.graphics.SwingViewGraphics2D;
 
 /** This class implements a Mode that permits to
  * create edges between anchors.
@@ -58,7 +59,7 @@ import org.arakhne.neteditor.swing.actionmode.ActionModeOwner;
  * @mavengroupid $GroupId$
  * @mavenartifactid $ArtifactId$
  */
-public abstract class EdgeCreationMode<G extends Graph<G,?,A,E>, A extends Anchor<G,?,A,E>, E extends Edge<G,?,A,E>> extends ActionMode<Figure,VirtualScreenGraphics2D,java.awt.Color> {
+public abstract class EdgeCreationMode<G extends Graph<G,?,A,E>, A extends Anchor<G,?,A,E>, E extends Edge<G,?,A,E>> extends ActionMode<Figure,SwingViewGraphics2D,Color> {
 
         private final List<Point2D> points = new ArrayList<Point2D>();
         private AnchorFigure<A> startAnchor = null;
@@ -70,7 +71,7 @@ public abstract class EdgeCreationMode<G extends Graph<G,?,A,E>, A extends Ancho
          * @param modeManager a reference to the ModeManager that
          *                    contains this Mode.
          */
-        public EdgeCreationMode(ActionModeManager<Figure,VirtualScreenGraphics2D,java.awt.Color> modeManager) { 
+        public EdgeCreationMode(ActionModeManager<Figure,SwingViewGraphics2D,Color> modeManager) { 
                 super(modeManager);
         }
 
@@ -341,10 +342,10 @@ public abstract class EdgeCreationMode<G extends Graph<G,?,A,E>, A extends Ancho
          * {@inheritDoc}
          */
         @Override
-        public void paint(VirtualScreenGraphics2D g) {
+        public void paint(SwingViewGraphics2D g) {
                 if (this.startAnchor!=null && !this.points.isEmpty()) {
                         Point2D p;
-                        GeneralPath path = new GeneralPath();
+                        Path2f path = new Path2f();
                         p = this.points.get(0);
                         path.moveTo(p.getX(), p.getY());
                         for(int i=1; i<this.points.size(); ++i) {
@@ -356,7 +357,7 @@ public abstract class EdgeCreationMode<G extends Graph<G,?,A,E>, A extends Ancho
                                 path.lineTo(this.candidate.getX(), this.candidate.getY());
                         }
 
-                        g.setColor(getModeManagerOwner().getSelectionBackground());
+                        g.setColors(null, getModeManagerOwner().getSelectionBackground());
                         g.draw(path);
                 }
         }

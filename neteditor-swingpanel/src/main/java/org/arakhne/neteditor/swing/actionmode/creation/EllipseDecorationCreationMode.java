@@ -21,15 +21,15 @@
  */
 package org.arakhne.neteditor.swing.actionmode.creation ;
 
-import java.awt.Shape;
-import java.awt.geom.Ellipse2D;
-import java.awt.geom.Rectangle2D;
-
+import org.arakhne.afc.math.continous.object2d.Ellipse2f;
+import org.arakhne.afc.math.continous.object2d.Rectangle2f;
+import org.arakhne.afc.math.continous.object2d.Shape2f;
 import org.arakhne.afc.ui.actionmode.ActionModeManager;
-import org.arakhne.afc.ui.awt.VirtualScreenGraphics2D;
+import org.arakhne.afc.ui.vector.Color;
 import org.arakhne.neteditor.fig.figure.Figure;
 import org.arakhne.neteditor.fig.figure.decoration.DecorationFigure;
 import org.arakhne.neteditor.fig.figure.decoration.EllipseFigure;
+import org.arakhne.neteditor.swing.graphics.SwingViewGraphics2D;
 
 /** This class implements a Mode that permits to
  * create ellipses.
@@ -48,7 +48,7 @@ public class EllipseDecorationCreationMode extends AbstractRectangularDecoration
          * @param modeManager a reference to the ModeManager that
          *                    contains this Mode.
          */
-        public EllipseDecorationCreationMode(boolean persistent, ActionModeManager<Figure,VirtualScreenGraphics2D,java.awt.Color> modeManager) { 
+        public EllipseDecorationCreationMode(boolean persistent, ActionModeManager<Figure,SwingViewGraphics2D,Color> modeManager) { 
                 super(persistent, modeManager);
         }
 
@@ -74,8 +74,8 @@ public class EllipseDecorationCreationMode extends AbstractRectangularDecoration
          * {@inheritDoc}
          */
         @Override
-        protected Shape getShape(Rectangle2D bounds) {
-                return new Ellipse2D.Double(
+        protected Shape2f getShape(Rectangle2f bounds) {
+                return new Ellipse2f(
                                 bounds.getMinX(),
                                 bounds.getMinY(),
                                 bounds.getWidth(),

@@ -27,13 +27,14 @@ import org.arakhne.afc.math.generic.Point2D;
 import org.arakhne.afc.ui.MouseCursor;
 import org.arakhne.afc.ui.actionmode.ActionMode;
 import org.arakhne.afc.ui.actionmode.ActionPointerEvent;
-import org.arakhne.afc.ui.awt.VirtualScreenGraphics2D;
 import org.arakhne.afc.ui.swing.undo.AbstractCallableUndoableEdit;
 import org.arakhne.afc.ui.undo.Undoable;
+import org.arakhne.afc.ui.vector.Color;
 import org.arakhne.afc.vmutil.locale.Locale;
 import org.arakhne.neteditor.fig.figure.Figure;
 import org.arakhne.neteditor.fig.shadow.LinearFeatureShadowPainter;
 import org.arakhne.neteditor.fig.view.LinearFeature;
+import org.arakhne.neteditor.swing.graphics.SwingViewGraphics2D;
 import org.arakhne.neteditor.swing.graphics.TransparentViewGraphics2D;
 
 /** This class implements a Mode that move the control
@@ -45,7 +46,7 @@ import org.arakhne.neteditor.swing.graphics.TransparentViewGraphics2D;
  * @mavengroupid $GroupId$
  * @mavenartifactid $ArtifactId$
  */
-class ControlPointMoveMode extends ActionMode<Figure,VirtualScreenGraphics2D,java.awt.Color> {
+class ControlPointMoveMode extends ActionMode<Figure,SwingViewGraphics2D,Color> {
 
         private int movedCtrlPoint = -1;
         private Point2D hitPosition = null;
@@ -66,7 +67,7 @@ class ControlPointMoveMode extends ActionMode<Figure,VirtualScreenGraphics2D,jav
         /** {@inheritDoc}
          */
         @Override
-        public void paint(VirtualScreenGraphics2D g) {
+        public void paint(SwingViewGraphics2D g) {
                 if (this.shadowPainter!=null) {
                         TransparentViewGraphics2D sg = new TransparentViewGraphics2D(g);
                         this.shadowPainter.paint(sg);

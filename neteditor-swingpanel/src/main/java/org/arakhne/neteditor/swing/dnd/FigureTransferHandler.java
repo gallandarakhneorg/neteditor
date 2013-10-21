@@ -26,7 +26,6 @@ import java.awt.Image;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.Transferable;
 import java.awt.datatransfer.UnsupportedFlavorException;
-import java.awt.geom.Rectangle2D;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -47,7 +46,6 @@ import javax.swing.plaf.UIResource;
 import org.arakhne.afc.io.filefilter.GXLFileFilter;
 import org.arakhne.afc.io.filefilter.MultiFileFilter;
 import org.arakhne.afc.io.filefilter.NGRFileFilter;
-import org.arakhne.afc.io.filefilter.PDFFileFilter;
 import org.arakhne.afc.io.filefilter.XMLFileFilter;
 import org.arakhne.afc.io.stream.ReaderInputStream;
 import org.arakhne.afc.math.continous.object2d.Rectangle2f;
@@ -57,7 +55,6 @@ import org.arakhne.afc.vmutil.FileSystem;
 import org.arakhne.afc.vmutil.locale.Locale;
 import org.arakhne.neteditor.fig.factory.CollisionAvoider;
 import org.arakhne.neteditor.fig.figure.decoration.BitmapFigure;
-import org.arakhne.neteditor.fig.figure.decoration.PdfFigure;
 import org.arakhne.neteditor.fig.figure.decoration.TextFigure;
 import org.arakhne.neteditor.fig.view.ViewComponent;
 import org.arakhne.neteditor.formalism.Graph;
@@ -65,7 +62,7 @@ import org.arakhne.neteditor.io.bitmap.ImageType;
 import org.arakhne.neteditor.io.gxl.GXLException;
 import org.arakhne.neteditor.io.gxl.GXLReader;
 import org.arakhne.neteditor.io.ngr.NGRReader;
-import org.arakhne.neteditor.swing.JFigureViewer;
+import org.arakhne.neteditor.swing.JFigureView;
 import org.arakhne.neteditor.swing.selection.JSelectionManager;
 
 /** Implementation of a transfer handler dedicated to
@@ -91,7 +88,7 @@ public class FigureTransferHandler extends TransferHandler implements UIResource
 	 */
 	@Override
 	public int getSourceActions(JComponent c) {
-		if (c instanceof JFigureViewer<?>) {
+		if (c instanceof JFigureView<?>) {
 			return COPY_OR_MOVE;
 		}
 		return NONE;
@@ -102,8 +99,8 @@ public class FigureTransferHandler extends TransferHandler implements UIResource
 	 */
 	@Override
 	protected Transferable createTransferable(JComponent c) {
-		if (c instanceof JFigureViewer<?>) {
-			JFigureViewer<?> editor = (JFigureViewer<?>)c;
+		if (c instanceof JFigureView<?>) {
+			JFigureView<?> editor = (JFigureView<?>)c;
 			JSelectionManager manager = editor.getSelectionManager();
 			if (manager.isEmpty()) return null;
 			return manager.getTransferableSelection();
@@ -117,9 +114,9 @@ public class FigureTransferHandler extends TransferHandler implements UIResource
 	@Override
 	protected void exportDone(JComponent source, Transferable data, int action) {
 		if (action==MOVE
-			&& source instanceof JFigureViewer<?>
+			&& source instanceof JFigureView<?>
 		    && data instanceof TransferableFigureSet) {
-			JFigureViewer<?> editor = (JFigureViewer<?>)source;
+			JFigureView<?> editor = (JFigureView<?>)source;
 			if (editor.isEditable()) {
 				TransferableFigureSet transferable = (TransferableFigureSet)data;
 				Undoable edit = editor.getModeManager().getModeManagerOwner().removeFigures(
@@ -136,7 +133,7 @@ public class FigureTransferHandler extends TransferHandler implements UIResource
 	 */
 	@Override
 	public boolean canImport(TransferSupport support) {
-		if (support.getComponent() instanceof JFigureViewer<?>) {
+		if (support.getComponent() instanceof JFigureView<?>) {
 			if (
 				  support.isDataFlavorSupported(FigureDataFlavor.NGR.getDataFlavor())
 				||support.isDataFlavorSupported(FigureDataFlavor.GXL.getDataFlavor())
@@ -156,8 +153,8 @@ public class FigureTransferHandler extends TransferHandler implements UIResource
 	@SuppressWarnings("unchecked")
 	@Override
 	public boolean importData(TransferSupport support) {
-		if (support.getComponent() instanceof JFigureViewer<?>) {
-			JFigureViewer<?> editor = (JFigureViewer<?>)support.getComponent();
+		if (support.getComponent() instanceof JFigureView<?>) {
+			JFigureView<?> editor = (JFigureView<?>)support.getComponent();
 			if (editor.isEditable()) {
 				Transferable transferable = support.getTransferable();
 				boolean isEmpty = editor.getFigureCount()==0;
@@ -191,7 +188,7 @@ public class FigureTransferHandler extends TransferHandler implements UIResource
 				}
 				finally {
 					if (isEmpty) {
-						editor.defaultView(true);
+						editor.resetView();
 					}
 				}
 			}
@@ -199,7 +196,7 @@ public class FigureTransferHandler extends TransferHandler implements UIResource
 		return false;
 	}
 	
-	private static <T extends Graph<?,?,?,?>> boolean importNgr(JFigureViewer<T> editor, URL content) throws IOException {
+	private static <T extends Graph<?,?,?,?>> boolean importNgr(JFigureView<T> editor, URL content) throws IOException {
 		if (content!=null) {
 			NGRReader reader = new NGRReader();
 			Map<UUID,List<ViewComponent>> figures = new TreeMap<UUID,List<ViewComponent>>();
@@ -213,7 +210,7 @@ public class FigureTransferHandler extends TransferHandler implements UIResource
 		return false;
 	}
 
-	private static <T extends Graph<?,?,?,?>> boolean importXml(JFigureViewer<T> editor, String content, String label) throws IOException {
+	private static <T extends Graph<?,?,?,?>> boolean importXml(JFigureView<T> editor, String content, String label) throws IOException {
 		if (content!=null && !content.isEmpty()) {
 			GXLReader reader = new GXLReader();
 			StringReader sr = new StringReader(content);
@@ -235,12 +232,11 @@ public class FigureTransferHandler extends TransferHandler implements UIResource
 		return false;
 	}
 
-	private static boolean importFiles(JFigureViewer<?> editor, List<File> files) throws IOException {
+	private static boolean importFiles(JFigureView<?> editor, List<File> files) throws IOException {
 		boolean changed = false;
 		NGRFileFilter ngr = new NGRFileFilter(false);
 		GXLFileFilter gxl = new GXLFileFilter(false);
 		XMLFileFilter xml = new XMLFileFilter(false);
-		PDFFileFilter pdf = new PDFFileFilter(false);
 		MultiFileFilter img = new MultiFileFilter(false, null, ImageType.getFileFilters());
 		for(File file : files) {
 			if (ngr.accept(file)) {
@@ -255,10 +251,6 @@ public class FigureTransferHandler extends TransferHandler implements UIResource
 				if (importXml(editor,toString(file), file.getName()))
 					changed = true;
 			}
-			else if (pdf.accept(file)) {
-				if (importPdf(editor, file))
-					changed = true;
-			}
 			else if (img.accept(file)) {
 				if (importImage(editor, file))
 					changed = true;
@@ -270,7 +262,7 @@ public class FigureTransferHandler extends TransferHandler implements UIResource
 		return changed;
 	}
 	
-	private static boolean importString(JFigureViewer<?> editor, String str) {
+	private static boolean importString(JFigureView<?> editor, String str) {
 		if (str!=null && !str.isEmpty()) {
 			try {
 				if (importXml(editor,str, Locale.getString("GXL_SOURCE"))) return true; //$NON-NLS-1$
@@ -295,7 +287,7 @@ public class FigureTransferHandler extends TransferHandler implements UIResource
 		return false;
 	}
 	
-	private static boolean importImage(JFigureViewer<?> editor, Image image) {
+	private static boolean importImage(JFigureView<?> editor, Image image) {
 		if (image!=null) {
 			Rectangle2f bounds = computeBounds(editor, 
 					Math.min(200, image.getWidth(null)),
@@ -314,30 +306,10 @@ public class FigureTransferHandler extends TransferHandler implements UIResource
 		return false;
 	}
 	
-	private static boolean importImage(JFigureViewer<?> editor, File image) throws IOException {
+	private static boolean importImage(JFigureView<?> editor, File image) throws IOException {
 		if (image!=null) {
 			BitmapFigure figure = new BitmapFigure(editor.getUUID());
 			figure.setImageURL(image.toURI().toURL());
-			org.arakhne.afc.ui.vector.Image img = figure.getImage();
-			Rectangle2f bounds = computeBounds(editor, 
-					Math.min(200, img.getWidth(null)),
-					Math.min(200, img.getHeight(null)));
-			figure.setBounds(
-					bounds.getMinX(),
-					bounds.getMinY(),
-					bounds.getWidth(),
-					bounds.getHeight());
-			Undoable undo = editor.importFigure(figure);
-			editor.getUndoManager().add(undo);
-			return true;
-		}
-		return false;
-	}
-
-	private static boolean importPdf(JFigureViewer<?> editor, File pdfFile) throws IOException {
-		if (pdfFile!=null) {
-			PdfFigure figure = new PdfFigure(editor.getUUID());
-			figure.setPdfURL(pdfFile.toURI().toURL());
 			org.arakhne.afc.ui.vector.Image img = figure.getImage();
 			Rectangle2f bounds = computeBounds(editor, 
 					Math.min(200, img.getWidth(null)),
@@ -372,16 +344,16 @@ public class FigureTransferHandler extends TransferHandler implements UIResource
 		return str.toString();
 	}
 	
-	private static Rectangle2f computeBounds(JFigureViewer<?> editor, float width, float height) {
-		Rectangle2D docBounds = editor.getDocumentRect();
+	private static Rectangle2f computeBounds(JFigureView<?> editor, float width, float height) {
+		Rectangle2f docBounds = editor.getViewBounds();
 		if (docBounds==null) return new Rectangle2f(0,0,width,height);
 		CollisionAvoider ca = editor.getCollisionAvoider();
 		Rectangle2f bounds = new Rectangle2f();
 		Random rnd = new Random();
 		float x, y;
 		do {
-			x = (float)((rnd.nextFloat() * (docBounds.getWidth() + 1.5f * width)) + docBounds.getX() - width);
-			y = (float)((rnd.nextFloat() * (docBounds.getHeight() + 1.5f * height)) + docBounds.getY() - height);
+			x = (rnd.nextFloat() * (docBounds.getWidth() + 1.5f * width)) + docBounds.getMinX() - width;
+			y = (rnd.nextFloat() * (docBounds.getHeight() + 1.5f * height)) + docBounds.getMinY() - height;
 			bounds.set(x, y, width, height);
 		}
 		while (ca.isCollisionFree(bounds, Collections.<ViewComponent>emptySet()));

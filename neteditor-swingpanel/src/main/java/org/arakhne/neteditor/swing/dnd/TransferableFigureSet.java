@@ -21,7 +21,6 @@
  */
 package org.arakhne.neteditor.swing.dnd ;
 
-import java.awt.Graphics2D;
 import java.awt.Image;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.Transferable;
@@ -36,15 +35,16 @@ import java.util.TreeSet;
 import org.arakhne.afc.io.stream.WriterOutputStream;
 import org.arakhne.afc.math.continous.object2d.Rectangle2f;
 import org.arakhne.afc.ui.Graphics2DLOD;
-import org.arakhne.afc.ui.awt.DefaultLODGraphics2D;
-import org.arakhne.afc.ui.awt.LODGraphics2D;
+import org.arakhne.afc.ui.vector.VectorGraphics2D;
+import org.arakhne.afc.ui.vector.VectorToolkit;
 import org.arakhne.neteditor.fig.figure.Figure;
+import org.arakhne.neteditor.fig.graphics.ViewGraphics2D;
+import org.arakhne.neteditor.fig.graphics.ViewGraphicsUtil;
 import org.arakhne.neteditor.io.eps.EpsExporter;
 import org.arakhne.neteditor.io.graphviz.DotExporter;
 import org.arakhne.neteditor.io.gxl.GXLWriter;
 import org.arakhne.neteditor.io.pdf.PdfExporter;
 import org.arakhne.neteditor.io.svg.SvgExporter;
-import org.arakhne.neteditor.swing.graphics.DelegatedViewGraphics2D;
 
 /** This is a collection of figures that can be tranfered.
  *  It is used to copy a selection into
@@ -142,19 +142,20 @@ public class TransferableFigureSet implements Transferable {
     			(int)Math.ceil(dim.getWidth()),
     			(int)Math.ceil(dim.getHeight()),
     			BufferedImage.TYPE_INT_ARGB);
-    	Graphics2D g = (Graphics2D)image.getGraphics();
-    	LODGraphics2D lg = new DefaultLODGraphics2D(
-				g, null, true, true, Graphics2DLOD.HIGH_LEVEL_OF_DETAIL);
-    	DelegatedViewGraphics2D<LODGraphics2D> vg = new DelegatedViewGraphics2D<LODGraphics2D>(lg);
+    	org.arakhne.afc.ui.vector.Image vImage = VectorToolkit.image(image);
+    	VectorGraphics2D vectg = vImage.getVectorGraphics();
+    	ViewGraphics2D vg = ViewGraphicsUtil.createViewGraphics(
+    			vectg, true, true,
+    			Graphics2DLOD.HIGH_LEVEL_OF_DETAIL);
     	Rectangle2f bounds;
-    	g.translate(-Math.round(dim.getMinX()), -Math.round(dim.getMinY()));
+    	vectg.translate(-Math.round(dim.getMinX()), -Math.round(dim.getMinY()));
     	for(Figure figure : this.figures) {
     		bounds = figure.getBounds();
     		vg.pushRenderingContext(figure, figure.getClip(bounds), bounds);
     		figure.paint(vg);
     		vg.popRenderingContext();
     	}
-    	g.dispose();
+    	vectg.dispose();
     	return image;
 	}
 	

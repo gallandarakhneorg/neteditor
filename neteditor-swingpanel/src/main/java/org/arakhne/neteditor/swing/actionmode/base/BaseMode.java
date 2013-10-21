@@ -21,11 +21,7 @@
  */
 package org.arakhne.neteditor.swing.actionmode.base ;
 
-import java.awt.Color;
-import java.awt.Paint;
 import java.awt.TexturePaint;
-import java.awt.geom.GeneralPath;
-import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 import java.net.URL;
@@ -35,18 +31,22 @@ import java.util.Set;
 import javax.imageio.ImageIO;
 
 import org.arakhne.afc.math.continous.object2d.Circle2f;
+import org.arakhne.afc.math.continous.object2d.Path2f;
+import org.arakhne.afc.math.continous.object2d.Point2f;
 import org.arakhne.afc.math.continous.object2d.Rectangle2f;
+import org.arakhne.afc.math.generic.Point2D;
 import org.arakhne.afc.ui.MouseCursor;
 import org.arakhne.afc.ui.ZoomableContext;
 import org.arakhne.afc.ui.actionmode.ActionMode;
 import org.arakhne.afc.ui.actionmode.ActionModeManager;
 import org.arakhne.afc.ui.actionmode.ActionModeManagerOwner;
 import org.arakhne.afc.ui.actionmode.ActionPointerEvent;
-import org.arakhne.afc.ui.awt.AwtUtil;
-import org.arakhne.afc.ui.awt.VirtualScreenGraphics2D;
 import org.arakhne.afc.ui.event.KeyEvent;
 import org.arakhne.afc.ui.swing.undo.AbstractCallableUndoableEdit;
 import org.arakhne.afc.ui.undo.Undoable;
+import org.arakhne.afc.ui.vector.Color;
+import org.arakhne.afc.ui.vector.Paint;
+import org.arakhne.afc.ui.vector.VectorToolkit;
 import org.arakhne.afc.vmutil.Resources;
 import org.arakhne.afc.vmutil.locale.Locale;
 import org.arakhne.neteditor.fig.figure.BlockFigure;
@@ -56,6 +56,7 @@ import org.arakhne.neteditor.fig.selection.SelectionManager;
 import org.arakhne.neteditor.fig.view.LinearFeature;
 import org.arakhne.neteditor.swing.actionmode.ActionModeUtil;
 import org.arakhne.neteditor.swing.actionmode.DifferedMouseEvent;
+import org.arakhne.neteditor.swing.graphics.SwingViewGraphics2D;
 
 /** This class implements a Mode that interpretes user inputs as
  *  selecting one or more figure. Clicking on a 
@@ -140,10 +141,10 @@ import org.arakhne.neteditor.swing.actionmode.DifferedMouseEvent;
  * @mavengroupid $GroupId$
  * @mavenartifactid $ArtifactId$
  */
-public class BaseMode extends ActionMode<Figure,VirtualScreenGraphics2D,java.awt.Color> {
+public class BaseMode extends ActionMode<Figure,SwingViewGraphics2D,Color> {
 
 	private static final int SELECTION_FRAME_SIZE = 8;
-	private static final TexturePaint SELECTION_PAINT;
+	private static final Paint SELECTION_PAINT;
 
 	static {
 		try {
@@ -153,15 +154,16 @@ public class BaseMode extends ActionMode<Figure,VirtualScreenGraphics2D,java.awt
 			if (w<0) w = SELECTION_FRAME_SIZE;
 			int h = image.getHeight();
 			if (h<0) h = SELECTION_FRAME_SIZE;
-			SELECTION_PAINT = new TexturePaint(image,
+			java.awt.Paint p = new TexturePaint(image,
 					new Rectangle2D.Float(0, 0, w, h));
+			SELECTION_PAINT = VectorToolkit.paint(p);
 		}
 		catch(Throwable e) {
 			throw new Error(e);
 		}
 	}
 
-	private volatile Rectangle2D selectRect = null;
+	private volatile Rectangle2f selectRect = null;
 	private volatile Point2D selectRectAnchor = null;
 	private volatile DifferedMouseEvent onPressedEvent = null;
 	private volatile ResizeDirection initiatedResizing = null;
@@ -173,7 +175,7 @@ public class BaseMode extends ActionMode<Figure,VirtualScreenGraphics2D,java.awt
 	 * @param modeManager a reference to the ModeManager that
 	 *                    contains this Mode.
 	 */
-	public BaseMode(ActionModeManager<Figure,VirtualScreenGraphics2D,java.awt.Color> modeManager) { 
+	public BaseMode(ActionModeManager<Figure,SwingViewGraphics2D,Color> modeManager) { 
 		super(modeManager);
 		setPersistent(true);
 	}
@@ -209,13 +211,11 @@ public class BaseMode extends ActionMode<Figure,VirtualScreenGraphics2D,java.awt
 	/** {@inheritDoc}
 	 */
 	@Override
-	public void paint(VirtualScreenGraphics2D g) {
+	public void paint(SwingViewGraphics2D g) {
 		if (this.selectRect!=null && !this.selectRect.isEmpty()) {
 			Color border = getModeManagerOwner().getSelectionBackground();
-			Color background = AwtUtil.makeTransparentColor(border);
-			g.setColor(background);
-			g.fill(this.selectRect);
-			g.setColor(border);
+			Color background = border.transparentColor();
+			g.setColors(background, border);
 			g.draw(this.selectRect);
 		}
 
@@ -236,7 +236,7 @@ public class BaseMode extends ActionMode<Figure,VirtualScreenGraphics2D,java.awt
 		}
 	}
 
-	private void paintSelectedControlPoints(VirtualScreenGraphics2D g, LinearFeature figure, float frameSize) {
+	private void paintSelectedControlPoints(SwingViewGraphics2D g, LinearFeature figure, float frameSize) {
 		float x, y;
 		Color background = getModeManagerOwner().getSelectionBackground();
 		Color foreground = getModeManagerOwner().getSelectionForeground();
@@ -250,13 +250,13 @@ public class BaseMode extends ActionMode<Figure,VirtualScreenGraphics2D,java.awt
 		}
 	}
 
-	private static void paintSelectionFrame(VirtualScreenGraphics2D g, Rectangle2f bounds, double frameSize) {
-		GeneralPath path = new GeneralPath();
+	private static void paintSelectionFrame(SwingViewGraphics2D g, Rectangle2f bounds, float frameSize) {
+		Path2f path = new Path2f();
 
-		double x1 = bounds.getMinX();
-		double x2 = bounds.getMaxX();
-		double y1 = bounds.getMinY();
-		double y2 = bounds.getMaxY();
+		float x1 = bounds.getMinX();
+		float x2 = bounds.getMaxX();
+		float y1 = bounds.getMinY();
+		float y2 = bounds.getMaxY();
 
 		path.moveTo(x1, y1);
 		path.lineTo(x2, y1);
@@ -264,10 +264,10 @@ public class BaseMode extends ActionMode<Figure,VirtualScreenGraphics2D,java.awt
 		path.lineTo(x1, y2);
 		path.lineTo(x1, y1);
 
-		double x1o = x1 - frameSize;
-		double x2o = x2 + frameSize;
-		double y1o = y1 - frameSize;
-		double y2o = y2 + frameSize;
+		float x1o = x1 - frameSize;
+		float x2o = x2 + frameSize;
+		float y1o = y1 - frameSize;
+		float y2o = y2 + frameSize;
 
 		path.lineTo(x1o, y1o);
 		path.lineTo(x1o, y2o);
@@ -279,11 +279,13 @@ public class BaseMode extends ActionMode<Figure,VirtualScreenGraphics2D,java.awt
 
 		Paint oldPaint = g.getPaint();
 		g.setPaint(SELECTION_PAINT);
-		g.fill(path);
+		g.setInteriorPainted(true);
+		g.setOutlineDrawn(false);
+		g.draw(path);
 		g.setPaint(oldPaint);
 	}
 
-	private void paintSelectionBlocks(VirtualScreenGraphics2D g, Rectangle2f bounds, float frameSize) {
+	private void paintSelectionBlocks(SwingViewGraphics2D g, Rectangle2f bounds, float frameSize) {
 		float x1 = bounds.getMinX();
 		float x2 = bounds.getMaxX();
 		float y1 = bounds.getMinY();
@@ -308,11 +310,9 @@ public class BaseMode extends ActionMode<Figure,VirtualScreenGraphics2D,java.awt
 		paintSelectionBlock(g, x2, yc, frameSize, foreground, background);
 	}
 
-	private static void paintSelectionBlock(VirtualScreenGraphics2D g, float x, float y, float frameSize, Color foreground, Color background) {
-		g.setColor(background);
-		g.fillRect(x, y, frameSize, frameSize);
-		g.setColor(foreground);
-		g.drawRect(x, y, frameSize, frameSize);
+	private static void paintSelectionBlock(SwingViewGraphics2D g, float x, float y, float frameSize, Color foreground, Color background) {
+		g.setColors(background, foreground);
+		g.draw(new Rectangle2f(x, y, frameSize, frameSize));
 	}
 
 	/** {@inheritDoc}
@@ -371,8 +371,8 @@ public class BaseMode extends ActionMode<Figure,VirtualScreenGraphics2D,java.awt
 					}
 				}
 				if (this.initiatedResizing==null) {
-					this.selectRect = new Rectangle2D.Float(x,y,0f,0f);
-					this.selectRectAnchor = new Point2D.Float(x, y);
+					this.selectRect = new Rectangle2f(x,y,0f,0f);
+					this.selectRectAnchor = new Point2f(x, y);
 					this.onPressedEvent = null;
 					this.initiatedResizing = null;
 				}
@@ -482,7 +482,7 @@ public class BaseMode extends ActionMode<Figure,VirtualScreenGraphics2D,java.awt
 			assert(this.selectRectAnchor!=null);
 			float x = event.getX();
 			float y = event.getY();
-			this.selectRect.setFrameFromDiagonal(
+			this.selectRect.setFromCorners(
 					x, y, 
 					this.selectRectAnchor.getX(),
 					this.selectRectAnchor.getY());
@@ -592,24 +592,24 @@ public class BaseMode extends ActionMode<Figure,VirtualScreenGraphics2D,java.awt
 			this.onPressedEvent = null;
 			this.initiatedResizing = null;
 			if (this.selectRect!=null) {
-				Rectangle2D bounds = this.selectRect;
+				Rectangle2f bounds = this.selectRect;
 				Point2D anchor = this.selectRectAnchor;
 				this.selectRect = null;
 				this.selectRectAnchor = null;
 				assert(anchor!=null);
 				float x = event.getX();
 				float y = event.getY();
-				bounds.setFrameFromDiagonal(
+				bounds.setFromCorners(
 						x, y, 
 						anchor.getX(), anchor.getY());
 
-				ActionModeManagerOwner<Figure,VirtualScreenGraphics2D,java.awt.Color> mc = getModeManagerOwner();
+				ActionModeManagerOwner<Figure,SwingViewGraphics2D,Color> mc = getModeManagerOwner();
 				assert(mc!=null);
 				SelectionManager sm = (SelectionManager)mc.getSelectionManager();
 				if (!bounds.isEmpty() && mc.isSelectionEnabled()) {
 					Set<Figure> inBounds = mc.getFiguresIn(new Rectangle2f(
-							(float)bounds.getMinX(), (float)bounds.getMinY(),
-							(float)bounds.getWidth(), (float)bounds.getHeight()));
+							bounds.getMinX(), bounds.getMinY(),
+							bounds.getWidth(), bounds.getHeight()));
 					if (!inBounds.isEmpty()) {
 						if (event.isShiftDown()) {
 							sm.addAll(inBounds);

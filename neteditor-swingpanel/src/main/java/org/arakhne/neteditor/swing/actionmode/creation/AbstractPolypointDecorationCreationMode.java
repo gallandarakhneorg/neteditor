@@ -20,21 +20,18 @@
  */
 package org.arakhne.neteditor.swing.actionmode.creation ;
 
-import java.awt.Color;
-import java.awt.geom.GeneralPath;
-import java.awt.geom.Path2D;
-
+import org.arakhne.afc.math.continous.object2d.Path2f;
 import org.arakhne.afc.math.continous.object2d.Point2f;
 import org.arakhne.afc.math.generic.Point2D;
 import org.arakhne.afc.ui.actionmode.ActionMode;
 import org.arakhne.afc.ui.actionmode.ActionModeManager;
 import org.arakhne.afc.ui.actionmode.ActionPointerEvent;
-import org.arakhne.afc.ui.awt.AwtUtil;
-import org.arakhne.afc.ui.awt.VirtualScreenGraphics2D;
 import org.arakhne.afc.ui.event.KeyEvent;
 import org.arakhne.afc.ui.undo.Undoable;
+import org.arakhne.afc.ui.vector.Color;
 import org.arakhne.neteditor.fig.figure.Figure;
 import org.arakhne.neteditor.fig.figure.decoration.DecorationFigure;
+import org.arakhne.neteditor.swing.graphics.SwingViewGraphics2D;
 
 /** This class implements a Mode that permits to
  * create decorations based on a collection of points.
@@ -44,9 +41,9 @@ import org.arakhne.neteditor.fig.figure.decoration.DecorationFigure;
  * @mavengroupid $GroupId$
  * @mavenartifactid $ArtifactId$
  */
-public abstract class AbstractPolypointDecorationCreationMode extends ActionMode<Figure,VirtualScreenGraphics2D,java.awt.Color> {
+public abstract class AbstractPolypointDecorationCreationMode extends ActionMode<Figure,SwingViewGraphics2D,Color> {
 
-        private GeneralPath points = null;
+        private Path2f points = null;
         private Point2D candidate = null;
         private final Point2D hit = new Point2f();
 
@@ -56,7 +53,7 @@ public abstract class AbstractPolypointDecorationCreationMode extends ActionMode
          * @param modeManager a reference to the ModeManager that
          *                    contains this Mode.
          */
-        public AbstractPolypointDecorationCreationMode(boolean persistent, ActionModeManager<Figure,VirtualScreenGraphics2D,java.awt.Color> modeManager) { 
+        public AbstractPolypointDecorationCreationMode(boolean persistent, ActionModeManager<Figure,SwingViewGraphics2D,Color> modeManager) { 
                 super(modeManager);
                 setPersistent(persistent);
         }
@@ -151,7 +148,7 @@ public abstract class AbstractPolypointDecorationCreationMode extends ActionMode
                         }
                         else if (this.candidate!=null) {
                                 if (this.points==null) {
-                                        this.points = new GeneralPath();
+                                        this.points = new Path2f();
                                         if (this.candidate.equals(this.points)) {
                                                 this.points.moveTo(event.getX(), event.getY());
                                         }
@@ -177,21 +174,21 @@ public abstract class AbstractPolypointDecorationCreationMode extends ActionMode
          * @param path is the path to follow.
          * @return the new figure.
          */
-        protected abstract DecorationFigure createFigure(Path2D path);
+        protected abstract DecorationFigure createFigure(Path2f path);
 
         /**
          * {@inheritDoc}
          */
         @Override
-        public void paint(VirtualScreenGraphics2D g) {
+        public void paint(SwingViewGraphics2D g) {
                 if (this.points!=null) {
                         Color border = getModeManagerOwner().getSelectionBackground();
-                        Color background = AwtUtil.makeTransparentColor(border);
+                        Color background = border.transparentColor();
                         paintShape(g, this.points, this.candidate, border, background);
                 }
                 else if (this.candidate!=null) {
                         Color border = getModeManagerOwner().getSelectionBackground();
-                        Color background = AwtUtil.makeTransparentColor(border);
+                        Color background = border.transparentColor();
                         paintShape(g, this.hit, this.candidate, border, background);
                 }
         }
@@ -204,7 +201,7 @@ public abstract class AbstractPolypointDecorationCreationMode extends ActionMode
          * @param borderColor
          * @param backgroundColor
          */
-        protected abstract void paintShape(VirtualScreenGraphics2D g, Path2D path, Point2D candidate, Color borderColor, Color backgroundColor);
+        protected abstract void paintShape(SwingViewGraphics2D g, Path2f path, Point2D candidate, Color borderColor, Color backgroundColor);
 
         /** Paint the shape that will be created.
          * 
@@ -214,6 +211,6 @@ public abstract class AbstractPolypointDecorationCreationMode extends ActionMode
          * @param borderColor
          * @param backgroundColor
          */
-        protected abstract void paintShape(VirtualScreenGraphics2D g, Point2D lastPoint, Point2D candidate, Color borderColor, Color backgroundColor);
+        protected abstract void paintShape(SwingViewGraphics2D g, Point2D lastPoint, Point2D candidate, Color borderColor, Color backgroundColor);
 
 }

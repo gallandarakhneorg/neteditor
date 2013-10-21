@@ -23,8 +23,9 @@ package org.arakhne.neteditor.swing.actionmode ;
 import java.util.UUID;
 
 import org.arakhne.afc.ui.actionmode.ActionMode;
-import org.arakhne.afc.ui.awt.VirtualScreenGraphics2D;
+import org.arakhne.afc.ui.vector.Color;
 import org.arakhne.neteditor.fig.figure.Figure;
+import org.arakhne.neteditor.swing.graphics.SwingViewGraphics2D;
 
 /** ModeManager keeps track of all the 
  *  {@link ActionMode Modes} for a given workspace.
@@ -42,7 +43,7 @@ import org.arakhne.neteditor.fig.figure.Figure;
  * @mavengroupid $GroupId$
  * @mavenartifactid $ArtifactId$
  */
-public class ActionModeManager extends org.arakhne.afc.ui.actionmode.ActionModeManager<Figure,VirtualScreenGraphics2D,java.awt.Color> {
+public class ActionModeManager extends org.arakhne.afc.ui.actionmode.ActionModeManager<Figure,SwingViewGraphics2D,Color> {
 
 	/**
 	 * @param viewID is the identifier of the view associated to this manager.
