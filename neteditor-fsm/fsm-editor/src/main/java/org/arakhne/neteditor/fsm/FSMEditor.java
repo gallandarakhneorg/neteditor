@@ -159,10 +159,9 @@ import org.arakhne.neteditor.io.ngr.NGRWriter;
 import org.arakhne.neteditor.io.pdf.PdfExporter;
 import org.arakhne.neteditor.io.pdf.PdfTeXExporter;
 import org.arakhne.neteditor.io.svg.SvgExporter;
-import org.arakhne.neteditor.swing.JFigureViewer;
+import org.arakhne.neteditor.swing.JFigureView;
 import org.arakhne.neteditor.swing.actionmode.creation.BitmapDecorationCreationMode;
 import org.arakhne.neteditor.swing.actionmode.creation.EllipseDecorationCreationMode;
-import org.arakhne.neteditor.swing.actionmode.creation.PdfDecorationCreationMode;
 import org.arakhne.neteditor.swing.actionmode.creation.PolygonDecorationCreationMode;
 import org.arakhne.neteditor.swing.actionmode.creation.PolylineDecorationCreationMode;
 import org.arakhne.neteditor.swing.actionmode.creation.RectangleDecorationCreationMode;
@@ -200,7 +199,6 @@ public class FSMEditor extends JFrame {
 	private static final URL ELLIPSE_ICON = Resources.getResource(FSMEditor.class, "ellipse.png"); //$NON-NLS-1$
 	private static final URL RECTANGLE_ICON = Resources.getResource(FSMEditor.class, "rectangle.png"); //$NON-NLS-1$
 	private static final URL BITMAP_ICON = Resources.getResource(FSMEditor.class, "bitmap.png"); //$NON-NLS-1$
-	private static final URL PDF_ICON = Resources.getResource(FSMEditor.class, "pdf.png"); //$NON-NLS-1$
 	private static final URL TEXT_ICON = Resources.getResource(FSMEditor.class, "text.png"); //$NON-NLS-1$
 	private static final URL POLYLINE_ICON = Resources.getResource(FSMEditor.class, "polyline.png"); //$NON-NLS-1$
 	private static final URL POLYGON_ICON = Resources.getResource(FSMEditor.class, "polygon.png"); //$NON-NLS-1$
@@ -322,7 +320,6 @@ public class FSMEditor extends JFrame {
 
 	private final Action decoTextAction = new DecorationTextToolAction();
 	private final Action decoBitmapAction = new DecorationBitmapToolAction();
-	private final Action decoPdfAction = new DecorationPdfToolAction();
 	private final Action decoRectangleAction = new DecorationRectangleToolAction();
 	private final Action decoEllipseAction = new DecorationEllipseToolAction();
 	private final Action decoPolylineAction = new DecorationPolylineToolAction();
@@ -330,7 +327,7 @@ public class FSMEditor extends JFrame {
 
 	private final AbstractButton defaultToolButton;
 
-	private final JFigureViewer<FiniteStateMachine> figurePanel;
+	private final JFigureView<FiniteStateMachine> figurePanel;
 
 	private NetEditorContentType currentDocumentFileFormat = null;
 	private File currentDocument = null;
@@ -363,7 +360,7 @@ public class FSMEditor extends JFrame {
 
 		this.stateMachine = new FiniteStateMachine();
 
-		this.figurePanel = new JFigureViewer<FiniteStateMachine>(
+		this.figurePanel = new JFigureView<FiniteStateMachine>(
 				FiniteStateMachine.class,
 				this.stateMachine,
 				new FSMFigureFactory(),
@@ -443,7 +440,7 @@ public class FSMEditor extends JFrame {
 		editMenu.add(new JMenuItem(this.moveDownAction));
 		editMenu.add(new JMenuItem(this.moveBottomAction));
 
-		Collection<AbstractButton>[] buttons = new Collection[12];
+		Collection<AbstractButton>[] buttons = new Collection[11];
 		for(int i=0; i<buttons.length; ++i) {
 			buttons[i] = new ArrayList<AbstractButton>(2);
 		}
@@ -457,11 +454,10 @@ public class FSMEditor extends JFrame {
 		toolMenu.addSeparator();
 		toolMenu.add(makeMenuToggleButton(this.decoTextAction, buttons[5]));
 		toolMenu.add(makeMenuToggleButton(this.decoBitmapAction, buttons[6]));
-		toolMenu.add(makeMenuToggleButton(this.decoPdfAction, buttons[7]));
-		toolMenu.add(makeMenuToggleButton(this.decoRectangleAction, buttons[8]));
-		toolMenu.add(makeMenuToggleButton(this.decoEllipseAction, buttons[9]));
-		toolMenu.add(makeMenuToggleButton(this.decoPolylineAction, buttons[10]));
-		toolMenu.add(makeMenuToggleButton(this.decoPolygonAction, buttons[11]));
+		toolMenu.add(makeMenuToggleButton(this.decoRectangleAction, buttons[7]));
+		toolMenu.add(makeMenuToggleButton(this.decoEllipseAction, buttons[8]));
+		toolMenu.add(makeMenuToggleButton(this.decoPolylineAction, buttons[9]));
+		toolMenu.add(makeMenuToggleButton(this.decoPolygonAction, buttons[10]));
 
 		generatorMenu.add(new JMenuItem(this.generateJavaAction));
 
@@ -511,11 +507,10 @@ public class FSMEditor extends JFrame {
 
 		toolBar.add(makeToolbarToggleButton(this.decoTextAction, buttons[5]));
 		toolBar.add(makeToolbarToggleButton(this.decoBitmapAction, buttons[6]));
-		toolBar.add(makeToolbarToggleButton(this.decoPdfAction, buttons[7]));
-		toolBar.add(makeToolbarToggleButton(this.decoRectangleAction, buttons[8]));
-		toolBar.add(makeToolbarToggleButton(this.decoEllipseAction, buttons[9]));
-		toolBar.add(makeToolbarToggleButton(this.decoPolylineAction, buttons[10]));
-		toolBar.add(makeToolbarToggleButton(this.decoPolygonAction, buttons[11]));
+		toolBar.add(makeToolbarToggleButton(this.decoRectangleAction, buttons[7]));
+		toolBar.add(makeToolbarToggleButton(this.decoEllipseAction, buttons[8]));
+		toolBar.add(makeToolbarToggleButton(this.decoPolylineAction, buttons[9]));
+		toolBar.add(makeToolbarToggleButton(this.decoPolygonAction, buttons[10]));
 
 		ButtonGroup buttonGroup = new ButtonGroup();
 		for(Collection<AbstractButton> bts : buttons) {
@@ -773,7 +768,7 @@ public class FSMEditor extends JFrame {
 					this.currentDocument = inputFile;
 					this.currentDocumentFileFormat = gw.getContentType();
 					saved();
-					this.figurePanel.defaultView(true);
+					this.figurePanel.fitView();
 				}
 			}
 			catch (Throwable ex) {
@@ -1521,12 +1516,12 @@ public class FSMEditor extends JFrame {
 	 */
 	private static class Printer implements Printable {
 
-		private final JFigureViewer<?> p;
+		private final JFigureView<?> p;
 
 		/**
 		 * @param p
 		 */
-		public Printer(JFigureViewer<?> p) {
+		public Printer(JFigureView<?> p) {
 			this.p = p;
 		}
 
@@ -2092,38 +2087,6 @@ public class FSMEditor extends JFrame {
 		public void actionPerformed(ActionEvent e) {
 			FSMEditor.this.figurePanel.getModeManager().beginMode(
 					new BitmapDecorationCreationMode(MODE_PERSISTENCE));
-		}
-
-	}
-
-	/**
-	 * @author $Author: galland$
-	 * @version $Name$ $Revision$ $Date$
-	 * @mavengroupid $GroupId$
-	 * @mavenartifactid $ArtifactId$
-	 */
-	private class DecorationPdfToolAction extends StandardAction {
-
-		private static final long serialVersionUID = -4270090946820640096L;
-
-		/**
-		 * @throws IOException
-		 */
-		@SuppressWarnings("synthetic-access")
-		public DecorationPdfToolAction() throws IOException {
-			setText(Locale.getString(FSMEditor.class, "ACTION_NAME_CREATE_PDF")); //$NON-NLS-1$
-			setToolTipText(Locale.getString(FSMEditor.class, "TOOLTIP_CREATE_PDF")); //$NON-NLS-1$
-			setIcon(loadIcon(PDF_ICON));
-		}
-
-		/**
-		 * {@inheritDoc}
-		 */
-		@SuppressWarnings("synthetic-access")
-		@Override
-		public void actionPerformed(ActionEvent e) {
-			FSMEditor.this.figurePanel.getModeManager().beginMode(
-					new PdfDecorationCreationMode(MODE_PERSISTENCE));
 		}
 
 	}
@@ -2722,7 +2685,7 @@ public class FSMEditor extends JFrame {
 				Undoable edit = layout.layoutFigures(FSMEditor.this.figurePanel.getFigures());
 				if (edit!=null) {
 					FSMEditor.this.figurePanel.getUndoManager().add(edit);
-					FSMEditor.this.figurePanel.defaultView(true);
+					FSMEditor.this.figurePanel.fitView();
 				}
 			}
 			finally {
@@ -2765,7 +2728,7 @@ public class FSMEditor extends JFrame {
 				Undoable edit = layout.layoutFigures(FSMEditor.this.figurePanel.getFigures());
 				if (edit!=null) {
 					FSMEditor.this.figurePanel.getUndoManager().add(edit);
-					FSMEditor.this.figurePanel.defaultView(true);
+					FSMEditor.this.figurePanel.fitView();
 				}
 			}
 			finally {

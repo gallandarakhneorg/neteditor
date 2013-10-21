@@ -91,16 +91,6 @@
         android:title="@android:string/unknownName">
     </item>
     <item
-        android:id="@+id/menu_decoration_pdf"
-        android:checkable="false"
-        android:enabled="true"
-        android:icon="@drawable/ic_menu_decoration_pdf"
-        android:menuCategory="container"
-        android:orderInCategory="25"
-        android:showAsAction="always"
-        android:title="@android:string/unknownName">
-    </item>
-    <item
         android:id="@+id/menu_decoration_polyline"
         android:checkable="false"
         android:enabled="true"

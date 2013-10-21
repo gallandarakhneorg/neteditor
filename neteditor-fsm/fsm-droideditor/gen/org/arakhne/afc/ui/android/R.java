@@ -24,14 +24,14 @@ public final class R {
 		public static final int hatchs = 0x7f020005;
 		public static final int ic_file = 0x7f020008;
 		public static final int ic_folder = 0x7f02000a;
-		public static final int ic_menu_save_gray = 0x7f020024;
-		public static final int ic_menu_save_selector = 0x7f020025;
-		public static final int ic_menu_save_upload = 0x7f020026;
-		public static final int ic_menu_save_upload_gray = 0x7f020027;
-		public static final int ic_menu_save_upload_selector = 0x7f020028;
-		public static final int ic_menu_up_directory = 0x7f02002b;
-		public static final int ic_menu_up_directory_gray = 0x7f02002c;
-		public static final int ic_menu_up_directory_selector = 0x7f02002d;
+		public static final int ic_menu_save_gray = 0x7f020023;
+		public static final int ic_menu_save_selector = 0x7f020024;
+		public static final int ic_menu_save_upload = 0x7f020025;
+		public static final int ic_menu_save_upload_gray = 0x7f020026;
+		public static final int ic_menu_save_upload_selector = 0x7f020027;
+		public static final int ic_menu_up_directory = 0x7f02002a;
+		public static final int ic_menu_up_directory_gray = 0x7f02002b;
+		public static final int ic_menu_up_directory_selector = 0x7f02002c;
 	}
 	public static final class id {
 		public static final int about_application_id = 0x7f090000;
@@ -55,8 +55,8 @@ public final class R {
 		public static final int fileChooserSaveMenu = 0x7f090019;
 		public static final int filechooserTextView1 = 0x7f090012;
 		public static final int textEditor = 0x7f090018;
-		public static final int textEditorSaveMenu = 0x7f090038;
-		public static final int textEditorUploadMenu = 0x7f090039;
+		public static final int textEditorSaveMenu = 0x7f090037;
+		public static final int textEditorUploadMenu = 0x7f090038;
 	}
 	public static final class layout {
 		public static final int about = 0x7f030000;
@@ -78,6 +78,7 @@ public final class R {
 		public static final int default_color = 0x7f040001;
 		public static final int empty_directory = 0x7f040002;
 		public static final int enter_filename = 0x7f040003;
+		public static final int fit_view_done = 0x7f04000c;
 		public static final int property_dialog_title = 0x7f040006;
 		public static final int property_label_name = 0x7f040008;
 		public static final int property_label_text = 0x7f040009;

@@ -41,7 +41,6 @@ import org.arakhne.afc.vmutil.FileSystem;
 import org.arakhne.neteditor.android.actionmode.FigureActionModeManager;
 import org.arakhne.neteditor.android.actionmode.creation.BitmapDecorationCreationMode;
 import org.arakhne.neteditor.android.actionmode.creation.EllipseDecorationCreationMode;
-import org.arakhne.neteditor.android.actionmode.creation.PdfDecorationCreationMode;
 import org.arakhne.neteditor.android.actionmode.creation.PolygonDecorationCreationMode;
 import org.arakhne.neteditor.android.actionmode.creation.PolylineDecorationCreationMode;
 import org.arakhne.neteditor.android.actionmode.creation.RectangleDecorationCreationMode;
@@ -320,14 +319,6 @@ public class FSMEditorActivity extends AbstractEditorActivity<FiniteStateMachine
 			case R.id.menu_decoration_image:
 			{
 				BitmapDecorationCreationMode mode = new BitmapDecorationCreationMode();
-				FigureView<?> view = getFigureView();
-				FigureActionModeManager modeManager = view.getActionModeManager();
-				modeManager.startMode(mode);
-				return true;
-			}
-			case R.id.menu_decoration_pdf:
-			{
-				PdfDecorationCreationMode mode = new PdfDecorationCreationMode();
 				FigureView<?> view = getFigureView();
 				FigureActionModeManager modeManager = view.getActionModeManager();
 				modeManager.startMode(mode);
