@@ -444,15 +444,8 @@ public class PdfGraphics2D extends AbstractVectorialExporterGraphics2D {
 	}
 
 	@Override
-	public void drawString(String str, float x, float y) {
-		drawString(str, x, y, null);
-	}
-
-	@Override
-	public void drawString(String str, float x, float y, Shape2f clip) {
+	protected void paintString(String text, float x, float y, Shape2f clip) {
 		Shape2f oldClip = getClip();
-
-		preDrawing();
 
 		if (clip!=null) {
 			clip(clip);
@@ -460,15 +453,13 @@ public class PdfGraphics2D extends AbstractVectorialExporterGraphics2D {
 
 		Color c = getOutlineColor();
 		if (c==null) c = ViewComponentConstants.DEFAULT_LINE_COLOR;
-		drawPdfString(x, y, str, c);
+		drawPdfString(x, y, text, c);
 
 		if (clip!=null) {
 			setClip(oldClip);
 		}
-
-		postDrawing();
 	}
-
+	
 	/** Primtive operation that permits to draw a string.
 	 * 
 	 * @param x is the position of the text

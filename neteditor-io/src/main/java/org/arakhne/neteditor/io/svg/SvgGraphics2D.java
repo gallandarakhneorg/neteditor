@@ -500,40 +500,23 @@ public class SvgGraphics2D extends AbstractVectorialExporterGraphics2D {
 		postDrawing();
 		return true;
 	}
-
-	/**
-	 * {@inheritDoc}
-	 */
+	
 	@Override
-	public void drawString(String str, float x, float y) {
-		preDrawing();
-		
-		Font font = getFont();
-		Element textN = this.xmldocument.createElement(tag("text")); //$NON-NLS-1$
-		this.svgCurrentNode.appendChild(textN);
-		textN.setAttribute("x", Float.toString(x)); //$NON-NLS-1$
-		textN.setAttribute("y", Float.toString(y)); //$NON-NLS-1$
-		textN.setAttribute("font-size", Float.toString(font.getSize())); //$NON-NLS-1$
-		textN.setAttribute("font-family", extractFontFamily(font)); //$NON-NLS-1$
-
-		textN.appendChild(this.xmldocument.createTextNode(str));
-		
-		setTextDrawingAttributes(textN);
-		
-		postDrawing();
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public void drawString(String str, float x, float y, Shape2f clip) {
+	protected void paintString(String text, float x, float y, Shape2f clip) {
 		if (clip==null) {
-			drawString(str, x, y);
+			Font font = getFont();
+			Element textN = this.xmldocument.createElement(tag("text")); //$NON-NLS-1$
+			this.svgCurrentNode.appendChild(textN);
+			textN.setAttribute("x", Float.toString(x)); //$NON-NLS-1$
+			textN.setAttribute("y", Float.toString(y)); //$NON-NLS-1$
+			textN.setAttribute("font-size", Float.toString(font.getSize())); //$NON-NLS-1$
+			textN.setAttribute("font-family", extractFontFamily(font)); //$NON-NLS-1$
+
+			textN.appendChild(this.xmldocument.createTextNode(text));
+			
+			setTextDrawingAttributes(textN);
 		}
 		else {
-			preDrawing();
-			
 			Element gN = this.xmldocument.createElement(tag("g")); //$NON-NLS-1$
 			this.svgCurrentNode.appendChild(gN);
 			
@@ -557,11 +540,9 @@ public class SvgGraphics2D extends AbstractVectorialExporterGraphics2D {
 			textN.setAttribute("font-family", extractFontFamily(font)); //$NON-NLS-1$
 			textN.setAttribute("clip-path", "url(#"+clipPathId+")"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 			
-			textN.appendChild(this.xmldocument.createTextNode(str));
+			textN.appendChild(this.xmldocument.createTextNode(text));
 			
 			setTextDrawingAttributes(textN);
-
-			postDrawing();
 		}
 	}
 

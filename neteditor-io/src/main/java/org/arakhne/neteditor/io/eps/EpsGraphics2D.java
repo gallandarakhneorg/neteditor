@@ -277,16 +277,9 @@ public class EpsGraphics2D extends AbstractVectorialExporterGraphics2D {
 		
 		return true;
 	}
-
+	
 	@Override
-	public void drawString(String str, float x, float y) {
-		drawString(str, x, y, null);
-	}
-
-	@Override
-	public void drawString(String str, float x, float y, Shape2f clip) {
-		preDrawing();
-		
+	protected void paintString(String text, float x, float y, Shape2f clip) {
 		EpsContext context = this.context.peek();
 
 		gsave();
@@ -297,13 +290,11 @@ public class EpsGraphics2D extends AbstractVectorialExporterGraphics2D {
 		
 		Color c = getOutlineColor();
 		if (c==null) c = ViewComponentConstants.DEFAULT_LINE_COLOR;
-		drawEpsString(context, x, y, str, c);
+		drawEpsString(context, x, y, text, c);
 		
 		grestore();
-		
-		postDrawing();
 	}
-	
+
 	/** Draw a text in EPS.
 	 * 
 	 * @param context is the EPS context.
