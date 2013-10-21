@@ -161,10 +161,10 @@ public class SvgExporter extends AbstractVectorialExporter<SvgGraphics2D, Output
 		synchronized(container.getTreeLock()) {
 			ProgressionUtil.init(getProgression(), 0, container.getFigureCount()+5);
 			try {
-				SvgGraphics2D g = prepareExport(null, null, container.getComponentBounds());
+				SvgGraphics2D g = prepareExport(null, null, container.getViewBounds());
 				if (g==null) throw new IOException();
 				g.xmldocument = xmlDocument; // Force to use the given XML document
-				g.pushRenderingContext(null, null, container.getComponentBounds());
+				g.pushRenderingContext(null, null, container.getViewBounds());
 				g.prolog();
 				boolean oldShadow = container.isShadowDrawn();
 				container.setShadowDrawn(isShadowExported() && isShadowSupported());
@@ -178,7 +178,7 @@ public class SvgExporter extends AbstractVectorialExporter<SvgGraphics2D, Output
 				ProgressionUtil.advance(getProgression(), container.getFigureCount());
 				g.epilog();
 				g.popRenderingContext();
-				finalizeExport(null, null, container.getComponentBounds(), g);
+				finalizeExport(null, null, container.getViewBounds(), g);
 				
 				return extractNode(g.xmldocument, g.tag("svg")); //$NON-NLS-1$
 			}

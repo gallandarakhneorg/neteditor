@@ -107,7 +107,7 @@ public class ImageIOBitmapExporter implements BitmapExporter {
 	 */
 	protected Image generateImage(ViewComponentContainer<?,?> container, float scale, Progression progression) {
 		ProgressionUtil.init(progression, 0, 3);
-    	Rectangle2f dim = container.getComponentBounds();
+    	Rectangle2f dim = container.getViewBounds();
     	int iw = (int)(Math.ceil(dim.getWidth())*scale);
     	int ih = (int)(Math.ceil(dim.getHeight())*scale);
     	Image image = VectorToolkit.image(iw, ih, this.type.isAlphaSupported());

@@ -198,11 +198,11 @@ public abstract class AbstractVectorialExporter<D extends AbstractVectorialExpor
 			S stream = createStream(this.file, output);
 			ProgressionUtil.advance(getProgression(), 10);
 			try {
-				D g = prepareExport(this.file, stream, container.getComponentBounds());
+				D g = prepareExport(this.file, stream, container.getViewBounds());
 				if (g==null) throw new IOException();
 				ProgressionUtil.advance(getProgression(), 100);
 				g.prolog();
-				g.pushRenderingContext(null, null, container.getComponentBounds());
+				g.pushRenderingContext(null, null, container.getViewBounds());
 				boolean oldShadow = container.isShadowDrawn();
 				container.setShadowDrawn(isShadowExported() && isShadowSupported());
 				ProgressionUtil.advance(getProgression(), 10);
@@ -215,7 +215,7 @@ public abstract class AbstractVectorialExporter<D extends AbstractVectorialExpor
 				ProgressionUtil.advance(getProgression(), 780);
 				g.popRenderingContext();
 				g.epilog();
-				finalizeExport(this.file, stream, container.getComponentBounds(), g);
+				finalizeExport(this.file, stream, container.getViewBounds(), g);
 			}
 			finally {
 				stream.close();
