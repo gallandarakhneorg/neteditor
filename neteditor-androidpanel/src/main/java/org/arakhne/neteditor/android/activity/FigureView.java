@@ -49,6 +49,8 @@ import org.arakhne.afc.ui.actionmode.ActionMode;
 import org.arakhne.afc.ui.actionmode.ActionModeListener;
 import org.arakhne.afc.ui.actionmode.SelectableInteractionListener;
 import org.arakhne.afc.ui.android.filechooser.FileChooser;
+import org.arakhne.afc.ui.android.zoom.AbstractDocumentWrapper;
+import org.arakhne.afc.ui.android.zoom.DocumentWrapper;
 import org.arakhne.afc.ui.android.zoom.ZoomableView;
 import org.arakhne.afc.ui.event.PointerEvent;
 import org.arakhne.afc.ui.selection.SelectionEvent;
@@ -172,6 +174,8 @@ public class FigureView<G extends Graph<?,?,?,?>> extends ZoomableView  implemen
 	private int backgroundSelectionColor;
 	private int foregroundSelectionColor;
 	
+	private final EventHandler eventHandler = new EventHandler();
+	
 	/**
 	 * @param context is the droid context in which the view is displayed.
 	 */
@@ -197,10 +201,15 @@ public class FigureView<G extends Graph<?,?,?,?>> extends ZoomableView  implemen
 		this.backgroundColor = context.getResources().getColor(android.R.color.background_light);
 		this.backgroundSelectionColor = context.getResources().getColor(R.color.figureviewer_selection_background);
 		this.foregroundSelectionColor = context.getResources().getColor(R.color.figureviewer_selection_foreground);
-		this.selectionManager.addSelectionListener(getEventHandler(SelectionListener.class));
+		this.selectionManager.addSelectionListener(this.eventHandler);
 		setLongClickable(true);
 	}
 	
+	@Override
+	protected DocumentWrapper createDocumentWrapper() {
+		return new ViewDocumentWrapper();
+	}
+
 	/** Replies if the selection manager is enabled.
 	 * 
 	 * @return <code>true</code> if the selection manager is enabled.
@@ -233,14 +242,6 @@ public class FigureView<G extends Graph<?,?,?,?>> extends ZoomableView  implemen
 		return this.isAlwaysRemovingModelObjects;
 	}
 	
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	protected EventHandler createEventHandler() {
-		return new EventHandler();
-	}
-
 	/** Replies the selection manager.
 	 * 
 	 * @return the selection manager.
@@ -263,9 +264,9 @@ public class FigureView<G extends Graph<?,?,?,?>> extends ZoomableView  implemen
 	 */
 	public void setSelectionManager(SelectionManager manager) {
 		if (manager!=null && manager!=this.selectionManager) {
-			this.selectionManager.removeSelectionListener(getEventHandler(SelectionListener.class));
+			this.selectionManager.removeSelectionListener(this.eventHandler);
 			this.selectionManager = manager;
-			this.selectionManager.addSelectionListener(getEventHandler(SelectionListener.class));
+			this.selectionManager.addSelectionListener(this.eventHandler);
 		}
 	}
 
@@ -282,7 +283,7 @@ public class FigureView<G extends Graph<?,?,?,?>> extends ZoomableView  implemen
 	 */
 	@Override
 	protected float getPreferredFocusX() {
-		Rectangle2f r = getDocumentRect();
+		Rectangle2f r = getViewBounds();
 		if (r!=null) return r.getCenterX();
 		return 0f;
 	}
@@ -291,7 +292,7 @@ public class FigureView<G extends Graph<?,?,?,?>> extends ZoomableView  implemen
 	 */
 	@Override
 	protected float getPreferredFocusY()  {
-		Rectangle2f r = getDocumentRect();
+		Rectangle2f r = getViewBounds();
 		if (r!=null) return r.getCenterY();
 		return 0f;
 	}
@@ -376,7 +377,7 @@ public class FigureView<G extends Graph<?,?,?,?>> extends ZoomableView  implemen
 			this.changeLock.lock();
 			if (g!=this.graph) {
 				this.selectionManager.clear();
-				ModelObjectListener eh = getEventHandler(ModelObjectListener.class);
+				ModelObjectListener eh = this.eventHandler;
 				if (this.graph!=null) {
 					this.graph.removeModelObjectListener(eh);
 					for(ModelObjectListener l : this.listenerList.getListeners(ModelObjectListener.class)) {
@@ -421,6 +422,8 @@ public class FigureView<G extends Graph<?,?,?,?>> extends ZoomableView  implemen
 	 * point inside. If you want to test the point against
 	 * the shape of the figures, please use
 	 * {@link #getFigureAt(float, float)}.
+	 * This function uses the precision of the clicks, which
+	 * is replied by {@link #getHitPrecision()}.
 	 * 
 	 * @param x
 	 * @param y
@@ -430,8 +433,10 @@ public class FigureView<G extends Graph<?,?,?,?>> extends ZoomableView  implemen
 		float precision = pixel2logical_size(getHitPrecision());
 		Rectangle2f clickRect = new Rectangle2f();
 		clickRect.setFromCorners(x-precision, y-precision, x+precision, y+precision);
+		Rectangle2f figureBounds;
 		for(Figure figure : this.figures) {
-			if (figure.intersects(clickRect)) {
+			figureBounds = figure.getBounds();
+			if (figureBounds!=null && figureBounds.intersects(clickRect)) {
 				return figure;
 			}
 		}
@@ -473,14 +478,12 @@ public class FigureView<G extends Graph<?,?,?,?>> extends ZoomableView  implemen
 	 * @return the hit figures, never <code>null</code>.
 	 */
 	public Set<Figure> getFiguresIn(Rectangle2f bounds) {
+		assert(bounds!=null);
 		Set<Figure> figures = new TreeSet<Figure>();
-		Rectangle2f bb = new Rectangle2f(
-				bounds.getMinX(),
-				bounds.getMinY(),
-				bounds.getWidth(),
-				bounds.getHeight());
+		Rectangle2f figureBounds;
 		for(Figure figure : this.figures) {
-			if (figure.contains(bb)) {
+			figureBounds = figure.getBounds();
+			if (figureBounds!=null && bounds.contains(figureBounds)) {
 				figures.add(figure);
 			}
 		}
@@ -493,8 +496,11 @@ public class FigureView<G extends Graph<?,?,?,?>> extends ZoomableView  implemen
 	 * @return the hit figures, never <code>null</code>.
 	 */
 	public Figure getFigureIn(Rectangle2f bounds) {
+		assert(bounds!=null);
+		Rectangle2f figureBounds;
 		for(Figure figure : this.figures) {
-			if (figure.contains(bounds)) {
+			figureBounds = figure.getBounds();
+			if (figureBounds!=null && bounds.contains(figureBounds)) {
 				return figure;
 			}
 		}
@@ -512,8 +518,8 @@ public class FigureView<G extends Graph<?,?,?,?>> extends ZoomableView  implemen
 			this.figures.set(idx, o);
 			this.figures.set(idx-1, figure);
 
-			Rectangle2f r = figure.getDamagedBounds();
-			r = o.getDamagedBounds().createUnion(r);
+			Rectangle2f r = figure.getBounds();
+			r = o.getBounds().createUnion(r);
 
 			repaint(r);
 		}
@@ -530,8 +536,8 @@ public class FigureView<G extends Graph<?,?,?,?>> extends ZoomableView  implemen
 			this.figures.set(idx, o);
 			this.figures.set(idx+1, figure);
 
-			Rectangle2f r = figure.getDamagedBounds();
-			r = o.getDamagedBounds().createUnion(r);
+			Rectangle2f r = figure.getBounds();
+			r = o.getBounds().createUnion(r);
 
 			repaint(r);
 		}
@@ -596,32 +602,24 @@ public class FigureView<G extends Graph<?,?,?,?>> extends ZoomableView  implemen
 	}
 
 	private void removeFigureListeners(Figure figure) {
-		figure.removeViewComponentChangeListener(getEventHandler(ViewComponentChangeListener.class));
-		figure.removeViewComponentPropertyChangeListener(getEventHandler(ViewComponentPropertyChangeListener.class));
-		figure.removeViewComponentRepaintListener(getEventHandler(ViewComponentLayoutListener.class));
+		figure.removeViewComponentChangeListener(this.eventHandler);
+		figure.removeViewComponentPropertyChangeListener(this.eventHandler);
+		figure.removeViewComponentRepaintListener(this.eventHandler);
 		if (figure instanceof ModelObjectFigure<?>)
-			((ModelObjectFigure<?>)figure).removeViewComponentBindingListener(
-					getEventHandler(ViewComponentBindingListener.class));
+			((ModelObjectFigure<?>)figure).removeViewComponentBindingListener(this.eventHandler);
 	}
 
 	private void addFigureListeners(Figure figure) {
-		figure.addViewComponentChangeListener(getEventHandler(ViewComponentChangeListener.class));
-		figure.addViewComponentPropertyChangeListener(getEventHandler(ViewComponentPropertyChangeListener.class));
-		figure.addViewComponentRepaintListener(getEventHandler(ViewComponentLayoutListener.class));
-		if (figure instanceof ModelObjectFigure<?>)
-			((ModelObjectFigure<?>)figure).addViewComponentBindingListener(
-					getEventHandler(ViewComponentBindingListener.class));
+		figure.addViewComponentChangeListener(this.eventHandler);
+		figure.addViewComponentPropertyChangeListener(this.eventHandler);
+		figure.addViewComponentRepaintListener(this.eventHandler);
+		if (figure instanceof ModelObjectFigure<?>) {
+			((ModelObjectFigure<?>)figure).addViewComponentBindingListener(this.eventHandler);
+		}
 	}
 
-	/**
-	 * Replies the area covered by the displayed graph.
-	 * This function invokes {@link #calcDocumentBounds()}
-	 * to compute the bounds of the document when it is unknown.
-	 * 
-	 * @return the bounds of the document or <code>null</code> if
-	 * there is no bounds (ie. no document).
-	 */
-	public Rectangle2f getDocumentRect() {
+	@Override
+	public final Rectangle2f getViewBounds() {
 		Rectangle2f r = (this.documentBounds==null) ? null : this.documentBounds.get();
 		if (r==null) {
 			r = calcDocumentBounds();
@@ -641,7 +639,7 @@ public class FigureView<G extends Graph<?,?,?,?>> extends ZoomableView  implemen
 			Rectangle2f r = null;
 			Rectangle2f rr;
 			for(Figure figure : this.figures) {
-				rr = figure.getDamagedBounds();
+				rr = figure.getBounds();
 				assert(rr!=null);
 				if (r==null) r = rr.clone();
 				else Rectangle2f.union(r, rr, r);
@@ -912,17 +910,17 @@ public class FigureView<G extends Graph<?,?,?,?>> extends ZoomableView  implemen
 	}
 
 	@Override
-	public final Rectangle2f getComponentBounds() {
-		return getDocumentRect();
-	}
-
-	@Override
 	public int getFigureCount() {
 		return this.figures.size();
 	}
 
 	/**
-	 * Replies the figure at the given coordinate.
+	 * Replies the figure at the given coordinate. This function
+	 * is testing the point against the shapes of the figures.
+	 * If you want to test the bounds of the figure, use
+	 * {@link #getFigureWithBoundsAt(float, float)}.
+	 * This function uses the precision of the clicks, which
+	 * is replied by {@link #getHitPrecision()}.
 	 * 
 	 * @param x
 	 * @param y
@@ -1215,7 +1213,7 @@ public class FigureView<G extends Graph<?,?,?,?>> extends ZoomableView  implemen
 			Rectangle2f r;
 			for(Figure figure : FigureView.this) {
 				if (figure instanceof BlockFigure && !exceptions.contains(figure)) {
-					r = figure.getDamagedBounds();
+					r = figure.getBounds();
 					if (r!=null && !r.isEmpty()
 							&& r.intersects(bounds)) {
 						return false;
@@ -1233,7 +1231,7 @@ public class FigureView<G extends Graph<?,?,?,?>> extends ZoomableView  implemen
 			Rectangle2f r;
 			for(Figure figure : FigureView.this) {
 				if (figure instanceof BlockFigure && !exceptions.contains(figure)) {
-					r = figure.getDamagedBounds();
+					r = figure.getBounds();
 					if (r!=null && !r.isEmpty()
 							&& r.intersects(bounds)) {
 						return r;
@@ -1300,7 +1298,7 @@ public class FigureView<G extends Graph<?,?,?,?>> extends ZoomableView  implemen
 					Figure figure = addedObject.getViewBinding().getView(getUUID(), Figure.class);
 					if (figure==null) {
 						FigureFactory<G> factory = getFigureFactory();
-						Rectangle2f bb = getDocumentRect();
+						Rectangle2f bb = getViewBounds();
 						figure = factory.createFigureFor(
 								getUUID(),
 								bb,
@@ -2047,4 +2045,25 @@ public class FigureView<G extends Graph<?,?,?,?>> extends ZoomableView  implemen
 
 	} // class DecorationFigureAdditionUndo
 
+	/** 
+	 * @author $Author: galland$
+	 * @version $FullVersion$
+	 * @mavengroupid $GroupId$
+	 * @mavenartifactid $ArtifactId$
+	 */
+	private class ViewDocumentWrapper extends AbstractDocumentWrapper {
+
+		/**
+		 */
+		public ViewDocumentWrapper() {
+			//
+		}
+
+		@Override
+		public Rectangle2f getDocumentBounds() {
+			return getViewBounds();
+		}
+
+	} // class ViewDocumentWrapper
+	
 }

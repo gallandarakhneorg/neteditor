@@ -120,7 +120,7 @@ class MoveMode extends ActionMode<Figure,DroidViewGraphics2D,Color> {
 		for(Figure figure : (SelectionManager)getModeManagerOwner().getSelectionManager()) {
 			if (figure.isMovable() && !figure.isLocked()) {
 				this.shadowPainter.offers(figure, figure==hFigure);
-				bb = figure.getDamagedBounds();
+				bb = figure.getBounds();
 				if (bb!=null) {
 					if (this.shadowPainter.size()==1) {
 						this.damagedRectangle.set(bb);

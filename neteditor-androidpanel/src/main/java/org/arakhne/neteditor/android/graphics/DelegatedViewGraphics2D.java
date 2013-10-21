@@ -32,7 +32,7 @@ import org.arakhne.afc.math.continous.object2d.Shape2f;
 import org.arakhne.afc.math.matrix.Transform2D;
 import org.arakhne.afc.ui.ZoomableContext;
 import org.arakhne.afc.ui.vector.Color;
-import org.arakhne.afc.ui.vector.android.DelegatedVectorGraphics2D;
+import org.arakhne.afc.ui.vector.DelegatedVectorGraphics2D;
 import org.arakhne.neteditor.fig.figure.Figure;
 import org.arakhne.neteditor.fig.graphics.ViewGraphics2D;
 
