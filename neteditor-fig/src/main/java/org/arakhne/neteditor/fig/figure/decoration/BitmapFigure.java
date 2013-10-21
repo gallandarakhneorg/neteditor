@@ -51,10 +51,10 @@ public class BitmapFigure extends BlockDecorationFigure implements ImageObserver
 	 */
 	private Image bitmap = null;
 
-	/** <code>true</code> if this text area must be framed, 
+	/** <code>true</code> if this bitmap area must be framed, 
 	 *  <code>false</code> otherwise.
 	 */
-	private boolean framed = true;
+	private boolean framed = false;
 
 	private transient SoftReference<Image> transparentBitmap = null;
 
