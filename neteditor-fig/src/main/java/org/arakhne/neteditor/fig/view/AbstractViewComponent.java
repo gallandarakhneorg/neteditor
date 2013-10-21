@@ -157,7 +157,6 @@ public abstract class AbstractViewComponent extends AbstractPropertyTooler imple
 
 	private SoftReference<Point2D> bufferPosition = null;
 	private SoftReference<Rectangle2f> bufferBounds = null;
-	private SoftReference<Rectangle2f> bufferDamagedBounds = null;
 	private SoftReference<Dimension> bufferDimension = null;
 
 	private WeakReference<ViewComponentContainer<?,?>> container = null;
@@ -428,7 +427,6 @@ public abstract class AbstractViewComponent extends AbstractPropertyTooler imple
 			float old = this.width;
 			this.width = rw;
 			this.bufferBounds = null;
-			this.bufferDamagedBounds = null;
 			this.bufferDimension = null;
 
 			onSizeUpdated(old, this.width, this.height, this.height);
@@ -449,7 +447,6 @@ public abstract class AbstractViewComponent extends AbstractPropertyTooler imple
 			float old = this.height;
 			this.height = rh;
 			this.bufferBounds = null;
-			this.bufferDamagedBounds = null;
 			this.bufferDimension = null;
 
 			onSizeUpdated(this.width, this.width, old, this.height);
@@ -574,7 +571,6 @@ public abstract class AbstractViewComponent extends AbstractPropertyTooler imple
 				this.maxWidth = this.minWidth;
 
 			this.bufferBounds = null;
-			this.bufferDamagedBounds = null;
 			this.bufferDimension = null;
 
 			if (this.maxWidth!=old3) {
@@ -599,7 +595,6 @@ public abstract class AbstractViewComponent extends AbstractPropertyTooler imple
 				this.maxHeight = this.minHeight;
 
 			this.bufferBounds = null;
-			this.bufferDamagedBounds = null;
 			this.bufferDimension = null;
 
 			if (this.maxHeight!=old3) {
@@ -633,7 +628,6 @@ public abstract class AbstractViewComponent extends AbstractPropertyTooler imple
 				this.minWidth = this.maxWidth;
 
 			this.bufferBounds = null;
-			this.bufferDamagedBounds = null;
 			this.bufferDimension = null;
 
 			if (this.minWidth!=old3) {
@@ -658,7 +652,6 @@ public abstract class AbstractViewComponent extends AbstractPropertyTooler imple
 				this.minHeight = this.maxHeight;
 
 			this.bufferBounds = null;
-			this.bufferDamagedBounds = null;
 			this.bufferDimension = null;
 
 			if (this.minHeight!=old3) {
@@ -731,46 +724,6 @@ public abstract class AbstractViewComponent extends AbstractPropertyTooler imple
 		return bounds;
 	}
 
-	/** This function compute the damaged bounds.
-	 * <p>
-	 * <strong>This function is not expected to be directly
-	 * called by you! So, never call it.</strong>
-	 * This function is called by {@link #getDamagedBounds()}
-	 * when the buffered damaged bounds is invalid.
-	 * <p>
-	 * This function does not change the bounds stored
-	 * in this AbstractViewComponent (that is replied
-	 * by {@link #getDamagedBounds()}.
-	 * Its purpose is to provide an overridable implementation
-	 * of the algorithm to compute the damaged bounds.
-	 * This algorithm may be specialized by the subclasses.
-	 * 
-	 * @return the damaged bounds.
-	 */
-	protected Rectangle2f computeDamagedBounds() {
-		float h = ViewComponentConstants.DEFAULT_DAMAGING_EXTENTS;
-		float d = 2f*h;
-		return new Rectangle2f(
-				this.x - h, this.y - h,
-				this.width + d, this.height + d);
-	}
-	
-	/**
-	 * {@inheritDoc}
-	 * 
-	 * @see #computeDamagedBounds()
-	 */
-	@Override
-	public final Rectangle2f getDamagedBounds() {
-		Rectangle2f bounds = this.bufferDamagedBounds==null ? null : this.bufferDamagedBounds.get();
-		if (bounds==null) {
-			bounds = computeDamagedBounds();
-			this.bufferDamagedBounds = new SoftReference<Rectangle2f>(bounds);
-		}
-		return bounds;
-	}
-
-	
 	/** Invoked each time the size (and not the position)
 	 * of the component have changed.
 	 * This function is declared to be overridden by subclasses
@@ -857,7 +810,6 @@ public abstract class AbstractViewComponent extends AbstractPropertyTooler imple
 			this.height = rh;
 			
 			this.bufferBounds = null;
-			this.bufferDamagedBounds = null;
 			this.bufferPosition = null;
 			this.bufferDimension = null;
 
@@ -896,7 +848,6 @@ public abstract class AbstractViewComponent extends AbstractPropertyTooler imple
 			this.height = rh;
 			
 			this.bufferBounds = null;
-			this.bufferDamagedBounds = null;
 			this.bufferDimension = null;
 
 			onSizeUpdated(old3, this.width, old4, this.height);
@@ -945,7 +896,6 @@ public abstract class AbstractViewComponent extends AbstractPropertyTooler imple
 	@Override
 	public void cleanUp() {
 		this.bufferBounds = null;
-		this.bufferDamagedBounds = null;
 		this.bufferPosition = null;
 		this.bufferDimension = null;
 	}
@@ -1097,7 +1047,6 @@ public abstract class AbstractViewComponent extends AbstractPropertyTooler imple
 			this.x = x;
 			this.y = y;
 			this.bufferBounds = null;
-			this.bufferDamagedBounds = null;
 			this.bufferPosition = null;
 
 			onPositionUpdated(old1, this.x, old2, this.y);
@@ -1122,7 +1071,6 @@ public abstract class AbstractViewComponent extends AbstractPropertyTooler imple
 			this.x += dx;
 			this.y += dy;
 			this.bufferBounds = null;
-			this.bufferDamagedBounds = null;
 			this.bufferPosition = null;
 
 			onPositionUpdated(old1, this.x, old2, this.y);

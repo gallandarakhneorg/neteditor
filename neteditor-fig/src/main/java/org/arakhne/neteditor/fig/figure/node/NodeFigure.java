@@ -62,9 +62,6 @@ public abstract class NodeFigure<N extends Node<?,? super N,? super A,?>,A exten
 
 	private static final long serialVersionUID = -3748725681196675586L;
 
-	@Deprecated
-	private AnchorFigure<A> _lastHitAnchor = null;
-
 	/** Construct a new AbstractNodeFigure.
 	 * <p>
 	 * The specified width and height are set inconditionally.
@@ -93,19 +90,6 @@ public abstract class NodeFigure<N extends Node<?,? super N,? super A,?>,A exten
 	@Override
 	protected void updateAssociatedGeometry() {
 		//
-	}
-
-	/** {@inheritDoc}
-	 */
-	@Override
-	public Rectangle2f computeDamagedBounds() {
-		Rectangle2f r = super.computeDamagedBounds();
-		Rectangle2f rr;
-		for(AnchorFigure<A> anchor : getAnchorFigures()) {
-			rr = anchor.getDamagedBounds();
-			Rectangle2f.union(r, rr, r);
-		}
-		return r;
 	}
 
 	/** Return the list of anchor figure attached to the owner.
@@ -167,33 +151,6 @@ public abstract class NodeFigure<N extends Node<?,? super N,? super A,?>,A exten
 		return false;
 	}
 
-	/** Test if one of the anchors is hit by the given coordinates.
-	 * 
-	 * @param x
-	 * @param y
-	 * @param epsilon
-	 * @return <code>true</code> if hit; otherwise <code>false</code>.
-	 * @deprecated see {@link #getAnchorOn(Shape2f)}
-	 */
-	@Deprecated
-	protected boolean hitAnchors(float x, float y, float epsilon) {
-		this._lastHitAnchor = null;
-
-		float ox = getX();
-		float oy =  getY();
-		float px = x - ox;
-		float py = y - oy;
-
-		for(AnchorFigure<A> anchor : getAnchorFigures()) {
-			if (anchor.hit(px, py, epsilon)) {
-				this._lastHitAnchor = anchor;
-				return true;
-			}
-		}
-		
-		return false;
-	}
-	
 	/** Test if one of the anchors is hit by the given shape.
 	 * 
 	 * @param shape
@@ -211,35 +168,6 @@ public abstract class NodeFigure<N extends Node<?,? super N,? super A,?>,A exten
 			}
 		}
 		return null;
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	@Deprecated
-	public boolean hit(float x, float y, float epsilon) {
-		if (hitAnchors(x, y, epsilon)) return true;
-
-		float ox = getX();
-		float oy =  getY();
-
-		return (x>=(ox-epsilon) && x<=(ox+getWidth()+epsilon))
-				&&
-				(y>=(oy-epsilon) && y<=(oy+getHeight()+epsilon));
-	}
-
-	/** Replies the anchor that was hit during the last
-	 * call to {@link #hit(float, float, float)}.
-	 * You must call {@link #hit(float, float, float)}
-	 * before to obtain this information.
-	 * 
-	 * @return the last hit anchor, or <code>null</code>.
-	 * @deprecated
-	 */
-	@Deprecated
-	public AnchorFigure<A> getLastHitAnchor() {
-		return this._lastHitAnchor;
 	}
 
 	/** {@inheritDoc}

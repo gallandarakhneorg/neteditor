@@ -131,21 +131,6 @@ extends AbstractEllipsoidAnchorFigure<A> {
 				r.getWidth(), r.getHeight());
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	@Deprecated
-	public boolean hit(float x, float y, float epsilon) {
-		float cx = getRelativeX() + getWidth()/2f;
-		float cy = getRelativeY() + getHeight()/2f;
-		float radius = getRadius();
-		cx -= x;
-		cy -= y;
-		radius += epsilon;
-		return cx*cx+cy*cy <= radius*radius;
-	}
-	
 	@Override
 	public boolean intersects(Shape2f r) {
 		float radius = getWidth()/2f;

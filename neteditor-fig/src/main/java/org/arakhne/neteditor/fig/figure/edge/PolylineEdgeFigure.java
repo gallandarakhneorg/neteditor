@@ -189,7 +189,7 @@ public class PolylineEdgeFigure<E extends Edge<?,?,?,?>> extends EdgeFigure<E> {
 	public int hitSegment(float x, float y, float epsilon) {
 		if (getDrawingMethod()==DrawingMethod.BEZIER_SPLINE
 				|| getDrawingMethod()==DrawingMethod.QUADRATIC_SPLINE) {
-			if ( getDamagedBounds().contains(x,y) ) {
+			if ( getBounds().contains(x,y) ) {
 				Path2f path = getPath();
 				assert(path!=null);
 				Iterator<PathElement2f> pathIterator = path.getPathIterator(MathConstants.SPLINE_APPROXIMATION_RATIO);

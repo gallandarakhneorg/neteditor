@@ -149,19 +149,4 @@ public class EllipseNodeFigure<N extends Node<?,? super N,? super A,?>,A extends
 		return r.intersects(new Ellipse2f(getX(), getY(), getWidth(), getHeight()));
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	@Deprecated
-	public boolean hit(float x, float y, float epsilon) {
-		if (hitAnchors(x, y, epsilon)) return true;
-		float absx = getX();
-		float absy = getY();
-		Ellipse2f ellipse = new Ellipse2f(
-				absx - epsilon, absy - epsilon,
-				getWidth() + epsilon, getHeight() + epsilon) ;
-		return ( ellipse.contains(x, y) );
-	}
-
 }

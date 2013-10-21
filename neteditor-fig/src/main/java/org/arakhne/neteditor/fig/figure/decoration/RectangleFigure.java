@@ -25,7 +25,6 @@ import java.util.Map;
 import java.util.TreeMap;
 import java.util.UUID;
 
-import org.arakhne.afc.math.continous.object2d.Rectangle2f;
 import org.arakhne.afc.ui.vector.Color;
 import org.arakhne.afc.ui.vector.Dimension;
 import org.arakhne.neteditor.fig.graphics.ViewGraphics2D;
@@ -150,21 +149,6 @@ public class RectangleFigure extends BlockDecorationFigure {
 		g.draw(g.getCurrentViewComponentBounds());
 	}
 	
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	@Deprecated
-	public boolean hit(float x, float y, float epsilon) {
-		Rectangle2f bounds = getBounds();
-		Rectangle2f rr = new Rectangle2f(
-				bounds.getMinX() - epsilon,
-				bounds.getMinY() - epsilon,
-				bounds.getWidth() + 2*epsilon,
-				bounds.getHeight() + 2*epsilon);
-		return rr.contains(x,  y);
-	}
-
 	/**
 	 * {@inheritDoc}
 	 */

@@ -1,5 +1,4 @@
 /* 
- * $Id$
  * 
  * Copyright (C) 2002 Stephane GALLAND, Madhi HANNOUN, Marc BAUMGARTNER.
  * Copyright (C) 2012 Stephane GALLAND.
@@ -191,23 +190,6 @@ public interface ViewComponent extends Serializable, Comparable<ViewComponent>, 
 	 */    
 	public boolean contains(Rectangle2f r) ;
 
-	/** Reply <code>true</code> if given coords may correspond
-	 * to a position of the mouse cursor that permits to
-	 * hit this figure.
-	 * This function should take into account the shape of 
-	 * the figure, and not only the bounds as for {@link #contains(float, float)}
-	 *
-	 * @param x horizontal coord.
-	 * @param y vertical coord.
-	 * @param epsilon is the error amount allowed for the hitting test.
-	 * @return <code>true</code> if the point 
-	 *         (<var>x</var>,<var>y</var>) is in this Fig.
-	 * @see #contains(float, float)
-	 * @deprecated see {@link #intersects(Shape2f)} or {@link #contains(float, float)}
-	 */
-	@Deprecated
-	public boolean hit(float x, float y, float epsilon) ;
-
 	/** Set the width of this Fig.
 	 *
 	 * @param width width.
@@ -219,22 +201,6 @@ public interface ViewComponent extends Serializable, Comparable<ViewComponent>, 
 	 * @param height height.
 	 */
 	public void setHeight(float height) ;
-
-	/** Reply the position and the dimension of the area that
-	 *  will be refresh when the Fig was damaged.
-	 *  <p>
-	 *  The returned rectangle must always be in the
-	 *  screen coordinate system. No relative/local
-	 *  coordinate system must be used, in opposite of
-	 *  {@link #getBounds()} that is allowing
-	 *  relative coordinates.
-	 *  <p>
-	 *  Note that the coordinates replied by this function
-	 *  are always global (eg, screen coordinates).
-	 *
-	 * @return the damaged area.
-	 */
-	public Rectangle2f getDamagedBounds() ;
 
 	/** Reply the minimal height of the figure.
 	 * 

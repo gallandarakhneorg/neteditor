@@ -23,7 +23,6 @@ package org.arakhne.neteditor.fig.subfigure;
 
 import java.util.UUID;
 
-import org.arakhne.afc.math.continous.object2d.Rectangle2f;
 import org.arakhne.neteditor.fig.figure.Figure;
 import org.arakhne.neteditor.fig.view.AbstractViewComponent;
 import org.arakhne.neteditor.fig.view.ViewComponentConstants;
@@ -62,19 +61,6 @@ public abstract class AbstractSubFigure extends AbstractViewComponent implements
 	public AbstractSubFigure(UUID viewUUID, float x, float y, float width, float height) {
 		super(viewUUID, x, y, width, height);
 		setMinimalDimension(DEFAULT_MINIMAL_SUBFIGURE_SIZE, DEFAULT_MINIMAL_SUBFIGURE_SIZE);
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public Rectangle2f computeDamagedBounds() {
-		float h = ViewComponentConstants.DEFAULT_DAMAGING_EXTENTS;
-		return new Rectangle2f(
-				getAbsoluteX() - h - 1,
-				getAbsoluteY() - h - 1,
-				getWidth() + 2f*h + 2,
-				getHeight() + 2f*h + 2);
 	}
 
 	/**

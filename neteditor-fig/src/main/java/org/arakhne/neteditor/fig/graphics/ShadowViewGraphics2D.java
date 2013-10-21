@@ -324,6 +324,16 @@ public class ShadowViewGraphics2D implements ViewGraphics2D {
 	public Color setOutlineColor(Color color) {
 		return color;
 	}
+	
+	@Override
+	public void setColors(Color fillingColor, Color outlineColor) {
+		if (fillingColor!=null) {
+			setInteriorPainted(true);
+		}
+		if (outlineColor!=null) {
+			setOutlineDrawn(true);
+		}
+	}
 
 	/**
 	 * {@inheritDoc}

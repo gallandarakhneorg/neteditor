@@ -25,7 +25,6 @@ import java.lang.ref.SoftReference;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
@@ -33,10 +32,8 @@ import java.util.UUID;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.arakhne.afc.math.MathConstants;
 import org.arakhne.afc.math.MathUtil;
 import org.arakhne.afc.math.continous.object2d.Path2f;
-import org.arakhne.afc.math.continous.object2d.PathElement2f;
 import org.arakhne.afc.math.continous.object2d.PathIterator2f;
 import org.arakhne.afc.math.continous.object2d.Point2f;
 import org.arakhne.afc.math.continous.object2d.Rectangle2f;
@@ -90,15 +87,6 @@ public class PolylineFigure extends DecorationFigure implements LinearFeature {
 	/** Buffered general path.
 	 */
 	private SoftReference<PathDetails> bufferedPath = null;
-
-	/** Indicates the last segment that was successfully tested against
-	 * a hit.
-	 * This attribute is updated each time {@link #hit(float, float, float)}
-	 * is invoked.
-	 * @deprecated
-	 */
-	@Deprecated
-	protected int _lastHitSegment = -1;
 
 	/** Construct a new figure.
 	 *
@@ -302,92 +290,6 @@ public class PolylineFigure extends DecorationFigure implements LinearFeature {
 			return -1;
 		}
 		return index;
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Deprecated
-	@Override
-	public boolean hit(float x, float y, float epsilon) {
-		if ( getDamagedBounds().contains(x,y) ) {
-			if (isClosed()) {
-				// Hit the polygon?
-				Path2f path = getPath();
-				assert(path!=null);
-				this._lastHitSegment = -1;
-				Rectangle2f mouse = new Rectangle2f();
-				mouse.setFromCenter(x, y, x-epsilon, y-epsilon);
-				return path.intersects(mouse);
-			}
-			
-			// Hit a polyline?
-			if (getDrawingMethod()==DrawingMethod.BEZIER_SPLINE
-					|| getDrawingMethod()==DrawingMethod.QUADRATIC_SPLINE) {
-				Path2f path = getPath();
-				assert(path!=null);
-				Iterator<PathElement2f> pathIterator = path.getPathIterator(MathConstants.SPLINE_APPROXIMATION_RATIO);
-				int index = 0 ;
-				
-				PathElement2f pathElement;
-
-				// Checks all segments
-				while (pathIterator.hasNext() ) {
-					pathElement = pathIterator.next();
-					if ( ( index < 0 ) || ( index >= getCtrlPointCount() ) ) {
-						index = -1 ;
-					}
-					else if( getCtrlPointAt(index+1).equals( 
-							new Point2f( pathElement.toX, pathElement.toY ) ) ) {
-						index ++ ;
-					}
-					switch(pathElement.type) {
-					case MOVE_TO:
-						break;
-					case LINE_TO:
-						if ( MathUtil.isPointClosedToSegment(
-								pathElement.fromX, pathElement.fromY,
-								pathElement.toX, pathElement.toY,
-								x, y,
-								epsilon ) ) {
-							this._lastHitSegment = index ;
-							return true ;
-						}
-						break;
-					case CLOSE:
-						if ( MathUtil.isPointClosedToSegment(
-								pathElement.fromX, pathElement.fromY,
-								pathElement.toX, pathElement.toY,
-								x, y,
-								epsilon) ) {
-							this._lastHitSegment = index ;
-							return true ;
-						}
-						break;
-					default:
-					}
-				}
-			}
-			else {
-				ControlPoint previous = null;
-				this._lastHitSegment = 0;
-				for(ControlPoint p : this.points) {
-					if (previous!=null) {
-						if (MathUtil.isPointClosedToSegment(
-								previous.x(), previous.y(),
-								p.x(), p.y(),
-								x, y,
-								epsilon)) {
-							return true;
-						}
-						++this._lastHitSegment;
-					}
-					previous = p;
-				}
-			}
-		}
-		this._lastHitSegment = -1;
-		return false;
 	}
 
 	/**
@@ -746,15 +648,6 @@ public class PolylineFigure extends DecorationFigure implements LinearFeature {
 		return index;
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	@Deprecated
-	public int getLastHitSegment() {
-		return this._lastHitSegment;
-	}
-	
 	/**
 	 * {@inheritDoc}
 	 */

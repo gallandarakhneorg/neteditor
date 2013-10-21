@@ -112,24 +112,6 @@ public class CircleNodeFigure<N extends Node<?,? super N,? super A,?>,A extends 
 				r.getMinX(), r.getMinY(), r.getWidth(), r.getHeight());
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	@Deprecated
-	public boolean hit(float x, float y, float epsilon) {
-		if (hitAnchors(x, y, epsilon)) return true;
-		Rectangle2f r = getBounds();
-		assert(r!=null);
-		float cx = r.getCenterX();
-		float cy = r.getCenterY();
-		float radius = getRadius();
-		cx -= x;
-		cy -= y;
-		radius += epsilon;
-		return cx*cx+cy*cy <= radius*radius;
-	}
-	
 	@Override
 	public boolean intersects(Shape2f r) {
 		float radius = getWidth()/2f;

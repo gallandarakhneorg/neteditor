@@ -182,21 +182,6 @@ public class TextFigure extends BlockDecorationFigure {
 	 * {@inheritDoc}
 	 */
 	@Override
-	@Deprecated
-	public boolean hit(float x, float y, float epsilon) {
-		Rectangle2f bounds = getBounds();
-		Rectangle2f rr = new Rectangle2f(
-				bounds.getMinX() - epsilon,
-				bounds.getMinY() - epsilon,
-				bounds.getWidth() + 2*epsilon,
-				bounds.getHeight() + 2*epsilon);
-		return rr.contains(x,  y);
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
 	public Map<String,Object> getProperties() {
 		Map<String,Object> properties = super.getProperties();
 		if (this.text==null || this.text.isEmpty())

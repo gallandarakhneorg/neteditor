@@ -88,15 +88,6 @@ public abstract class EdgeFigure<E extends Edge<?,?,?,?>> extends AbstractModelO
 	 */    
 	private EdgeSymbol endSymbol = null;
 
-	/** Indicates the last segment that was successfully tested against
-	 * a hit.
-	 * This attribute is updated each time {@link #hit(float, float, float)}
-	 * is invoked.
-	 * @deprecated
-	 */
-	@Deprecated
-	protected int _lastHitSegment = -1;
-
 	/** Buffered general path.
 	 */
 	private SoftReference<PathDetails> bufferedPath = null;
@@ -840,7 +831,7 @@ public abstract class EdgeFigure<E extends Edge<?,?,?,?>> extends AbstractModelO
 	 */
 	@Override
 	public int hitSegment(float x, float y, float epsilon) {
-		if ( getDamagedBounds().contains(x,y) ) {
+		if ( getBounds().contains(x,y) ) {
 			ControlPoint previous = null;
 			int segmentIndex = 0;
 			for(ControlPoint p : this.points) {
@@ -858,14 +849,6 @@ public abstract class EdgeFigure<E extends Edge<?,?,?,?>> extends AbstractModelO
 			}
 		}
 		return -1;
-	}
-
-	/** {@inheritDoc}
-	 */
-	@Override
-	@Deprecated
-	public int getLastHitSegment() {
-		return this._lastHitSegment;
 	}
 
 	/** Replies if a point is closed to a segment.
@@ -905,26 +888,6 @@ public abstract class EdgeFigure<E extends Edge<?,?,?,?>> extends AbstractModelO
 	 */
 	protected abstract float distanceToSegment(float x1, float y1,  float x2, float y2, 
 			float x, float y, Point2D pts);
-
-	/** {@inheritDoc}
-	 */
-	@Override
-	@Deprecated
-	public final boolean hit(float x, float y, float epsilon) {
-		// Tests if hitting the edges
-		boolean hitted = hitSegment( x, y, epsilon ) != -1;
-		// Tests the hitting of end-symbols
-		if (!hitted) {
-			EdgeSymbol s;
-			s = getStartSymbol();
-			if (s!=null) hitted = s.hit(x, y, epsilon);
-			if (!hitted) {
-				s = getEndSymbol();
-				if (s!=null) hitted = s.hit(x, y, epsilon);
-			}
-		}
-		return hitted ;
-	}
 
 	/** {@inheritDoc}
 	 */

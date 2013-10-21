@@ -54,11 +54,11 @@ public interface ViewComponentContainer<C extends ViewComponent, G extends Graph
 	 */
 	public UUID getUUID();
 
-	/** Replies the bounds of the components.
+	/** Replies the bounds of the view of the components.
 	 * 
-	 * @return the bounds of the components.
+	 * @return the bounds of the view of the components.
 	 */
-	public Rectangle2f getComponentBounds();
+	public Rectangle2f getViewBounds();
 
 	/** Replies the number of components in this container.
 	 * 

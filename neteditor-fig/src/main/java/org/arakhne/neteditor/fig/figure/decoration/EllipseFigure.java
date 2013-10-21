@@ -192,20 +192,6 @@ public class EllipseFigure extends BlockDecorationFigure {
 	/**
 	 * {@inheritDoc}
 	 */
-	@Deprecated
-	@Override
-	public boolean hit(float x, float y, float epsilon) {
-		Ellipse2f oval = new Ellipse2f(
-				getX() - epsilon,
-				getY() - epsilon,
-				getWidth() + 2*epsilon,
-				getHeight() + 2*epsilon);
-		return oval.contains(x,  y);
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public Map<String,Object> getProperties() {
 		Map<String,Object> properties = super.getProperties();

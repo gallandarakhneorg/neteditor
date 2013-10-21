@@ -74,19 +74,6 @@ public abstract class AbstractRectangularAnchorFigure<A extends Anchor<?,?,?,?>>
 	 * {@inheritDoc}
 	 */
 	@Override
-	@Deprecated
-	public boolean hit(float x, float y, float epsilon) {
-		float ax = getRelativeX();
-		float ay = getRelativeX();
-		return (x>=(ax-epsilon) && x<=(ax+getWidth()+epsilon))
-				&&
-				(y>=(ay-epsilon) && y<=(ay+getHeight()+epsilon));
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
 	protected Point2D getConnectionPointFrom(Point2D position, Point2D absoluteAnchorPosition, AnchorLocation location) {
 		assert(location!=null);
 		assert(position!=null);

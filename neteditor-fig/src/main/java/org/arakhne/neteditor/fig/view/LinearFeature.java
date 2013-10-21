@@ -65,23 +65,6 @@ public interface LinearFeature {
 	 */
 	public Point2D getCtrlPointAt( int index);
 
-	/** Reply <code>true</code> if given coords may correspond
-	 * to a position of the mouse cursor that permits to
-	 * hit this figure.
-	 * This function should take into account the shape of 
-	 * the figure, and not only the bounds as for {@link #contains(float, float)}
-	 *
-	 * @param x horizontal coord.
-	 * @param y vertical coord.
-	 * @param epsilon is the error amount allowed for the hitting test.
-	 * @return <code>true</code> if the point 
-	 *         (<var>x</var>,<var>y</var>) is in this Fig.
-	 * @see #contains(float, float)
-	 * @deprecated see {@link #contains(float, float)}
-	 */
-	@Deprecated
-	public boolean hit(float x, float y, float epsilon) ;
-
 	/** Reply <code>true</code> if the object intersects the given shape.
 	 *
 	 *  @param r a shape
@@ -92,14 +75,11 @@ public interface LinearFeature {
 
 	/** Reply <code>true</code> if given coords are in the bounds of this Fig.
 	 * This function takes into account only the bounds of the figure.
-	 * If you are interested in a click in the shape of the figure,
-	 * see {@link #hit(float, float, float)}
 	 *
 	 * @param x horizontal coord.
 	 * @param y vertical coord.
 	 * @return <code>true</code> if the point 
 	 *         (<var>x</var>,<var>y</var>) is in this Fig.
-	 * @see #hit(float, float, float)
 	 */
 	public boolean contains(float x, float y) ;
 
@@ -167,18 +147,6 @@ public interface LinearFeature {
 	 * @return the general path that is representing this edge figure.
 	 */
 	public Path2f getPath();
-
-	/** Replies the last segment that was successfully tested against
-	 * a hit.
-	 * This value is updated each time {@link #hit(float, float, float)}
-	 * is invoked.
-	 * 
-	 * @return the index of the last hit segment; if negative these is not
-	 * last hit segment.
-	 * @deprecated see {@link #hitSegment(float, float, float)}
-	 */
-	@Deprecated
-	public int getLastHitSegment();
 
 	/** Insert a point into the path defined by the given index.
 	 *
