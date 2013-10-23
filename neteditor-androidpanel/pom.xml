@@ -81,8 +81,9 @@
 					</emulator>
 				</configuration>
 				<extensions>true</extensions>
-				<!-- Update the Manifest according to currenty Maven configuration -->
-				<executions>
+				<!-- Update the Manifest according to currenty Maven configuration.
+				     This configuration does not work on the CLI when deploying. -->
+				<!--<executions>
 					<execution>
 						<id>update-manifest</id>
 						<phase>process-resources</phase>
@@ -95,7 +96,7 @@
 							</manifest>
 						</configuration>
 					</execution>
-				</executions>
+				</executions>-->
 			</plugin>
 		</plugins>
 	</build>
