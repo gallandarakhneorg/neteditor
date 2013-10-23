@@ -4,7 +4,7 @@
 
 	<groupId>org.arakhne.neteditor</groupId>
 	<artifactId>neteditor</artifactId>
-	<version>17.0</version>
+	<version>18.0-SNAPSHOT</version>
 	<name>NetEditor</name>
 	<packaging>pom</packaging>
 	<inceptionYear>2001</inceptionYear>
@@ -12,7 +12,7 @@
 
 	<properties>
 		<afc.version>10.0</afc.version>
-		<neteditor.version>17.0</neteditor.version>
+		<neteditor.version>18.0-SNAPSHOT</neteditor.version>
 		<year>2013</year>
 		<sourceEncoding>UTF-8</sourceEncoding>
 		<copyrighters>NetEditor Developers</copyrighters>

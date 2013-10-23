@@ -4,8 +4,7 @@
 	<parent>
 		<artifactId>neteditor-fsm</artifactId>
 		<groupId>org.arakhne.neteditor.fsm</groupId>
-		<version>17.0</version>
-		<relativePath>..</relativePath>
+		<version>18.0-SNAPSHOT</version>
 	</parent>
 
 	<artifactId>fsm-editor</artifactId>
