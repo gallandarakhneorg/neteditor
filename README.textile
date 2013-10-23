@@ -19,7 +19,7 @@ p=. !http://www.arakhne.org/neteditor/screen.png!
 
 h1. Definition of a Graph-based Graphical Language
 
-NetEditor is designed to create editors for "Visual Programmaing Languages":http://en.wikipedia.org/wiki/Visual_programming_language. It assumes that the language constructs are defined independently from the graphical representations of these constructs. 
+NetEditor is designed to create editors for "Visual Programming Languages":http://en.wikipedia.org/wiki/Visual_programming_language. It assumes that the language constructs are defined independently from the graphical representations of these constructs. 
 
 h2. Language Constructs Specification
 
