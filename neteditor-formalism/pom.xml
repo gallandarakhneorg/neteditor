@@ -4,7 +4,7 @@
   
     <artifactId>neteditor</artifactId>
     <groupId>org.arakhne.neteditor</groupId>
-    <version>17.0-SNAPSHOT</version>
+    <version>17.0</version>
   </parent>
   
   <artifactId>neteditor-formalism</artifactId>
