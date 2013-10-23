@@ -11,9 +11,9 @@
 	<url>http://www.arakhne.org/neteditor.html</url>
 
 	<properties>
-		<afc.version>10.0-SNAPSHOT</afc.version>
+		<afc.version>10.0</afc.version>
 		<neteditor.version>17.0-SNAPSHOT</neteditor.version>
-	    <year>2013</year>
+		<year>2013</year>
 		<sourceEncoding>UTF-8</sourceEncoding>
 		<copyrighters>NetEditor Developers</copyrighters>
 		<android.sdk.path>/opt/android-sdk</android.sdk.path>
@@ -259,14 +259,14 @@
 		<pluginManagement>
 			<plugins>
 				<plugin>
-					<groupId>org.arakhne.afc</groupId>
+					<groupId>org.arakhne.afc.maven</groupId>
 					<artifactId>tag-replacer</artifactId>
-					<version>2.4</version>
+					<version>${afc.version}</version>
 				</plugin>
 				<plugin>
-					<groupId>org.arakhne.afc</groupId>
+					<groupId>org.arakhne.afc.maven</groupId>
 					<artifactId>license-installer</artifactId>
-					<version>2.4</version>
+					<version>${afc.version}</version>
 				</plugin>
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
@@ -276,7 +276,7 @@
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-compiler-plugin</artifactId>
-					<version>3.0</version>
+					<version>3.1</version>
 				</plugin>
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
@@ -291,12 +291,12 @@
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-javadoc-plugin</artifactId>
-					<version>2.9</version>
+					<version>2.9.1</version>
 				</plugin>
 				<plugin>
 					<groupId>com.jayway.maven.plugins.android.generation2</groupId>
 					<artifactId>android-maven-plugin</artifactId>
-					<version>3.6.0</version>
+					<version>3.7.0</version>
 				</plugin>
 
 				<!-- This plugin's configuration is used to store Eclipse m2e settings 
