@@ -26,6 +26,7 @@ import java.io.IOException;
 
 import org.arakhne.afc.math.continous.object2d.Point2f;
 import org.arakhne.afc.math.continous.object2d.Rectangle2f;
+import org.arakhne.afc.math.discrete.object2d.Rectangle2i;
 import org.arakhne.afc.math.generic.Point2D;
 import org.arakhne.afc.ui.vector.Image;
 import org.arakhne.afc.ui.vector.Raster;
@@ -172,7 +173,7 @@ class EpsUtil {
 		int iw = Math.abs(sx2 - sx1);
 		int ih = Math.abs(sy2 - sy1);
 		
-		Raster raster = image.getData(new Rectangle2f(ix, iy, iw, ih));
+		Raster raster = image.getData(new Rectangle2i(ix, iy, iw, ih));
 		
 		int pixel;
 		int bands = raster.getNumBands();

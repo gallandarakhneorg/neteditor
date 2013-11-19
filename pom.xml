@@ -11,7 +11,7 @@
 	<url>http://www.arakhne.org/neteditor.html</url>
 
 	<properties>
-		<afc.version>10.0</afc.version>
+		<afc.version>11.0-SNAPSHOT</afc.version>
 		<neteditor.version>18.0-SNAPSHOT</neteditor.version>
 		<year>2013</year>
 		<sourceEncoding>UTF-8</sourceEncoding>
