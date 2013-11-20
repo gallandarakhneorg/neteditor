@@ -30,7 +30,6 @@ import org.arakhne.afc.math.generic.Point2D;
 import org.arakhne.afc.ui.actionmode.ActionPointerEvent;
 import org.arakhne.afc.ui.undo.AbstractUndoable;
 import org.arakhne.afc.ui.vector.Color;
-import org.arakhne.neteditor.android.actionmode.ActionModeManager;
 import org.arakhne.neteditor.android.actionmode.ActionModeOwner;
 import org.arakhne.neteditor.android.graphics.DroidViewGraphics2D;
 import org.arakhne.neteditor.fig.anchor.AnchorFigure;
@@ -78,14 +77,6 @@ public abstract class AbstractEdgeCreationMode extends AbstractAndroidCreationMo
 		this.undoLabel = undoLabel;
 	}
 
-	private static Point2D getCenter(AnchorFigure<?> anchor) {
-		float x = anchor.getAbsoluteX();
-		float y = anchor.getAbsoluteY();
-		return new Point2f(
-				x + anchor.getWidth() / 2f,
-				y + anchor.getHeight() / 2f);
-	}
-	
 	private static boolean isSameAnchor(AnchorFigure<?> a, AnchorFigure<?> b) {
 		if (a==b) return true;
 		if (a==null || b==null) return false;
@@ -187,44 +178,53 @@ public abstract class AbstractEdgeCreationMode extends AbstractAndroidCreationMo
 			AnchorFigure<?> figure = getPointedAnchor();
 			if (figure!=null && canStartFrom(figure)) {
 				this.startAnchor = figure;
-				Point2D p = getCenter(this.startAnchor);
-				this.shape = new Path2f();
-				this.shape.moveTo(p.getX(), p.getY());
-				this.shape.lineTo(p.getX(), p.getY());
-
-				this.damagedRectangle.set(this.startAnchor.getBounds());
-				this.damagedRectangle.inflate(
-						ActionModeManager.REPAINTING_INFLATING_SIZE,
-						ActionModeManager.REPAINTING_INFLATING_SIZE,
-						ActionModeManager.REPAINTING_INFLATING_SIZE,
-						ActionModeManager.REPAINTING_INFLATING_SIZE);
-
 				event.consume();
 			}
 		}
 		else {
+			// Add a point in the path
 			Point2D p = event.getPosition();
-			updatePolypointObject(p.getX(), p.getY());
+			updatePath(p.getX(), p.getY(), true);
 			event.consume();
 		}
 	}
-
-	private void updatePolypointObject(float x, float y) {
-		this.shape.setLastPoint(x, y);
-		Rectangle2f newBounds = this.shape.toBoundingBox().clone();
-		newBounds.setUnion(this.startAnchor.getBounds());
-		repaint(this.damagedRectangle.createUnion(newBounds));
+	
+	private void updatePath(float x, float y, boolean lineTo) {
+		Point2f lastPoint;
+		if (this.shape==null) {
+			this.damagedRectangle.set(this.startAnchor.getAbsoluteBounds());
+			this.shape = new Path2f();
+			lastPoint = new Point2f(
+					this.damagedRectangle.getCenterX(),
+					this.damagedRectangle.getCenterY());
+			this.shape.moveTo(lastPoint.getX(), lastPoint.getY());
+			this.shape.lineTo(x, y);
+		}
+		else {
+			lastPoint = this.shape.getPointAt(this.shape.size()-2);
+			if (lineTo)
+				this.shape.lineTo(x, y);
+			else
+				this.shape.setLastPoint(x, y);
+		}
+		Rectangle2f newBounds = new Rectangle2f();
+		newBounds.setFromCorners(
+				lastPoint.getX(), lastPoint.getY(),
+				x, y);
+		Rectangle2f rep = newBounds.createUnion(this.damagedRectangle);
 		this.damagedRectangle.set(newBounds);
+		repaint(rep);
 	}
-
+	
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
 	public void pointerDragged(ActionPointerEvent event) {
-		if (this.shape!=null && this.startAnchor!=null) {
+		if (this.startAnchor!=null) {
+			// Update the last point in the path
 			Point2D p = event.getPosition();
-			updatePolypointObject(p.getX(), p.getY());
+			updatePath(p.getX(), p.getY(), false);
 			event.consume();
 		}
 	}
@@ -235,22 +235,30 @@ public abstract class AbstractEdgeCreationMode extends AbstractAndroidCreationMo
 	@Override
 	public void pointerReleased(ActionPointerEvent event) {
 		if (this.startAnchor!=null) {
-			boolean createPoint = true;
 			AnchorFigure<?> currentAnchor = getPointedAnchor();
 			if (currentAnchor!=null && canArriveTo(currentAnchor)
 				&&
 				(!isSameAnchor(this.startAnchor, currentAnchor)
-				 ||this.shape.size()>2)) { // Loop on the same anchor only if a point exists outside
+				 ||(this.shape!=null && this.shape.size()>2))) { // Loop on the same anchor only if a point exists outside
 
 				ActionModeOwner container = getModeManagerOwner();
 				Graph<?,?,?,?> graph = container.getGraph();
 				Edge<?,?,?,?> edge = getCurrentEdge();
 
 				if (graph!=null && edge!=null) {
-					createPoint = false;
-
-					Point2D center = getCenter(currentAnchor);
-					this.shape.setLastPoint(center.getX(), center.getY());
+					Rectangle2f box = currentAnchor.getAbsoluteBounds();
+					Point2D center = new Point2f(
+							box.getCenterX(),
+							box.getCenterY());
+					if (this.shape==null) {
+						box = this.startAnchor.getAbsoluteBounds();
+						this.shape = new Path2f();
+						this.shape.moveTo(box.getCenterX(), box.getCenterY());
+						this.shape.lineTo(center.getX(), center.getY());
+					}
+					else {
+						this.shape.setLastPoint(center.getX(), center.getY());
+					}
 					
 					if (this.undoLabelBuffer==null) {
 						this.undoLabelBuffer = container.getContext().getString(this.undoLabel);
@@ -269,19 +277,6 @@ public abstract class AbstractEdgeCreationMode extends AbstractAndroidCreationMo
 
 					finish();
 				}
-			}
-
-			if (createPoint) {
-				Point2D position = event.getPosition();
-				this.shape.lineTo(position.getX(), position.getY());
-				Rectangle2f newBounds = this.shape.toBoundingBox();
-				this.damagedRectangle.setUnion(newBounds);
-				this.damagedRectangle.inflate(
-						ActionModeManager.REPAINTING_INFLATING_SIZE,
-						ActionModeManager.REPAINTING_INFLATING_SIZE,
-						ActionModeManager.REPAINTING_INFLATING_SIZE,
-						ActionModeManager.REPAINTING_INFLATING_SIZE);
-				repaint(this.damagedRectangle);
 			}
 
 			event.consume();
