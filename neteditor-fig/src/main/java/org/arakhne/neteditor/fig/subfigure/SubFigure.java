@@ -21,6 +21,7 @@
  */
 package org.arakhne.neteditor.fig.subfigure;
 
+import org.arakhne.afc.math.continous.object2d.Rectangle2f;
 import org.arakhne.neteditor.fig.figure.Figure;
 import org.arakhne.neteditor.fig.view.ViewComponent;
 
@@ -63,5 +64,20 @@ public interface SubFigure extends ViewComponent {
 	 * @return the absolute y position.
 	 */
 	public float getAbsoluteY();
+
+	/** Replies the absolute bounds of this sub-figure.
+	 * <p>
+	 * <pre><code>
+	 * absBounds = ( x => parentNode.x + this.x,
+	 *               y => parentNode.y + this.y,
+	 *               width => this.width,
+	 *               height => this.height)
+	 * </code></pre>
+	 * 
+	 * @return the bounds in absolute coordinates.
+	 * @see #getBounds()
+	 * @since 11.0
+	 */
+	public Rectangle2f getAbsoluteBounds();
 
 }

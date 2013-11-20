@@ -23,6 +23,7 @@ package org.arakhne.neteditor.fig.subfigure;
 
 import java.util.UUID;
 
+import org.arakhne.afc.math.continous.object2d.Rectangle2f;
 import org.arakhne.neteditor.fig.figure.Figure;
 import org.arakhne.neteditor.fig.view.AbstractViewComponent;
 import org.arakhne.neteditor.fig.view.ViewComponentConstants;
@@ -63,9 +64,6 @@ public abstract class AbstractSubFigure extends AbstractViewComponent implements
 		setMinimalDimension(DEFAULT_MINIMAL_SUBFIGURE_SIZE, DEFAULT_MINIMAL_SUBFIGURE_SIZE);
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public float getAbsoluteX() {
 		Figure parent = getParent();
@@ -76,8 +74,6 @@ public abstract class AbstractSubFigure extends AbstractViewComponent implements
 		return x;
 	}
 
-	/** {@inheritDoc}
-	 */
 	@Override
 	public float getAbsoluteY() {
 		Figure parent = getParent();
@@ -86,6 +82,23 @@ public abstract class AbstractSubFigure extends AbstractViewComponent implements
 			return y + parent.getY();
 		}
 		return y;
+	}
+	
+	@Override
+	public Rectangle2f getAbsoluteBounds() {
+		Rectangle2f r;
+		Figure parent = getParent();
+		if (parent!=null) {
+			r = new Rectangle2f(
+					parent.getX() + getX(),
+					parent.getY() + getY(),
+					getWidth(),
+					getHeight());
+		}
+		else {
+			r = getBounds();
+		}
+		return r;
 	}
 	
 }
