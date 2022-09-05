@@ -237,19 +237,6 @@
 	<!-- ==== Devel Configuration === -->
 	<!-- ======================================= -->
 
-	<distributionManagement>
-		<repository>
-			<id>repository.arakhne.org</id>
-			<name>Arakhn&amp;ecirc; Repository</name>
-			<url>file:///srv/arakhne.org/repository/maven/</url>
-		</repository>
-		<site>
-			<id>afc.site.arakhne.org</id>
-			<name>AFC Project Websites Repository</name>
-			<url>file:///srv/arakhne.org/web/maven-sites/</url>
-		</site>
-	</distributionManagement>
-
 	<scm>
 		<connection>scm:git:git://github.com/gallandarakhneorg/neteditor.git</connection>
 		<developerConnection>scm:git:https://github.com/gallandarakhneorg/neteditor.git</developerConnection>
